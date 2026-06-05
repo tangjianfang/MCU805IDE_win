@@ -1,0 +1,19 @@
+# Dependencies (too large, not needed for build)
+deps/ActiveTcl-master/
+deps/ActiveTcl-for-Windows-master/
+
+# Build artifacts / temp files
+build/startup_log.txt
+build/diag_*.txt
+build/diag_*.exe
+build/diag_*.tcl
+build/detect_output.txt
+build/wrap_error.txt
+build/error_output.txt
+
+# IDE config directory (user-specific)
+.mcu8051ide/
+
+# OS files
+Thumbs.db
+.DS_Storesrc/demo/*.mcu8051ide~

@@ -131,13 +131,21 @@ set smallfont_bold [font create -size [expr {int(-10 * $::font_size_factor)}] -f
 # -----------------------------
 foreach directory {16x16 22x22 32x32 flag} ns {16 22 32 flag} {
 	namespace eval ::ICONS::${ns} {}
-	if {!$::MICROSOFT_WINDOWS} {
-		# Use glob
-		set list_of_icons [glob "${::ROOT_DIRNAME}/icons/${directory}/*.png"]
-	} else {
-		# Use ZIP Virtual File System (freeWrap)
-		set list_of_icons [zvfs::list "${::ROOT_DIRNAME}/icons/${directory}/*.png"]
-	}
+		if {!$::MICROSOFT_WINDOWS} {
+			# Use glob
+			set list_of_icons [glob "${::ROOT_DIRNAME}/icons/${directory}/*.png"]
+		} else {
+			# On Windows with freewrap, try zvfs::list first (for VFS files),
+			# but fall back to glob if zvfs::list returns nothing (which happens
+			# when freewrapTCLSH wraps files that are also on the real filesystem)
+			set list_of_icons {}
+			if {[info commands zvfs::list] != ""} {
+				set list_of_icons [zvfs::list "${::ROOT_DIRNAME}/icons/${directory}/*.png"]
+			}
+			if {[llength $list_of_icons] == 0} {
+				set list_of_icons [glob -nocomplain "${::ROOT_DIRNAME}/icons/${directory}/*.png"]
+			}
+		}
 	foreach filename $list_of_icons {
 		set iconname [file tail $filename]
 		regexp {^\w+} $iconname iconname

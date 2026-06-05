@@ -39,9 +39,13 @@ set _MAIN_TCL _
 # -----------------------------
 set DEBUG		0				;# Turn on debugging
 encoding system {utf-8}					;# System encoding
-set LIB_DIRNAME	[file normalize [file dirname $argv0]]	;# Path to directory where the *.tcl file are located
-set INSTALLATION_DIR [file normalize "$LIB_DIRNAME/.."]	;# Path to the main executable (this file)
-set ROOT_DIRNAME [file normalize "$LIB_DIRNAME/.."]	;# On Linux it's the same as INSTALLATION_DIR, but it's different on MS Windows
+# When running via freewrap, the entry script sets these variables before
+# sourcing this file. When running from source, compute from argv0.
+if {![info exists ::LIB_DIRNAME]} {
+	set LIB_DIRNAME	[file normalize [file dirname $argv0]]	;# Path to directory where the *.tcl file are located
+	set INSTALLATION_DIR [file normalize "$LIB_DIRNAME/.."]	;# Path to the main executable (this file)
+	set ROOT_DIRNAME [file normalize "$LIB_DIRNAME/.."]	;# On Linux it is the same as INSTALLATION_DIR, but different on MS Windows
+}
 set VERSION		"1.4.7"				;# Version of this IDE
 set SHORTNAME		"MCU8051IDE"			;# Program short name (without white space)
 set APPNAME		"MCU 8051 IDE v$VERSION"	;# Full program name
@@ -78,7 +82,7 @@ set LIBRARIES_TO_LOAD {
 	{md5		2.0}
 	{Tk		8.5}
 	{img::png	1.3}
-	{tdom		0.8}
+	{tdom		0.9}
 	{Tclx		8.0}
 	{Tcl		8.2}
 }
@@ -105,16 +109,25 @@ if {[string first {Windows} ${tcl_platform(os)}] != -1} {
 	#   to do some workarounds here in order to make the IDE functional.
 	set ::MICROSOFT_WINDOWS 1
 
-	set LIB_DIRNAME_SPECIFIC_FOR_MS_WINDOWS "C:/tjf/github/MCU805IDE_win/build/lib" ;# <-- The auto. inst. pkg. creation script will fill this in
-	set AUTO_PATH_FOR_MS_WINDOWS [list libraries/bwidget libraries/md5 libraries/tdom libraries/itcl libraries/tclx8.4 libraries/img_png] ;# <-- The auto. inst. pkg. creation script will fill this in
-	set INSTALLATION_DIR $LIB_DIRNAME
+	# When running via freewrap, the entry script (mcu8051ide_entry.tcl)
+	# sets these variables before sourcing this file. When running from
+	# source (e.g. tclsh), we compute them from the script location.
+	if {[info exists ::AUTO_PATH_FOR_MS_WINDOWS] && [info exists ::LIB_DIRNAME_SPECIFIC_FOR_MS_WINDOWS]} {
+		# All variables already set by the freewrap entry script — use them
+	} else {
+		# Fallback: compute from script location (for development/source runs)
+		set LIB_DIRNAME_SPECIFIC_FOR_MS_WINDOWS [file dirname [info script]]
+		set ROOT_DIRNAME [file normalize [file join $LIB_DIRNAME_SPECIFIC_FOR_MS_WINDOWS ..]]
+		set AUTO_PATH_FOR_MS_WINDOWS [list libraries/bwidget libraries/md5 libraries/tdom libraries/itcl libraries/tclx8.4 libraries/img_png]
+	}
+	# On Windows, the lib directory path is platform-specific
+	set INSTALLATION_DIR $ROOT_DIRNAME
 	set LIB_DIRNAME $LIB_DIRNAME_SPECIFIC_FOR_MS_WINDOWS
-	set ROOT_DIRNAME [regsub {\/\w+\/?$} $LIB_DIRNAME {}]
 
 	foreach dir $AUTO_PATH_FOR_MS_WINDOWS {
-		lappend ::auto_path "${::ROOT_DIRNAME}/${dir}"
+		lappend ::auto_path [file join $::ROOT_DIRNAME $dir]
 	}
-	set env(ITCL_LIBRARY) "${::ROOT_DIRNAME}/libraries/itcl"
+	set env(ITCL_LIBRARY) [file join $::ROOT_DIRNAME libraries itcl]
 }
 
 # Set directory containing configuration files according to the host OS
@@ -167,7 +180,20 @@ proc libraryLoadFailed {library} {
 		puts stderr "\nERROR: Unable to load Itcl library compatible with this version of Tcl/Tk !"
 		puts stderr "Trying to workaround ..."
 
-		if {[lsearch {Linux} ${::tcl_platform(os)}] == -1} {
+		if {${::tcl_platform(platform)} == {windows}} {
+			# Windows: try loading itcl DLL directly
+			puts stderr "Loading Itcl DLL for Windows ..." 
+			if {[catch {load [file join ${::ROOT_DIRNAME} libraries itcl itcl34.dll] Itcl} error_info]} {
+				puts stderr "FAILED !"
+				puts stderr "Reason: ${error_info}"
+				puts stderr "
+Please try to run mcu8051ide with --check-libraries to see what's wrong."
+				exit 1
+			} else {
+				puts stderr "WORKAROUND SUCCESSFUL ... "
+				return
+			}
+		} elseif {[lsearch {Linux} ${::tcl_platform(os)}] == -1} {
 			puts stderr "FATAL ERROR: Unsupported operating system. ${::tcl_platform(os)}"
 			puts stderr "You can contact authors of the project at <martin.osmera@gmail.com> if you want to get you OS supported."
 			exit 1

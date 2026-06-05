@@ -909,7 +909,8 @@ libraries/img_png/tkimgxbm1414.dll
 libraries/img_png/tkimgxpm1414.dll
 libraries/img_png/zlibtcl1213.dll
 libraries/itcl/itcl.tcl
-libraries/itcl/itcl40t.dll
+libraries/itcl/pkgIndex.tcl
+libraries/itcl/itcl34.dll
 libraries/md5/md5.tcl
 libraries/md5/md5c.tcl
 libraries/md5/md5x.tcl
@@ -938,3 +939,6 @@ libraries/tclx8.4/tclx84.dll
 libraries/tdom/pkgIndex.tcl
 libraries/tdom/tdom.tcl
 libraries/tdom/tdom093.dll
+translations/languages.txt
+translations/zh_CN.msg
+translations/template.txt
