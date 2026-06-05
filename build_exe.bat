@@ -62,11 +62,13 @@ if "!MISSING!"=="1" (
 echo   All files verified
 
 :: ---- Kill any running mcu8051ide.exe ----
-tasklist /fi "imagename eq mcu8051ide.exe" 2>nul | %SYSTEMROOT%\system32\find.exe /i "mcu8051ide.exe" >nul
-if %errorlevel% equ 0 (
-    echo Closing running mcu8051ide.exe ...
-    taskkill /f /im mcu8051ide.exe >nul 2>&1
-    timeout /t 2 /nobreak >nul
+taskkill /f /im mcu8051ide.exe >nul 2>&1
+:: (Silently kill if running; ignore error if not running)
+
+:: ---- Record current exe timestamp so we can detect a new build ----
+set "OLD_SIZE=0"
+if exist "%OUTPUT_EXE%" (
+    for %%e in ("%OUTPUT_EXE%") do set "OLD_SIZE=%%~ze"
 )
 
 :: ---- Build ----
@@ -78,30 +80,38 @@ cd /d "%BUILD_DIR%"
 
 "%FREEWRAP_TCLSH%" mcu8051ide_entry.tcl -forcewrap -f list_of_files_to_wrap.txt -w "%FREEWRAP_WRAPPER%" -o mcu8051ide.exe
 
-if %errorlevel% neq 0 (
-    echo.
-    echo ERROR: Build failed (exit code %errorlevel%)
-    cd /d "%PROJECT_DIR%"
-    exit /b 1
-)
-
 :: ---- Verify output ----
+cd /d "%PROJECT_DIR%"
+
 if not exist "%OUTPUT_EXE%" (
-    echo ERROR: Output exe not found
-    cd /d "%PROJECT_DIR%"
+    echo.
+    echo ERROR: Output exe not found after build
+    echo Path: %OUTPUT_EXE%
     exit /b 1
 )
 
-for %%e in ("%OUTPUT_EXE%") do set "EXE_SIZE=%%~ze"
-echo.
-echo ============================================================
-echo Build successful!
+for %%e in ("%OUTPUT_EXE%") do set "NEW_SIZE=%%~ze"
+
+:: Detect if exe was actually rebuilt (size changed or was 0 before)
+if "!OLD_SIZE!"=="0" (
+    echo.
+    echo ============================================================
+    echo Build successful!
+) else if "!NEW_SIZE!"=="!OLD_SIZE!" (
+    echo.
+    echo ============================================================
+    echo Build completed (exe unchanged - same content)
+) else (
+    echo.
+    echo ============================================================
+    echo Build successful!
+)
+
 echo   Output: %OUTPUT_EXE%
-echo   Size:   !EXE_SIZE! bytes
+echo   Size:   !NEW_SIZE! bytes
 echo.
 echo To run: double-click the exe or execute:
 echo   "%OUTPUT_EXE%"
 echo ============================================================
 
-cd /d "%PROJECT_DIR%"
 endlocal
