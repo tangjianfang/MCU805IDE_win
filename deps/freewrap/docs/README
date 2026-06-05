@@ -1,0 +1,24 @@
+This message announces the availability of freeWrap version 6.61. FreeWrap 6.61 is based on TCL/TK 8.6.0
+
+freeWrap is a program that allows creation of stand-alone TCL/TK executables without needing a compiler.
+
+Versions are free and available for the Windows and Linux operating systems.
+
+Instructions and source code for building freeWrap are also available.
+
+
+The following additional variation of freeWrap is also available for download:
+
+     freewrapTCLSH       a console-only application which includes only TCL.
+
+
+Please visit the freeWrap home page:
+
+          http://freewrap.sourceforge.net
+
+
+Changes implemented in version 6.61
+-----------------------------------
+   1. The behavior of wrapped scripts that generate fatal errors has been modified to better replicate the behavior of compiled applications.
+   2. The response of freeWrap, when run as a standalone shell, to fatal script errors has been modified to better replicate the behavior of the standard TCLSH and WISH shells.
+   3. Corrected a problem where applications containing more than 50 files could not be wrapped.
