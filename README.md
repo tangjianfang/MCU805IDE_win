@@ -20,32 +20,33 @@ MCU805IDE_win/
 │   ├── CMakeLists.txt          # CMake 构建配置
 │   └── LICENSE                 # GPLv2 许可证
 ├── deps/
-│   ├── freewrapTK661.exe       # Tcl/Tk 打包工具，将脚本打包为独立 exe  (5.2 MB)
-│   └── tcl/
-│       ├── Tcl-3.2.0-amd64.msi       # Tcl/Tk 8.6 运行环境           (36.4 MB)
-│       ├── BWidget-1.9.16.tar.gz      # GUI 组件库                     (0.3 MB)
-│       ├── tdom-0.9.3.tar.gz          # XML 解析                       (1.1 MB)
-│       ├── tkimg-1.4.14.tar.gz        # 图像支持                       (1.7 MB)
-│       ├── itcl-4.2.4.tar.gz          # OO 扩展                        (0.6 MB)
-│       └── tclx-8.4.tar.gz            # Tcl 扩展工具库                 (TclX)
+│   ├── freewrap661.zip         # freewrap 打包工具（含 win32 + win64 freewrap.exe）
+│   ├── ActiveTcl-8.6.14...exe # ActiveTcl Tcl/Tk 8.6 运行环境安装器
+│   ├── *.zip / *.tar.gz        # 依赖包原始下载压缩包
+│   └── lib_pkg_dir/            # 已解压的依赖包（供 freewrap 打包引用）
+│       ├── img_png/            # tkimg 图像支持（24 DLL + pkgIndex.tcl）
+│       ├── tdom/               # tdom XML 解析（1 DLL + tdom.tcl + pkgIndex.tcl）
+│       ├── bwidget/            # BWidget GUI 组件（纯 Tcl，46 .tcl + images）
+│       ├── itcl/               # incr Tcl OO 扩展（.tcl 文件，DLL 待编译）
+│       └── tclx8.4/            # TclX 扩展工具库（.tcl 文件，DLL 待编译）
 ├── docs/
-│   └── BUILD.md                       # 构建文档
+│   └── BUILD.md                # 构建文档
 └── README.md
 ```
 
 ## 运行依赖
 
-| 组件 | 文件 | 说明 |
-|------|------|------|
-| freewrapTK | `deps/freewrapTK661.exe` | 将 Tcl/Tk 脚本打包为独立 Windows exe |
-| Tcl/Tk | `deps/tcl/Tcl-3.2.0-amd64.msi` | Tcl/Tk 8.6 运行环境 |
-| BWidget | `deps/tcl/BWidget-1.9.16.tar.gz` | 高级 GUI 组件（树视图、笔记本等） |
-| tDOM | `deps/tcl/tdom-0.9.3.tar.gz` | XML/DOM 解析扩展 |
-| tkimg | `deps/tcl/tkimg-1.4.14.tar.gz` | Tk 图像格式支持（PNG 等） |
-| incr Tcl | `deps/tcl/itcl-4.2.4.tar.gz` | Tcl 面向对象扩展 |
-| TclX | `deps/tcl/tclx-8.4.tar.gz` | Tcl 扩展工具库（数组、文件等高级操作） |
+| 组件 | 来源 | 说明 | DLL 状态 |
+|------|------|------|----------|
+| freewrap | `deps/freewrap661.zip` | 将 Tcl/Tk 脚本打包为独立 Windows exe | ✅ 已提取 |
+| Tcl/Tk | `deps/ActiveTcl-8.6.14...exe` | Tcl/Tk 8.6 运行环境安装器 | ✅ 可安装 |
+| tkimg | `deps/lib_pkg_dir/img_png/` | Tk 图像格式支持（PNG、JPEG 等） | ✅ 24 DLL 已提取 |
+| tDOM | `deps/lib_pkg_dir/tdom/` | XML/DOM 解析扩展 | ✅ DLL 已提取 |
+| BWidget | `deps/lib_pkg_dir/bwidget/` | 高级 GUI 组件（纯 Tcl） | ✅ 完整提取 |
+| incr Tcl | `deps/lib_pkg_dir/itcl/` | Tcl 面向对象扩展 | ⚠️ .tcl 已提取，DLL 待编译 |
+| TclX | `deps/lib_pkg_dir/tclx8.4/` | Tcl 扩展工具库（纯 Tcl .tcl） | ⚠️ .tcl 已提取，DLL 待编译 |
 
-> 以上依赖列表与源码仓库 `src/pkgs/README` 及官方安装包实际嵌入的包一致。
+> ⚠️ **itcl** 和 **TclX** 的 C 核心需要编译为 Windows DLL（itcl424.dll、tclx84.dll），需 MinGW + Tcl 开发头文件。编译完成后放入对应目录，pkgIndex.tcl 即可生效。
 
 ## 构建
 
