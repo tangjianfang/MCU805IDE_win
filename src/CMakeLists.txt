@@ -1,5 +1,5 @@
 PROJECT(mcu8051ide "NONE")
-SET(mcu8051ide_version 1.4.7)
+SET(mcu8051ide_version 1.4.9)
 
 #
 # INITIALIZE
@@ -21,7 +21,7 @@ SET(target_installation_directory share/mcu8051ide)
 # create launcher
 FILE(WRITE mcu8051ide
 	"#!/bin/sh\n"
-	"exec tclsh8.5 ${CMAKE_INSTALL_PREFIX}/${target_installation_directory}/lib/main.tcl \"$@\" || \\\n"
+	"exec tclsh ${CMAKE_INSTALL_PREFIX}/${target_installation_directory}/lib/main.tcl \"$@\" || \\\n"
 	"\tprintf \"Unable to execute, TCL interpreter is not reachable.\n\" > /dev/stderr"
 )
 
@@ -72,6 +72,7 @@ INSTALL(FILES ${translations} DESTINATION ${target_installation_directory}/trans
 # Install .desktop spec and application icon
 INSTALL(FILES mcu8051ide.png DESTINATION share/pixmaps/)
 INSTALL(FILES mcu8051ide.desktop DESTINATION share/applications/)
+INSTALL(FILES mcu8051ide.appdata.xml DESTINATION share/appdata/)
 INSTALL(FILES application-x-mcu8051ide.xml DESTINATION share/mime/packages/)
 
 # Install launcher

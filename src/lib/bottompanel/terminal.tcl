@@ -1,9 +1,12 @@
 #!/usr/bin/tclsh
-# Part of MCU 8051 IDE ( http://mcu8051ide.sf.net )
+# Part of MCU 8051 IDE ( http://http://www.moravia-microsystems.com/mcu8051ide )
 
 ############################################################################
 #    Copyright (C) 2007, 2008, 2009, 2010, 2011, 2012 by Martin Ošmera     #
 #    martin.osmera@gmail.com                                               #
+#                                                                          #
+#    Copyright (C) 2014 by Moravia Microsystems, s.r.o.                    #
+#    martin.osmera@moravia-microsystems.com                                #
 #                                                                          #
 #    This program is free software; you can redistribute it and#or modify  #
 #    it under the terms of the GNU General Public License as published by  #
@@ -33,8 +36,8 @@ set _TERMINAL_TCL _
 
 class Terminal {
 	# Terminal emulator configuration
-	common configuration
-	common configuration_def [subst {
+	public common configuration
+	public common configuration_def [subst {
 		bg		#FFFFFF
 		fg		#000000
 		font_size	12

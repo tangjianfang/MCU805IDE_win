@@ -1,9 +1,12 @@
 #!/usr/bin/tclsh
-# Part of MCU 8051 IDE ( http://mcu8051ide.sf.net )
+# Part of MCU 8051 IDE ( http://http://www.moravia-microsystems.com/mcu8051ide )
 
 ############################################################################
 #    Copyright (C) 2007, 2008, 2009, 2010, 2011, 2012 by Martin Ošmera     #
 #    martin.osmera@gmail.com                                               #
+#                                                                          #
+#    Copyright (C) 2014 by Moravia Microsystems, s.r.o.                    #
+#    martin.osmera@moravia-microsystems.com                                #
 #                                                                          #
 #    This program is free software; you can redistribute it and#or modify  #
 #    it under the terms of the GNU General Public License as published by  #
@@ -33,25 +36,25 @@ set _SUBPROGRAMS_TCL _
 
 class SubPrograms {
 	## COMMON
-	common fsd_filename	{}	;# Filename choosen by FSD
+	public common fsd_filename	{}	;# Filename choosen by FSD
 	 # Main font for the text widget
-	common main_font	[font create			\
+	public common main_font	[font create			\
 		-family {helvetica}				\
 		-size [expr {int(-14 * $::font_size_factor)}]	\
 	]
 	 # Bold font for the text widget
-	common bold_font	[font create			\
+	public common bold_font	[font create			\
 		-family {helvetica}				\
 		-size [expr {int(-14 * $::font_size_factor)}]	\
 		-weight {bold}					\
 	]
 	 # Font for status bar below the text box
-	common large_font	[font create			\
+	public common large_font	[font create			\
 		-family {helvetica}				\
 		-size [expr {int(-14 * $::font_size_factor)}]	\
 	]
 	 # Bold font for status bar below the text box
-	common large_bold_font	[font create			\
+	public common large_bold_font	[font create			\
 		-family {helvetica}				\
 		-size [expr {int(-14 * $::font_size_factor)}]	\
 		-weight {bold}					\

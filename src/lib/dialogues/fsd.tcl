@@ -1,9 +1,12 @@
 #!/usr/bin/tclsh
-# Part of MCU 8051 IDE ( http://mcu8051ide.sf.net )
+# Part of MCU 8051 IDE ( http://http://www.moravia-microsystems.com/mcu8051ide )
 
 ############################################################################
 #    Copyright (C) 2007, 2008, 2009, 2010, 2011, 2012 by Martin Ošmera     #
 #    martin.osmera@gmail.com                                               #
+#                                                                          #
+#    Copyright (C) 2014 by Moravia Microsystems, s.r.o.                    #
+#    martin.osmera@moravia-microsystems.com                                #
 #                                                                          #
 #    This program is free software; you can redistribute it and#or modify  #
 #    it under the terms of the GNU General Public License as published by  #
@@ -58,27 +61,27 @@ set _FSD_TCL _
 
 itcl::class KIFSD::FSD {
 
-	common bookmark_change_command	{}	;# Command to invoke on bokmark change
+	public common bookmark_change_command	{}	;# Command to invoke on bokmark change
 	# Font for quick navigation panel
-	common quick_nav_panel_font	[font create		\
+	public common quick_nav_panel_font	[font create		\
 		-family {helvetica}				\
 		-size [expr {int(-12 * $::font_size_factor)}]	\
 		-weight bold					\
 	]
 	# Font for files listbox in mode (Short view)
-	common listbox_font_short	[font create		\
+	public common listbox_font_short	[font create		\
 		-family {helvetica}				\
 		-size [expr {int(-14 * $::font_size_factor)}]	\
 		-weight normal					\
 	]
 	# Font for files listbox in mode (Detailed view) and directories listbox
-	common listbox_font_detailed	[font create		\
+	public common listbox_font_detailed	[font create		\
 		-family $::DEFAULT_FIXED_FONT			\
 		-size [expr {int(-12 * $::font_size_factor)}]	\
 		-weight normal					\
 	]
 	# Font for listbox header
-	common listbox_header_font	[font create		\
+	public common listbox_header_font	[font create		\
 		-family $::DEFAULT_FIXED_FONT			\
 		-size [expr {int(-12 * $::font_size_factor)}]	\
 		-weight bold					\
@@ -1932,13 +1935,13 @@ itcl::class KIFSD::FSD {
 	public method file_listbox_item_menu {x y item} {
 		set item_menu_request 1
 		set current_item $item
-		set current_item_index [$dir_listbox index $item]
+		set current_item_index [$file_listbox index $item]
 		foreach entry {Rename Delete Properties {Bookmark folder}} {
 			$win.listbox_menu entryconfigure [mc $entry] -state normal
 		}
 		set cur_listbox {file}
 		set current_item $item
-		set current_item_index [$dir_listbox index $item]
+		set current_item_index [$file_listbox index $item]
 		tk_popup $win.listbox_menu $x $y
 	}
 
@@ -2078,7 +2081,7 @@ itcl::class KIFSD::FSD {
 
 		# Create dialog window and Notebook
 		set dialog [toplevel $win.properties_dialog -class {Configuration dialog} -bg ${::COMMON_BG_COLOR}]
-		set nb [NoteBook $dialog.nb -bg ${::COMMON_BG_COLOR}]
+		set nb [ModernNoteBook $dialog.nb]
 		$nb insert end general -text "General"
 		if {!$::MICROSOFT_WINDOWS} { ;# Microsoft Windows has no file rights (compatible with posix rights)
 			$nb insert end permission -text "Permissions"
@@ -2091,7 +2094,7 @@ itcl::class KIFSD::FSD {
 		 # Name:
 		set row 0
 		grid [label $frame.lbl_$row		\
-			-text [::mc "Name:"] -anchor w		\
+			-text [::mc "Name:"] -anchor w	\
 			-font $listbox_font_short	\
 		] -column 0 -row $row -sticky w -pady 3
 		set ::KIFSD::FSD::item_properties(name) $name
@@ -2186,8 +2189,8 @@ itcl::class KIFSD::FSD {
 		] -side left -padx 2
 
 		# Pack notebook and bottom frame
-		pack $nb -fill both -expand 1 -padx 10 -pady 5
-		pack $bottom_frame -anchor e -after $nb -padx 10 -pady 5
+		pack [$nb get_nb] -fill both -expand 1 -padx 10 -pady 5
+		pack $bottom_frame -anchor e -after [$nb get_nb] -padx 10 -pady 5
 
 		# Configure dialog window
 		wm title $dialog [::mc "Item properties"]

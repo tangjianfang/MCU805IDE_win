@@ -1,10 +1,13 @@
 
 #!/usr/bin/tclsh
-# Part of MCU 8051 IDE ( http://mcu8051ide.sf.net )
+# Part of MCU 8051 IDE ( http://http://www.moravia-microsystems.com/mcu8051ide )
 
 ############################################################################
 #    Copyright (C) 2011 by Martin Ošmera                                   #
 #    martin.osmera@gmail.com                                               #
+#                                                                          #
+#    Copyright (C) 2014 by Moravia Microsystems, s.r.o.                    #
+#    martin.osmera@moravia-microsystems.com                                #
 #                                                                          #
 #    This program is free software; you can redistribute it and#or modify  #
 #    it under the terms of the GNU General Public License as published by  #
@@ -37,27 +40,27 @@ class PaleFileInterface {
 	inherit VirtualHWComponent
 
 	# Font: Font to be used in the panel -- bold
-	common cb_font [font create				\
+	public common cb_font [font create				\
 		-weight bold					\
 		-size [expr {int(-10 * $::font_size_factor)}]	\
 		-family {helvetica}				\
 	]
-	common text_font [font create				\
+	public common text_font [font create				\
 		-size [expr {int(-12 * $::font_size_factor)}]	\
 		-family ${::DEFAULT_FIXED_FONT}			\
 	]
-	common text_font_bold [font create			\
+	public common text_font_bold [font create			\
 		-weight bold					\
 		-size [expr {int(-12 * $::font_size_factor)}]	\
 		-family ${::DEFAULT_FIXED_FONT}			\
 	]
 
-	common COMPONENT_NAME	"VHW File Interface"	;# Name of this component
-	common CLASS_NAME	"PaleFileInterface"	;# Name of this class
-	common COMPONENT_ICON	{compfile1}		;# Icon for this panel (16x16)
+	public common COMPONENT_NAME	"VHW File Interface"	;# Name of this component
+	public common CLASS_NAME	"PaleFileInterface"	;# Name of this class
+	public common COMPONENT_ICON	{compfile1}		;# Icon for this panel (16x16)
 
 	# Configuration menu
-	common CONFMENU {
+	public common CONFMENU {
 		{command	{Sync. files now}	{}	1	"sync"	{filesave}
 			"Flush output file buffer"}
 		{checkbutton	"Keep files synchronized"	{}	{::PaleFileInterface::_keep_sync}
@@ -77,7 +80,7 @@ class PaleFileInterface {
 			""}
 	}
 
-	common _keep_sync		0
+	public common _keep_sync		0
 
 	private variable connection_port	;# Array of Int: Index is key number, value is port number or {-}
 	private variable connection_pin		;# Array of Int: Index is key number, value is bit number or {-}

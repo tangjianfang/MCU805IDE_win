@@ -1,9 +1,12 @@
 #!/usr/bin/tclsh
-# Part of MCU 8051 IDE ( http://mcu8051ide.sf.net )
+# Part of MCU 8051 IDE ( http://http://www.moravia-microsystems.com/mcu8051ide )
 
 ############################################################################
 #    Copyright (C) 2007, 2008, 2009, 2010, 2011, 2012 by Martin Ošmera     #
 #    martin.osmera@gmail.com                                               #
+#                                                                          #
+#    Copyright (C) 2014 by Moravia Microsystems, s.r.o.                    #
+#    martin.osmera@moravia-microsystems.com                                #
 #                                                                          #
 #    This program is free software; you can redistribute it and#or modify  #
 #    it under the terms of the GNU General Public License as published by  #
@@ -35,28 +38,28 @@ set _CVARSVIEW_TCL _
 class CVarsView {
 	## COMMON
 	 # Normal font fot the text widget
-	common text_wdg_font_n [font create			\
+	public common text_wdg_font_n [font create			\
 		-family $::DEFAULT_FIXED_FONT			\
 		-size [expr {int(-12 * $::font_size_factor)}]	\
 		-weight normal					\
 		-slant roman					\
 	]
 	 # Bold font for the text widget
-	common text_wdg_font_b [font create			\
+	public common text_wdg_font_b [font create			\
 		-family $::DEFAULT_FIXED_FONT			\
 		-size [expr {int(-12 * $::font_size_factor)}]	\
 		-weight bold					\
 		-slant roman					\
 	]
 	 # Italic font for the text widget
-	common text_wdg_font_i [font create			\
+	public common text_wdg_font_i [font create			\
 		-family $::DEFAULT_FIXED_FONT			\
 		-size [expr {int(-12 * $::font_size_factor)}]	\
 		-weight normal					\
 		-slant italic					\
 	]
 	 # Background color for selected lines
-	common color_selected_line	{#CCCCFF}
+	public common color_selected_line	{#CCCCFF}
 
 	private variable main_frame			;# Widget: Main frame
 

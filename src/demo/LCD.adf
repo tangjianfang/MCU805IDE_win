@@ -1,6 +1,6 @@
-# Assembler debug file for MCU 8051 IDE v1.4.7
+# Assembler debug file for MCU 8051 IDE v1.4.9
 # Used assembler: MCU 8051 IDE
-# Date: 12/28/2012
+# Date: 10/12/2014
 03C83A56F6DD9B68A2D385DD90C81D42 "LCD.asm" 
 0 14 0 2 0 28
 0 27 3 87

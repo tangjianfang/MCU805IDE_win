@@ -62,7 +62,7 @@ demo3           demo - 3                     32/13/1907 PAGE 6
                         58
                         59             CSEG    ; <-- From now on, OR
                         60     main:   ORG     0       ; Set segment
-****WARNING: This ORG has lower value than the previous one
+****WARNING:ThisORGhaslowervaluethanthepreviousone
                         61             IF 0    ; Begin conditional a
 demo3           demo - 3                     32/13/1907 PAGE 12
                         62                     USING   2       ; Sel
@@ -85,7 +85,7 @@ ASSEMBLY COMPLETE, NO ERRORS FOUND, 1 WARNING
 demo3           demo - 3                     32/13/1907 PAGE 2
 
 ERROR SUMMARY:
-Line 62, WARNING: This ORG has lower value than the previous one
+Line 62, WARNING:ThisORGhaslowervaluethanthepreviousone
 demo3           demo - 3                     32/13/1907 PAGE 3
 
 
@@ -94,7 +94,7 @@ Line 62, WARNING: This ORG has lower value than the previous one
 demo3           demo - 3                     32/13/1907 PAGE 4
 SYMBOL TABLE:
 ??MCU_8051_IDE . . . . . . . . . . .  N  NUMB  8051H  NOT USED
-??VERSION. . . . . . . . . . . . . .  N  NUMB  0147H  NOT USED
+??VERSION. . . . . . . . . . . . . .  N  NUMB  0149H  NOT USED
 A. . . . . . . . . . . . . . . . . .  N  NUMB  0036H  NOT USED
 AC . . . . . . . . . . . . . . . . .  B  ADDR  00D6H  NOT USED
 ACC. . . . . . . . . . . . . . . . .  D  ADDR  00E0H  NOT USED

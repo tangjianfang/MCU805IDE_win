@@ -87,7 +87,7 @@ function clear_source_dir() {
 	rm -fv "${SOURCE_DIR}/cmake_install.cmake"
 	rm -fv "${SOURCE_DIR}/install_manifest.txt"
 	rm -fv "${SOURCE_DIR}/Makefile"
-	rm -rfv "${SOURCE_DIR}/mcu8051ide"
+	#rm -rfv "${SOURCE_DIR}/mcu8051ide"
 	rm -rfv "${SOURCE_DIR}/CMakeFiles"
 	find "${SOURCE_DIR}" -name .directory | while read f; do
 		rm -rfv "${f}"
@@ -192,7 +192,7 @@ function create_sandbox() {
 	print_info 1 "Coping project files to the work directory."
 	mkdir -v "${WORK_DIR}" || die
 
-	for f in ChangeLog README TODO LICENSE mcu8051ide.desktop application-x-mcu8051ide.xml CMakeLists.txt mcu8051ide.png; do
+	for f in ChangeLog README TODO LICENSE mcu8051ide.desktop mcu8051ide.appdata.xml application-x-mcu8051ide.xml CMakeLists.txt mcu8051ide.png; do
 		cp -v "${SOURCE_DIR}/${f}" "${WORK_DIR}" || die
 	done
 	chmod -v 0644 "${WORK_DIR}"/* || die
@@ -523,7 +523,7 @@ function build_deb_pkg() {
 	mkdir -v "${WORK_DIR}/mcu8051ide_debian/usr" || die
 	mkdir -v "${WORK_DIR}/mcu8051ide_debian/usr/bin" || die
 	mkdir -v "${WORK_DIR}/mcu8051ide_debian/usr/share" || die
-	for d in applications man mcu8051ide pixmaps mime/packages; do
+	for d in applications appdata man mcu8051ide pixmaps mime/packages; do
 		mkdir -vp "${WORK_DIR}/mcu8051ide_debian/usr/share/${d}" || die
 	done
 
@@ -536,6 +536,7 @@ function build_deb_pkg() {
 
 	print_info 1 "Coping program sources."
 	cp -v "${WORK_DIR}/mcu8051ide.desktop" "${WORK_DIR}/mcu8051ide_debian/usr/share/applications/" || die
+	cp -v "${WORK_DIR}/mcu8051ide.appdata.xml" "${WORK_DIR}/mcu8051ide_debian/usr/share/appdata/" || die
 	cp -v "${WORK_DIR}/mcu8051ide.png" "${WORK_DIR}/mcu8051ide_debian/usr/share/pixmaps/" || die
 	cp -v "${WORK_DIR}/application-x-mcu8051ide.xml" "${WORK_DIR}/mcu8051ide_debian/usr/share/mime/packages/" || die
 	cp -v "${WORK_DIR}/doc/man/mcu8051ide.1.gz" "${WORK_DIR}/mcu8051ide_debian/usr/share/man/man1/" || die
@@ -598,7 +599,7 @@ function build_freeBSD_pkg() {
 	mkdir -v "${WORK_DIR}/freeBSD" || die
 	mkdir -v "${WORK_DIR}/freeBSD/mcu8051ide" || die
 	mkdir -v "${WORK_DIR}/freeBSD/share" || die
-	for d in applications man mcu8051ide pixmaps mime/packages; do
+	for d in applications appdata man mcu8051ide pixmaps mime/packages; do
 		mkdir -vp "${WORK_DIR}/freeBSD/share/${d}" || die
 	done
 
@@ -610,6 +611,7 @@ function build_freeBSD_pkg() {
 
 	print_info 1 "Coping program sources."
 	cp -v "${WORK_DIR}/mcu8051ide.desktop" "${WORK_DIR}/freeBSD/share/applications/" || die
+	cp -v "${WORK_DIR}/mcu8051ide.appdata.xml" "${WORK_DIR}/freeBSD/share/appdata/" || die
 	cp -v "${WORK_DIR}/mcu8051ide.png" "${WORK_DIR}/freeBSD/share/pixmaps/" || die
 	cp -v "${WORK_DIR}/application-x-mcu8051ide.xml" "${WORK_DIR}/freeBSD/share/mime/packages/" || die
 	cp -v "${WORK_DIR}/doc/man/mcu8051ide.1.gz" "${WORK_DIR}/freeBSD/share/man/man1/" || die

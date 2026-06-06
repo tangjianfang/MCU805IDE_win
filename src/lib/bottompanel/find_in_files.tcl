@@ -1,9 +1,12 @@
 #!/usr/bin/tclsh
-# Part of MCU 8051 IDE ( http://mcu8051ide.sf.net )
+# Part of MCU 8051 IDE ( http://http://www.moravia-microsystems.com/mcu8051ide )
 
 ############################################################################
 #    Copyright (C) 2007, 2008, 2009, 2010, 2011, 2012 by Martin Ošmera     #
 #    martin.osmera@gmail.com                                               #
+#                                                                          #
+#    Copyright (C) 2014 by Moravia Microsystems, s.r.o.                    #
+#    martin.osmera@moravia-microsystems.com                                #
 #                                                                          #
 #    This program is free software; you can redistribute it and#or modify  #
 #    it under the terms of the GNU General Public License as published by  #
@@ -33,7 +36,7 @@ set _FIND_IN_FILES_TCL _
 # --------------------------------------------------------------------------
 
 class FindInFiles {
-	common find_inf_count			0	;# Counter of class instances
+	public common find_inf_count			0	;# Counter of class instances
 
 	# Variables related to object initialization
 	private variable parent				;# Widget: parent widget
@@ -61,12 +64,21 @@ class FindInFiles {
 		set obj_idx $find_inf_count
 
 		# Load configuration
-		set ::FindInFiles::recursive_$obj_idx		[lindex $::CONFIG(FIND_IN_FILES_CONFIG) 0]
-		set ::FindInFiles::regular_expr_$obj_idx	[lindex $::CONFIG(FIND_IN_FILES_CONFIG) 1]
-		set ::FindInFiles::case_sensitive_$obj_idx	[lindex $::CONFIG(FIND_IN_FILES_CONFIG) 2]
-		set ::FindInFiles::folder_$obj_idx		[$this cget -projectPath] ;#[lindex $::CONFIG(FIND_IN_FILES_CONFIG) 3]
-		set ::FindInFiles::mask_$obj_idx		[lindex $::CONFIG(FIND_IN_FILES_CONFIG) 4]
-		set ::FindInFiles::pattern_$obj_idx		[lindex $::CONFIG(FIND_IN_FILES_CONFIG) 5]
+		if {[catch {
+			set ::FindInFiles::recursive_$obj_idx		[lindex $::CONFIG(FIND_IN_FILES_CONFIG) 0]
+			set ::FindInFiles::regular_expr_$obj_idx	[lindex $::CONFIG(FIND_IN_FILES_CONFIG) 1]
+			set ::FindInFiles::case_sensitive_$obj_idx	[lindex $::CONFIG(FIND_IN_FILES_CONFIG) 2]
+			set ::FindInFiles::folder_$obj_idx		[lindex $::CONFIG(FIND_IN_FILES_CONFIG) 3]
+			set ::FindInFiles::mask_$obj_idx		[lindex $::CONFIG(FIND_IN_FILES_CONFIG) 4]
+			set ::FindInFiles::pattern_$obj_idx		[lindex $::CONFIG(FIND_IN_FILES_CONFIG) 5]
+		}]} then {
+			set ::FindInFiles::recursive_$obj_idx		1
+			set ::FindInFiles::regular_expr_$obj_idx	0
+			set ::FindInFiles::case_sensitive_$obj_idx	1
+			set ::FindInFiles::folder_$obj_idx		{}
+			set ::FindInFiles::mask_$obj_idx		{*.asm,*.c,*.h}
+			set ::FindInFiles::pattern_$obj_idx		{}
+		}
 
 		# Validate loaded configuration
 		if {![string is boolean -strict [subst -nocommands "\$::FindInFiles::recursive_$obj_idx"]]} {

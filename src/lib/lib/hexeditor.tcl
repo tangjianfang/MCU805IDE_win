@@ -1,9 +1,12 @@
 #!/usr/bin/tclsh
-# Part of MCU 8051 IDE ( http://mcu8051ide.sf.net )
+# Part of MCU 8051 IDE ( http://http://www.moravia-microsystems.com/mcu8051ide )
 
 ############################################################################
 #    Copyright (C) 2007, 2008, 2009, 2010, 2011, 2012 by Martin Ošmera     #
 #    martin.osmera@gmail.com                                               #
+#                                                                          #
+#    Copyright (C) 2014 by Moravia Microsystems, s.r.o.                    #
+#    martin.osmera@moravia-microsystems.com                                #
 #                                                                          #
 #    This program is free software; you can redistribute it and#or modify  #
 #    it under the terms of the GNU General Public License as published by  #
@@ -36,49 +39,49 @@ set _HEXEDITOR_TCL _
 class HexEditor {
 	# Font for editor text widget(s) - normal size
 	if {!$::MICROSOFT_WINDOWS} {
-		common view_font_n [font create				\
+	public common view_font_n [font create				\
 			-family $::DEFAULT_FIXED_FONT			\
 			-size [expr {int(-15 * $::font_size_factor)}]	\
 		]
 	} else {
-		common view_font_n [font create				\
+	public common view_font_n [font create				\
 			-family $::DEFAULT_FIXED_FONT			\
 			-size [expr {int(-15 * $::font_size_factor)}]	\
 			-weight bold					\
 		]
 	}
 	# Font for editor headers - normal size
-	common header_font_n [font create			\
+	public common header_font_n [font create			\
 		-family $::DEFAULT_FIXED_FONT			\
 		-size [expr {int(-15 * $::font_size_factor)}]	\
 		-weight bold					\
 	]
 	# Font for editor headers - small size
-	common header_font_s [font create			\
+	public common header_font_s [font create			\
 		-family $::DEFAULT_FIXED_FONT			\
 		-size [expr {int(-12 * $::font_size_factor)}]	\
 		-weight bold					\
 	]
-	common view_font_s $header_font_s	;# Font for editor text widget(s) - small size
-	common header_bg	{#9999FF}	;# Background color for headers
-	common header_fg	{#FFFFFF}	;# Foreground color for headers
-	common n_row_bg		{#DDDDDD}	;# Background color for Nth rows
-	common highlight_fg	{#FFAA00}	;# Foreground color for chaged values
-	common highlight_bg	{#888888}	;# Background color for background highlight (variant 0)
-	common highlight_bg1	{#FFDD33}	;# Background color for background highlight (variant 1)
-	common highlight_bg2	{#FFAA00}	;# Background color for background highlight (variant 2)
-	common unprintable_fg	{#FF0000}	;# Foreground color for unprintable characters in ascii view
-	common current_full_bg	{#00FF00}	;# Background color for cursor in active view
-	common current_half_bg	{#AAFFAA}	;# Background color for cursor in inactive view
+	public common view_font_s $header_font_s	;# Font for editor text widget(s) - small size
+	public common header_bg	{#9999FF}	;# Background color for headers
+	public common header_fg	{#FFFFFF}	;# Foreground color for headers
+	public common n_row_bg		{#DDDDDD}	;# Background color for Nth rows
+	public common highlight_fg	{#FFAA00}	;# Foreground color for chaged values
+	public common highlight_bg	{#888888}	;# Background color for background highlight (variant 0)
+	public common highlight_bg1	{#FFDD33}	;# Background color for background highlight (variant 1)
+	public common highlight_bg2	{#FFAA00}	;# Background color for background highlight (variant 2)
+	public common unprintable_fg	{#FF0000}	;# Foreground color for unprintable characters in ascii view
+	public common current_full_bg	{#00FF00}	;# Background color for cursor in active view
+	public common current_half_bg	{#AAFFAA}	;# Background color for cursor in inactive view
 	 ## Variables related to find dialog
-	common find_dialog_win		{}	;# Widget: Find dialog
-	common find_dialog_count	0	;# Int: Counter find dialog opens
-	common text_to_find		{}	;# String: Text/Value to find
-	common where_to_search		left	;# String: Where to search (left or right view)
+	public common find_dialog_win		{}	;# Widget: Find dialog
+	public common find_dialog_count	0	;# Int: Counter find dialog opens
+	public common text_to_find		{}	;# String: Text/Value to find
+	public common where_to_search		left	;# String: Where to search (left or right view)
 	  ## Array: Find options
 	   # fc - Bool: Find option "From cursor"
 	   # bw - Bool: Find option "Backwards"
-	common find_opt
+	public common find_opt
 
 	private variable left_top_button	;# ID of button in left top corner (select all)
 	private variable left_address_bar	;# ID of left address bar

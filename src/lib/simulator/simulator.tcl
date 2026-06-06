@@ -1,9 +1,12 @@
 #!/usr/bin/tclsh
-# Part of MCU 8051 IDE ( http://mcu8051ide.sf.net )
+# Part of MCU 8051 IDE ( http://http://www.moravia-microsystems.com/mcu8051ide )
 
 ############################################################################
 #    Copyright (C) 2007, 2008, 2009, 2010, 2011, 2012 by Martin Ošmera     #
 #    martin.osmera@gmail.com                                               #
+#                                                                          #
+#    Copyright (C) 2014 by Moravia Microsystems, s.r.o.                    #
+#    martin.osmera@moravia-microsystems.com                                #
 #                                                                          #
 #    This program is free software; you can redistribute it and#or modify  #
 #    it under the terms of the GNU General Public License as published by  #
@@ -53,51 +56,51 @@ class Simulator {
 	inherit Simulator_GUI Simulator_ENGINE InterruptMonitor SFRMap Stopwatch BitMap StackMonitor UARTMonitor
 
 	## COMMON
-	common highlight_color	{#DD8800}	;# Foreground color for changed registers
-	common normal_color	{#000000}	;# Foreground color for unchanged registers
-	common error_dialog_project		;# Object: $this for current addressing error dialog
-	common not_again_val		0	;# Bool: Value of checkbutton "Do not shot this dialog again"
+	public common highlight_color	{#DD8800}	;# Foreground color for changed registers
+	public common normal_color	{#000000}	;# Foreground color for unchanged registers
+	public common error_dialog_project		;# Object: $this for current addressing error dialog
+	public common not_again_val		0	;# Bool: Value of checkbutton "Do not shot this dialog again"
 
-	common reverse_run_steps	10	;# Int: Number of steps which can be taken back
-	common ignore_stack_overflow	0	;# Bool: Do not show "Stack overflow" dialog
-	common ignore_stack_underflow	0	;# Bool: Do not show "Stack underflow" dialog
-	common ignore_watchdog_reset	0	;# Bool: Ignore reset invoked by watchdog overflow
-	common ignore_read_from_wr_only	0	;# Bool: Ignore reading from read only register
-	common ignore_invalid_reti	0	;# Bool: Ignore invalid return fom interrupt
-	common ignore_invalid_ins	0	;# Bool: Ignore invalid instructions
-	common ignore_invalid_IDATA	0	;# Bool: Ignore access to unimplemented IDATA memory
-	common ignore_invalid_EDATA	0	;# Bool: Ignore access to unimplemented EDATA memory
-	common ignore_invalid_XDATA	0	;# Bool: Ignore access to unimplemented XDATA memory
-	common ignore_invalid_BIT	0	;# Bool: Ignore access to unimplemented bit
-	common ignore_invalid_CODE	0	;# Bool: Ignore access to unimplemented CODE memory
-	common ignore_invalid_USB	0	;# Bool: Ignore "UART: Frame discarded"
-	common ignore_invalid_UMC	0	;# Bool: Ignore "UART mode has been changed while UART was engaged"
-	common ignore_invalid_TMC	0	;# Bool: Ignore "Timer mode has been changed while timer was running"
-	common ignore_invalid_brkpoints	0	;# Bool: Do not warn user about invalid (unreachable) breakpoints
+	public common reverse_run_steps	10	;# Int: Number of steps which can be taken back
+	public common ignore_stack_overflow	0	;# Bool: Do not show "Stack overflow" dialog
+	public common ignore_stack_underflow	0	;# Bool: Do not show "Stack underflow" dialog
+	public common ignore_watchdog_reset	0	;# Bool: Ignore reset invoked by watchdog overflow
+	public common ignore_read_from_wr_only	0	;# Bool: Ignore reading from read only register
+	public common ignore_invalid_reti	0	;# Bool: Ignore invalid return fom interrupt
+	public common ignore_invalid_ins	0	;# Bool: Ignore invalid instructions
+	public common ignore_invalid_IDATA	0	;# Bool: Ignore access to unimplemented IDATA memory
+	public common ignore_invalid_EDATA	0	;# Bool: Ignore access to unimplemented EDATA memory
+	public common ignore_invalid_XDATA	0	;# Bool: Ignore access to unimplemented XDATA memory
+	public common ignore_invalid_BIT	0	;# Bool: Ignore access to unimplemented bit
+	public common ignore_invalid_CODE	0	;# Bool: Ignore access to unimplemented CODE memory
+	public common ignore_invalid_USB	0	;# Bool: Ignore "UART: Frame discarded"
+	public common ignore_invalid_UMC	0	;# Bool: Ignore "UART mode has been changed while UART was engaged"
+	public common ignore_invalid_TMC	0	;# Bool: Ignore "Timer mode has been changed while timer was running"
+	public common ignore_invalid_brkpoints	0	;# Bool: Do not warn user about invalid (unreachable) breakpoints
 
-	common ignore_EEPROM_WR_fail	0	;# Bool: Ignore EEPROM write failure (due to EECON.WRTINH, EECON.RDYBSY or EECON.EEMWE)
-	common ignore_EEPROM_WR_abort	0	;# Bool: Ignore EEPROM write cycle abort
-	common undefined_value		2	;# Int: 2 == Random; 1 == 255; 0 == 0
+	public common ignore_EEPROM_WR_fail	0	;# Bool: Ignore EEPROM write failure (due to EECON.WRTINH, EECON.RDYBSY or EECON.EEMWE)
+	public common ignore_EEPROM_WR_abort	0	;# Bool: Ignore EEPROM write cycle abort
+	public common undefined_value		2	;# Int: 2 == Random; 1 == 255; 0 == 0
 
 	# Normal font for error dialog
-	common error_normal_font	[font create		\
+	public common error_normal_font	[font create		\
 		-family {helvetica}				\
 		-size [expr {int(-14 * $::font_size_factor)}]	\
 	]
 	# Bold font for error dialog
-	common error_bold_font		[font create		\
+	public common error_bold_font		[font create		\
 		-family $::DEFAULT_FIXED_FONT			\
 		-size [expr {int(-14 * $::font_size_factor)}]	\
 		-weight bold					\
 	]
 	# Header font for error dialog
-	common error_header_font	[font create		\
+	public common error_header_font	[font create		\
 		-family {helvetica}				\
 		-size [expr {int(-17 * $::font_size_factor)}]	\
 		-weight bold					\
 	]
 	# Main header font
-	common error_main_header	[font create		\
+	public common error_main_header	[font create		\
 		-family {helvetica}				\
 		-size [expr {int(-20 * $::font_size_factor)}]	\
 		-weight bold					\

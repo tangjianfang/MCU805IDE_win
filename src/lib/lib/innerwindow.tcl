@@ -1,9 +1,12 @@
 #!/usr/bin/tclsh
-# Part of MCU 8051 IDE ( http://mcu8051ide.sf.net )
+# Part of MCU 8051 IDE ( http://http://www.moravia-microsystems.com/mcu8051ide )
 
 ############################################################################
 #    Copyright (C) 2007, 2008, 2009, 2010, 2011, 2012 by Martin Ošmera     #
 #    martin.osmera@gmail.com                                               #
+#                                                                          #
+#    Copyright (C) 2014 by Moravia Microsystems, s.r.o.                    #
+#    martin.osmera@moravia-microsystems.com                                #
 #                                                                          #
 #    This program is free software; you can redistribute it and#or modify  #
 #    it under the terms of the GNU General Public License as published by  #
@@ -41,12 +44,12 @@ set _INNERWINDOW_TCL _
 
 class InnerWindow {
 	## COMMON
-	common active_titclr	{#AAAAFF}	;# Color: Active background color
-	common inactive_titclr	{#DDDDDD}	;# Color: Inactive background color
-	common title_bar_height	10		;# Int: Height of the titlebar in pixels
+	public common active_titclr	{#AAAAFF}	;# Color: Active background color
+	public common inactive_titclr	{#DDDDDD}	;# Color: Inactive background color
+	public common title_bar_height	10		;# Int: Height of the titlebar in pixels
 
 	# List: Title bar popup menu
-	common MENU {
+	public common MENU {
 		{command	"Shade/Unshade"	""	0	{collapse_expand}
 			{}}
 		{command	"Close"		""	0	{close_window}

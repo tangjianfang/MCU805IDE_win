@@ -1,5 +1,13 @@
 Change log for MCU 8051 IDE
 
+1.4.7 -> 1.4.9
+	* Fixed compatibility issues with Tcl-8.6 and its Itcl-4.0
+	* Added AppData file
+	* Bug fixes
+
+1.4.7 -> 1.4.8
+	* Bug fixes
+
 1.4.6 -> 1.4.7
 	* Bug fixes
 
@@ -7,7 +15,7 @@ Change log for MCU 8051 IDE
 	* Bug fixes
 	* Added support for SDCC configuration on Windows
 	* Added support for ASEM-51 on Windows
-	* Added a few new shortcuts to editor
+	* Added a few new shortcuts in the editor
 
 1.4.4 -> 1.4.5
 	* Bug fixes

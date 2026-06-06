@@ -1,9 +1,12 @@
 #!/usr/bin/tclsh
-# Part of MCU 8051 IDE ( http://mcu8051ide.sf.net )
+# Part of MCU 8051 IDE ( http://http://www.moravia-microsystems.com/mcu8051ide )
 
 ############################################################################
 #    Copyright (C) 2007, 2008, 2009, 2010, 2011, 2012 by Martin Ošmera     #
 #    martin.osmera@gmail.com                                               #
+#                                                                          #
+#    Copyright (C) 2014 by Moravia Microsystems, s.r.o.                    #
+#    martin.osmera@moravia-microsystems.com                                #
 #                                                                          #
 #    This program is free software; you can redistribute it and#or modify  #
 #    it under the terms of the GNU General Public License as published by  #
@@ -34,27 +37,27 @@ set _REGWATCHES_TCL _
 class RegWatches {
 
 	## COMMON
-	common watches_set_shortcuts	{}		;# Currently set shortcuts for register watches
-	common watches_shortcuts_cat	{watches}	;# Key shortcut categories related to register watches
+	public common watches_set_shortcuts	{}		;# Currently set shortcuts for register watches
+	public common watches_shortcuts_cat	{watches}	;# Key shortcut categories related to register watches
 	# Counter of embedded entry widgets in register watches
-	common watch_entry_count	0
+	public common watch_entry_count	0
 	# Conter of instances
-	common regw_count		0
+	public common regw_count		0
 	## Highlighting tags for register watches
 	 # {
 	 #	{tag_name foreground_color ?bold_or_italic?}
 	 #	...
 	 # }
-	common watch_text_tags {
+	public common watch_text_tags {
 		{tag_Baddr	#DD0000	1}
 		{tag_Xaddr	#AA00FF	1}
 		{tag_Eaddr	#00AAFF	1}
 		{tag_addr	#0000DD	1}
 		{tag_name	#8888DD {}}
 	}
-	common regfont [font create -family $::DEFAULT_FIXED_FONT -size [expr {int(-14 * $::font_size_factor)}]]
+	public common regfont [font create -family $::DEFAULT_FIXED_FONT -size [expr {int(-14 * $::font_size_factor)}]]
 	# Popup menu for register watches
-	common WATCHMENU {
+	public common WATCHMENU {
 		{command	{Move top}	{$watches:top}		0	"rightPanel_watch_move_top"
 			{top}		"Move this register watch to the top of list"}
 		{command	{Move up}	{$watches:up}		0	"rightPanel_watch_move_up"
@@ -76,7 +79,7 @@ class RegWatches {
 			"Configure this panel"}
 	}
 	# Configuration menu
-	common CONFMENU {
+	public common CONFMENU {
 		{cascade	"Sort by"		0	""	.sort		false 1 {
 			{command	"Name"		{}	0	"rightPanel_watch_sort_by N"	{}
 				""}

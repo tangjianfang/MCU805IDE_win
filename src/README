@@ -1,4 +1,4 @@
-MCU 8051 IDE v1.4.7
+MCU 8051 IDE v1.4.9
 
 DESCRIPTION:
 -------------
@@ -12,7 +12,6 @@ INSTALLATION:
 --------------
 
 At first make sure than you have all dependencies installed and install the missing ones.
-(http://mcu8051ide.sourceforge.net/dependencies)
 
 1) DEPENDENCIES
 
@@ -80,16 +79,16 @@ PROBLEMS & SUGGESTIONS:
 -----------------------
 
 	Project web page:
-		http://mcu8051ide.sf.net
+		http://www.moravia-microsystems.com/mcu8051ide
 
 	E-mail to the author:
-		martin.osmera@gmail.cz (Only English or Czech please)
+		martin.osmera@moravia-microsystems.com or martin.osmera@gmail.cz (Only English or Czech please)
 
 
 BUGS:
 ------
 	Currently I don't know about any bug.
-	If you find some bug, please let me know <martin.osmera@gmail.cz>.
+	If you find some bug, please let me know <martin.osmera@moravia-microsystems.com> or <martin.osmera@gmail.cz>.
 
 NOTE:
 -----

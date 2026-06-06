@@ -1,9 +1,12 @@
 #!/usr/bin/tclsh
-# Part of MCU 8051 IDE ( http://mcu8051ide.sf.net )
+# Part of MCU 8051 IDE ( http://http://www.moravia-microsystems.com/mcu8051ide )
 
 ############################################################################
 #    Copyright (C) 2007, 2008, 2009, 2010, 2011, 2012 by Martin Ošmera     #
 #    martin.osmera@gmail.com                                               #
+#                                                                          #
+#    Copyright (C) 2014 by Moravia Microsystems, s.r.o.                    #
+#    martin.osmera@moravia-microsystems.com                                #
 #                                                                          #
 #    This program is free software; you can redistribute it and#or modify  #
 #    it under the terms of the GNU General Public License as published by  #
@@ -40,19 +43,19 @@ class MultiplexedLedDisplay {
 	inherit VirtualHWComponent
 
 	# Font: Font to be used in the panel -- bold
-	common cb_font		[font create			\
+	public common cb_font		[font create			\
 		-weight bold					\
 		-size [expr {int(-10 * $::font_size_factor)}]	\
 		-family {helvetica}				\
 	]
-	common COMPONENT_NAME	"Multiplexed LED Display"	;# Name of this component
-	common CLASS_NAME	"MultiplexedLedDisplay"		;# Name of this class
-	common COMPONENT_ICON	{mleddisplay}			;# Icon for this panel (16x16)
+	public common COMPONENT_NAME	"Multiplexed LED Display"	;# Name of this component
+	public common CLASS_NAME	"MultiplexedLedDisplay"		;# Name of this class
+	public common COMPONENT_ICON	{mleddisplay}			;# Icon for this panel (16x16)
 
 	## Colors for display segments
 	 # There are 6 lists (red orange yellow green blue purple)
 	 # and each of them contain 3 colors (semi-dim bright dim)
-	common COLORS {
+	public common COLORS {
 		{#AA5555 #FF0000 #FF5555}
 		{#AAAA55 #FF8800 #FFCC55}
 		{#AAAA55 #FFFF00 #FFFF55}
@@ -61,10 +64,10 @@ class MultiplexedLedDisplay {
 		{#5555AA #0000FF #5555FF}
 		{#AA55AA #8800FF #CC55FF}
 	}
-	common DIMMED_COLOR	{#BBBBBB}
+	public common DIMMED_COLOR	{#BBBBBB}
 
 	# Configuration menu
-	common CONFMENU {
+	public common CONFMENU {
 		{cascade	{Common electrode}	7	"diode"		.ca	false 1 {
 			{radiobutton	"Common anode"	{}
 				::MultiplexedLedDisplay::cfg_common_anode	1

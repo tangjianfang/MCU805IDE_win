@@ -1,9 +1,12 @@
 #!/usr/bin/tclsh
-# Part of MCU 8051 IDE ( http://mcu8051ide.sf.net )
+# Part of MCU 8051 IDE ( http://http://www.moravia-microsystems.com/mcu8051ide )
 
 ############################################################################
 #    Copyright (C) 2007, 2008, 2009, 2010, 2011, 2012 by Martin Ošmera     #
 #    martin.osmera@gmail.com                                               #
+#                                                                          #
+#    Copyright (C) 2014 by Moravia Microsystems, s.r.o.                    #
+#    martin.osmera@moravia-microsystems.com                                #
 #                                                                          #
 #    This program is free software; you can redistribute it and#or modify  #
 #    it under the terms of the GNU General Public License as published by  #
@@ -675,6 +678,11 @@ if {$CLI_OPTION(check_libraries)} {
 		# Local variables
 		set library [lindex $::LIBRARIES_TO_LOAD [list $i 0]]	;# Library name
 		set version [lindex $::LIBRARIES_TO_LOAD [list $i 1]]	;# Library version
+
+		# Skip optional libraries.
+		if {[lsearch $::OPTIONAL_LIBRARIES $library] != -1} {
+			continue
+		}
 
 		# Print what library is currently being checked
 		if {$CLI_OPTION(nocolor)} {

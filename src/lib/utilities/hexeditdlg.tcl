@@ -1,9 +1,12 @@
 #!/usr/bin/tclsh
-# Part of MCU 8051 IDE ( http://mcu8051ide.sf.net )
+# Part of MCU 8051 IDE ( http://http://www.moravia-microsystems.com/mcu8051ide )
 
 ############################################################################
 #    Copyright (C) 2007, 2008, 2009, 2010, 2011, 2012 by Martin Ošmera     #
 #    martin.osmera@gmail.com                                               #
+#                                                                          #
+#    Copyright (C) 2014 by Moravia Microsystems, s.r.o.                    #
+#    martin.osmera@moravia-microsystems.com                                #
 #                                                                          #
 #    This program is free software; you can redistribute it and#or modify  #
 #    it under the terms of the GNU General Public License as published by  #
@@ -33,25 +36,25 @@ set _HEXEDITDLG_TCL _
 # --------------------------------------------------------------------------
 
 class HexEditDlg {
-	common count		0	;# Instance counter
-	common win_pos		{+0+0}	;# Window position (+X+Y)
-	common mode		{hex}	;# View mode {hex dec oct}
-	common cell		{0}	;# Current cell (0 - 0xFFFF)
-	common current_view	{left}	;# Focused view {left right}
+	public common count		0	;# Instance counter
+	public common win_pos		{+0+0}	;# Window position (+X+Y)
+	public common mode		{hex}	;# View mode {hex dec oct}
+	public common cell		{0}	;# Current cell (0 - 0xFFFF)
+	public common current_view	{left}	;# Focused view {left right}
 	# Font for mode combobox
-	common mode_cb_font	[font create			\
+	public common mode_cb_font	[font create			\
 		-family {Helvetica}				\
 		-size [expr {int(-17 * $::font_size_factor)}]	\
 		-weight bold					\
 	]
 	# General normal size bold font
-	common bold_font	[font create			\
+	public common bold_font	[font create			\
 		-family $::DEFAULT_FIXED_FONT			\
 		-size [expr {int(-12 * $::font_size_factor)}]	\
 		-weight bold					\
 	]
 	# Status bar tips for main menu for XDATA mode
-	common HELPFILE_XDATA {
+	public common HELPFILE_XDATA {
 		{
 			{Load IHEX8 file into editor and simulator XDATA memory}
 			{}
@@ -76,7 +79,7 @@ class HexEditDlg {
 		}
 	}
 	# Status bar tips for main menu for CODE mode
-	common HELPFILE_CODE {
+	public common HELPFILE_CODE {
 		{
 			{Load IHEX8 file into editor and simulator XDATA memory}
 			{Save current content of program (CODE) memory to IHEX8 file}

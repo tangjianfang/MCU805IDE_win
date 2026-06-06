@@ -1,9 +1,12 @@
 #!/usr/bin/tclsh
-# Part of MCU 8051 IDE ( http://mcu8051ide.sf.net )
+# Part of MCU 8051 IDE ( http://http://www.moravia-microsystems.com/mcu8051ide )
 
 ############################################################################
 #    Copyright (C) 2007, 2008, 2009, 2010, 2011, 2012 by Martin Ošmera     #
 #    martin.osmera@gmail.com                                               #
+#                                                                          #
+#    Copyright (C) 2014 by Moravia Microsystems, s.r.o.                    #
+#    martin.osmera@moravia-microsystems.com                                #
 #                                                                          #
 #    This program is free software; you can redistribute it and#or modify  #
 #    it under the terms of the GNU General Public License as published by  #
@@ -32,7 +35,7 @@ set _EIGHTSEGMENT_TCL _
 # --------------------------------------------------------------------------
 
 class EightSegment {
-	common ld_ed_count	0		;# Int: Counter of object instances
+	public common ld_ed_count	0		;# Int: Counter of object instances
 
 	private variable obj_idx	;# Int: Current object ID
 	private variable win		;# Widget: Dialog window

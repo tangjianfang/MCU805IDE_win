@@ -1,9 +1,12 @@
 #!/usr/bin/tclsh
-# Part of MCU 8051 IDE ( http://mcu8051ide.sf.net )
+# Part of MCU 8051 IDE ( http://http://www.moravia-microsystems.com/mcu8051ide )
 
 ############################################################################
 #    Copyright (C) 2007, 2008, 2009, 2010, 2011, 2012 by Martin Ošmera     #
 #    martin.osmera@gmail.com                                               #
+#                                                                          #
+#    Copyright (C) 2014 by Moravia Microsystems, s.r.o.                    #
+#    martin.osmera@moravia-microsystems.com                                #
 #                                                                          #
 #    This program is free software; you can redistribute it and#or modify  #
 #    it under the terms of the GNU General Public License as published by  #
@@ -32,8 +35,8 @@ set _AUTOCOMPLETION_TCL _
 # This file should be loaded into class Editor in file "editor.tcl"
 # --------------------------------------------------------------------------
 
-common invoke_com_win_in_p		0	;# Bool: invoke_completion_popup_window in progress
-common completion_win_opened		0	;# Bool: Editor popup-based completion window opended
+public common invoke_com_win_in_p		0	;# Bool: invoke_completion_popup_window in progress
+public common completion_win_opened		0	;# Bool: Editor popup-based completion window opended
 
 ## Array: Strings available for autocompletion
 	# Index 0 - Labels in assembly
@@ -165,47 +168,41 @@ private method autocompletion_c_syntax_analyze {line_number} {
 	# Find word after data type specification
 	set prev_range {}
 	set range [list $line_number.0 $line_number.0]
+	set line [$editor get $line_number.0 [list $line_number.0 lineend]]
+
+	set par_idx [string first "(" $line]
+
 	while {1} {
 		set range [$editor tag nextrange tag_c_data_type	\
 			[lindex $range 1] [list $line_number.0 lineend]	\
 		]
-		if {![llength $range]} {
+
+		if {![llength $range] || ( ( $par_idx != -1 ) && ([lindex [split [lindex $range 0] {.}] 1] > $par_idx) )} {
 			break
 		}
 		set prev_range $range
+	}
+	set range $prev_range
 
-		# Nothing found -> abort
-		if {![llength $prev_range]} {
-			return
-		}
 
-		# Gain details about the word
-		set range $prev_range
-		set line [$editor get $line_number.0 [list $line_number.0 lineend]]
-		set start [lindex [split [lindex $range 1] {.}] 1]
-		set end 0
-		set string {}
+	# Nothing found -> abort
+	if {![llength $range]} {
+		return
+	}
 
-		# Find part which consist of alphanumeric characters
-		while {1} {
-			if {![regexp -start $start -- {\w+} $line string]} {
-				return
-			}
+	set start [lindex [split [lindex $range 1] {.}] 1]
+	if {![regexp -start $start -- {\w+} $line string]} {
+		return
+	}
+	set start [string first $string $line $start]
+	set end [expr {$start + [string length $string]}]
 
-			incr start
-			set end [expr {$start + [string length $string]}]
-
-			if {[string is digit [string index $string 0]]} {
-				incr start [string length $string]
-			} else {
-				break
-			}
-		}
-
-		# Mark the word
-		if {[regexp -start $end -- {\s*\(} $line]} {
-			$editor tag add c_lang_func $line_number.$start $line_number.$end
-		} else {
+	# Mark the word
+	if {[regexp -start $end -- {\s*\(} $line]} {
+		$editor tag add c_lang_func $line_number.$start $line_number.$end
+	} else {
+		# Skip type conversions
+		if {![regexp {[\(\)]} [$editor get [lindex $range 1] $line_number.$start]]} {
 			$editor tag add c_lang_var $line_number.$start $line_number.$end
 		}
 	}
@@ -331,13 +328,13 @@ private method invoke_completion_popup_window {mode start_idx end_idx} {
 	if {![winfo exists .completion_win]} {
 		set win [frame .completion_win -background {#000000}]
 		bind $win <Button-1> "catch {$this completion_popup_window_but1 %X %Y}"
-		bind $win <FocusOut> "$this close_completion_popup_window"
+		bind $win <FocusOut> "catch {$this close_completion_popup_window}"
 		bind $win <Destroy> "
 			catch {$this detete_text_in_editor sel.first sel.last}
 			$this parse \[expr {int(\[$editor index insert\])}\]"
 		bind $win <Key-Escape> "
 			catch {$this detete_text_in_editor sel.first sel.last}
-			$this close_completion_popup_window"
+			catch {$this close_completion_popup_window}"
 
 		# Create lisbox and scrollbar
 		set frame [frame $win.frame]
@@ -364,11 +361,11 @@ private method invoke_completion_popup_window {mode start_idx end_idx} {
 
 		pack $frame -padx 1 -pady 1 -fill both -expand 1
 
-		$listbox bindText <Button-1>	"$this completion_accept"
-		$listbox bindText <Escape>	"$this close_completion_popup_window"
-		bind $listbox <Key-Return>	"$this completion_accept \[$listbox selection get\]"
-		bind $listbox <KP_Enter>	"$this completion_accept \[$listbox selection get\]"
-		bind $listbox <Escape>		"$this close_completion_popup_window"
+		$listbox bindText <Button-1>	"catch {$this completion_accept}"
+		$listbox bindText <Escape>	"catch {$this close_completion_popup_window}"
+		bind $listbox <Key-Return>	"catch {$this completion_accept \[$listbox selection get\]}"
+		bind $listbox <KP_Enter>	"catch {$this completion_accept \[$listbox selection get\]}"
+		bind $listbox <Escape>		"catch {$this close_completion_popup_window}"
 		if {[winfo exists $listbox.c]} {
 			bind $listbox.c <Button-5>	{%W yview scroll +1 units; break}
 			bind $listbox.c <Button-4>	{%W yview scroll -1 units; break}

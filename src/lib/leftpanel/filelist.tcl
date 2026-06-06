@@ -1,9 +1,12 @@
 #!/usr/bin/tclsh
-# Part of MCU 8051 IDE ( http://mcu8051ide.sf.net )
+# Part of MCU 8051 IDE ( http://http://www.moravia-microsystems.com/mcu8051ide )
 
 ############################################################################
 #    Copyright (C) 2007, 2008, 2009, 2010, 2011, 2012 by Martin Ošmera     #
 #    martin.osmera@gmail.com                                               #
+#                                                                          #
+#    Copyright (C) 2014 by Moravia Microsystems, s.r.o.                    #
+#    martin.osmera@moravia-microsystems.com                                #
 #                                                                          #
 #    This program is free software; you can redistribute it and#or modify  #
 #    it under the terms of the GNU General Public License as published by  #
@@ -45,50 +48,50 @@ class FileList {
 
 	## COMMON
 	 # String: Textvariable for dialog "Open with ..."
-	common open_with	${::CONFIG(OPEN_WITH_DLG)}
-	common open_with_cnfr	0	;# Bool: Confirm dialog "Open with ..."
-	common fl_lst_count	0	;# Instances counter
-	common file_indexes	{}	;# List of line indexes (auxiliary variable for opening multiple files)
-	common ac_index_in_fl		;# Index of actual editor filelist
-	common default_encoding	{utf-8}	;# Default encoding
-	common default_eol	{lf}	;# Default EOL
-	common bookmark		0	;# Auxiliary variable for popup menu for Icon Borders
-	common pmenu_cline	0	;# Auxiliary variable for popup menu for Icon Borders
+	public common open_with	${::CONFIG(OPEN_WITH_DLG)}
+	public common open_with_cnfr	0	;# Bool: Confirm dialog "Open with ..."
+	public common fl_lst_count	0	;# Instances counter
+	public common file_indexes	{}	;# List of line indexes (auxiliary variable for opening multiple files)
+	public common ac_index_in_fl		;# Index of actual editor filelist
+	public common default_encoding	{utf-8}	;# Default encoding
+	public common default_eol	{lf}	;# Default EOL
+	public common bookmark		0	;# Auxiliary variable for popup menu for Icon Borders
+	public common pmenu_cline	0	;# Auxiliary variable for popup menu for Icon Borders
 	# Menu items to disable when entering simulator mode
-	common freezable_menu_items {
+	public common freezable_menu_items {
 		{New} {Close} {Close All} {Open}
 	}
 	# Font for opened file in project files list
-	common opened_file_font	[font create	\
+	public common opened_file_font	[font create	\
 		-weight normal			\
 		-slant roman			\
 		-size -12			\
 		-family $::DEFAULT_FIXED_FONT	\
 	]
 	# Font for closed file in project files list
-	common closed_file_font	[font create	\
+	public common closed_file_font	[font create	\
 		-weight normal			\
 		-slant italic			\
 		-size -12			\
 		-family $::DEFAULT_FIXED_FONT	\
 	]
 	# Font for icon borders
-	common icon_border_font	[font create	\
+	public common icon_border_font	[font create	\
 		-weight normal			\
 		-slant roman			\
  		-size -12			\
  		-family $::DEFAULT_FIXED_FONT	\
 	]
 
-	common filelist			{}	;# List of files to open
-	common open_files_cur_file	{}	;# Name of file currently being opened
-	common open_files_progress	0	;# True if opening files in progress
-	common open_files_abort		0	;# Abort variable for open files ProgressDialog
-	common filedetails_visible	0	;# Bool: Is file details window visible
-	common filedetails_after_ID		;# ID of timeout for show window "file details"
+	public common filelist			{}	;# List of files to open
+	public common open_files_cur_file	{}	;# Name of file currently being opened
+	public common open_files_progress	0	;# True if opening files in progress
+	public common open_files_abort		0	;# Abort variable for open files ProgressDialog
+	public common filedetails_visible	0	;# Bool: Is file details window visible
+	public common filedetails_after_ID		;# ID of timeout for show window "file details"
 
 	# Definition of popup menu for listbox of opened files
-	common OPENEDFILESMENU {
+	public common OPENEDFILESMENU {
 		{command	{Append to project} {}		0 "filelist_append_to_prj"	{add}
 			"Append this file to the current project"}
 		{separator}
@@ -140,7 +143,7 @@ class FileList {
 	}
 
 	# Definition of popup menu for notebook with opened files
-	common FILETABSPUMENU {
+	public common FILETABSPUMENU {
 		{command	{Append to project} {}		0 "filelist_append_to_prj"	{add}
 			"Append this file to the current project"}
 		{separator}
@@ -169,7 +172,7 @@ class FileList {
 	}
 
 	# Definition of popup menu for listbox of project files
-	common PROJECTFILESMENU {
+	public common PROJECTFILESMENU {
 		{command	{Remove file from the project} {} 0 "filelist_remove_file_from_project" {editdelete}
 			"Remove this file from the project"}
 		{command	{Close file}	{$edit:close} 0	"filelist_project_file_close"
@@ -207,12 +210,12 @@ class FileList {
 	}
 
 	# Definition of popup menu icon border for list of of opened files
-	common OPENEDFILESIBMENU {
+	public common OPENEDFILESIBMENU {
 		{checkbutton	"Bookmark"	""	{::FileList::bookmark}	1 0 0
 			{opened_files_bookmark  ${::FileList::pmenu_cline}}}
 	}
 	# Definition of popup menu icon border for list of of project files
-	common PROJECTFILESIBMENU {
+	public common PROJECTFILESIBMENU {
 		{checkbutton	"Bookmark"	""	{::FileList::bookmark}	1 0 0
 			{project_files_bookmark ${::FileList::pmenu_cline}}}
 	}
@@ -1599,11 +1602,6 @@ class FileList {
 		set index [$listbox_opened_files index $item]	;# Item index
 		set target [expr {$index - 1}]			;# Target index
 
-		if {$last_selected_item == $item} {
-			return
-		}
-		set last_selected_item $item
-
 		# 1st item cannot be moved up
 		if {$index == 0} {return}
 
@@ -1648,11 +1646,12 @@ class FileList {
 		set target [expr {$index + 1}]			;# Target index
 
 		# Last item cannot be moved up
-		if {[llength [$listbox_opened_files items]] == $index} {return}
+		if {[llength [$listbox_opened_files items]] == ($index + 1)} {return}
 
 		# Move item in listbox
 		$listbox_opened_files move $item $target
 		$filetabs_nb move $item $target
+
 		# Move item in list of bookmarks and icon border
 		if {[lindex $opened_files_bookmarks $index] != [lindex $opened_files_bookmarks $target]} {
 			# Determinate bookmark flag for source and target index
@@ -1755,7 +1754,7 @@ class FileList {
 		set editor_idx [lsearch $file_descriptors $item]
 
 		# Adjust filetabs notebook
-		set page [lindex [$filetabs_nb pages] $editor_idx]
+		set page [lindex [$filetabs_nb pages] [$listbox_opened_files index $item]]
 		if {$page == {}} {
 			set switchfile_in_progress 0
 			return
@@ -2161,6 +2160,17 @@ class FileList {
 			# Adjust lists of file indexes
 			lappend file_indexes	$file_index
 			lappend file_indexes_fb	$num_of_opened_files
+
+			if { $file_index >= $filelist_length } {
+				set enlargeBy [expr {$file_index - $filelist_length + 1}]
+				append files_to_open__path	[string repeat { {}} $enlargeBy]
+				append files_to_open__enc	[string repeat { {}} $enlargeBy]
+				append files_to_open__eol	[string repeat { {}} $enlargeBy]
+				append files_to_open__bm	[string repeat { {}} $enlargeBy]
+				append files_to_open__ro	[string repeat { {}} $enlargeBy]
+				append files_to_open__sh	[string repeat { {}} $enlargeBy]
+				append files_to_open__nt	[string repeat { {}} $enlargeBy]
+			}
 
 			# Adjust list of files to open
 			lset files_to_open__path	$file_index $file_path$file_name

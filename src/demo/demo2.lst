@@ -44,7 +44,7 @@ demo2                                                                           
                         44     ; Program initialization
                         45     ; --------------------
                         46             org     0h              ; Reset vector
-****WARNING: This ORG has lower value than the previous one
+****WARNING:ThisORGhaslowervaluethanthepreviousone
 0000 801C               47             sjmp    start
                         48
                         49             org     0Bh             ; Interrupt vector - T0
@@ -88,11 +88,11 @@ ASSEMBLY COMPLETE, NO ERRORS FOUND, 1 WARNING
 
 
 ERROR SUMMARY:
-Line 48, WARNING: This ORG has lower value than the previous one
+Line 48, WARNING:ThisORGhaslowervaluethanthepreviousone
 
 SYMBOL TABLE:
 ??MCU_8051_IDE . . . . . . . . . . .  N  NUMB  8051H  NOT USED
-??VERSION. . . . . . . . . . . . . .  N  NUMB  0147H  NOT USED
+??VERSION. . . . . . . . . . . . . .  N  NUMB  0149H  NOT USED
 AC . . . . . . . . . . . . . . . . .  B  ADDR  00D6H  NOT USED
 ACC. . . . . . . . . . . . . . . . .  D  ADDR  00E0H  NOT USED
 ACSR . . . . . . . . . . . . . . . .  D  ADDR  0097H  NOT USED

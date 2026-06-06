@@ -1,9 +1,12 @@
 #!/usr/bin/tclsh
-# Part of MCU 8051 IDE ( http://mcu8051ide.sf.net )
+# Part of MCU 8051 IDE ( http://http://www.moravia-microsystems.com/mcu8051ide )
 
 ############################################################################
 #    Copyright (C) 2011 by Martin Ošmera                                   #
 #    martin.osmera@gmail.com                                               #
+#                                                                          #
+#    Copyright (C) 2014 by Moravia Microsystems, s.r.o.                    #
+#    martin.osmera@moravia-microsystems.com                                #
 #                                                                          #
 #    This program is free software; you can redistribute it and#or modify  #
 #    it under the terms of the GNU General Public License as published by  #
@@ -32,30 +35,30 @@ set _TABLE_OF_INSTRUCTIONS_TCL _
 # --------------------------------------------------------------------------
 
 class TableOfInstructions {
-	common tbl_of_inst_count 0		;# Int: Counter of object instances
-	common oprs_color	{#00DD00}	;# RGB Color: Number of operands
-	common len_color	{#00AA55}	;# RGB Color: Instruction length
-	common time_color	{#8800DD}	;# RGB Color: Time to execute
-	common ins_color	{#0000DD}	;# RGB Color: Instruction mnemonics
+	public common tbl_of_inst_count 0		;# Int: Counter of object instances
+	public common oprs_color	{#00DD00}	;# RGB Color: Number of operands
+	public common len_color	{#00AA55}	;# RGB Color: Instruction length
+	public common time_color	{#8800DD}	;# RGB Color: Time to execute
+	public common ins_color	{#0000DD}	;# RGB Color: Instruction mnemonics
 
 	# Font for instruction name
-	common instruction_font [font create			\
+	public common instruction_font [font create			\
 		-family {helvetica}				\
 		-size [expr {int(-10 * $::font_size_factor)}]	\
 	]
 	# Font for numbers below the instruction name
-	common number_font [font create				\
+	public common number_font [font create				\
 		-family {helvetica}				\
 		-size [expr {int(-10 * $::font_size_factor)}]	\
 		-weight {bold}					\
 	]
 	# Font for labels in details frame (normal)
-	common details_n_font [font create			\
+	public common details_n_font [font create			\
 		-family {helvetica}				\
 		-size [expr {int(-12 * $::font_size_factor)}]	\
 	]
 	# Font for labels in details frame (bold)
-	common details_b_font [font create			\
+	public common details_b_font [font create			\
 		-family {helvetica}				\
 		-size [expr {int(-12 * $::font_size_factor)}]	\
 		-weight {bold}					\

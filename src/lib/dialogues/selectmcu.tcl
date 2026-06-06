@@ -1,9 +1,12 @@
 #!/usr/bin/tclsh
-# Part of MCU 8051 IDE ( http://mcu8051ide.sf.net )
+# Part of MCU 8051 IDE ( http://http://www.moravia-microsystems.com/mcu8051ide )
 
 ############################################################################
 #    Copyright (C) 2007, 2008, 2009, 2010, 2011, 2012 by Martin Ošmera     #
 #    martin.osmera@gmail.com                                               #
+#                                                                          #
+#    Copyright (C) 2014 by Moravia Microsystems, s.r.o.                    #
+#    martin.osmera@moravia-microsystems.com                                #
 #                                                                          #
 #    This program is free software; you can redistribute it and#or modify  #
 #    it under the terms of the GNU General Public License as published by  #
@@ -1392,15 +1395,17 @@ namespace eval SelectMCU {
 			image delete $image
 		}
 		update
-		if {[catch {
-			$image_label configure -text { } -image [image create photo	\
-				-format png -file "${::ROOT_DIRNAME}/icons/mcu/$mcu_name.png"
-			]
-		}]} then {
-			$image_label configure			\
-				-fg {#DD0000}			\
-				-text [mc "  Image not found"]	\
-				-image ::ICONS::16::no
+		if {[winfo exists $image_label]} {
+			if {[catch {
+				$image_label configure -text { } -image [image create photo	\
+					-format png -file "${::ROOT_DIRNAME}/icons/mcu/$mcu_name.png"
+				]
+			}]} then {
+				$image_label configure			\
+					-fg {#DD0000}			\
+					-text [mc "  Image not found"]	\
+					-image ::ICONS::16::no
+			}
 		}
 	}
 

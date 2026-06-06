@@ -1,9 +1,12 @@
 #!/usr/bin/tclsh
-# Part of MCU 8051 IDE ( http://mcu8051ide.sf.net )
+# Part of MCU 8051 IDE ( http://http://www.moravia-microsystems.com/mcu8051ide )
 
 ############################################################################
 #    Copyright (C) 2007, 2008, 2009, 2010, 2011, 2012 by Martin Ošmera     #
 #    martin.osmera@gmail.com                                               #
+#                                                                          #
+#    Copyright (C) 2014 by Moravia Microsystems, s.r.o.                    #
+#    martin.osmera@moravia-microsystems.com                                #
 #                                                                          #
 #    This program is free software; you can redistribute it and#or modify  #
 #    it under the terms of the GNU General Public License as published by  #
@@ -122,8 +125,9 @@ namespace eval ErrorHandler {
 			]
 
 		# Write error message
+		$middle_frame.text insert end [mc "Program version: %s\n" "${::VERSION}"]
 		$middle_frame.text insert end [mc "Error log saved in: %s\n" "${::X::defaultDirectory}[file separator]mcu8051ide_errors.log"]
-		$middle_frame.text insert end [mc "Please send this file to %s\nor report this bug at:  http://sourceforge.net/tracker/?group_id=185864&atid=914981\n\n\n" {<martin.osmera@gmail.com>}]
+		$middle_frame.text insert end [mc "Please send this file to %s\n\n\n" {<martin.osmera@moravia-microsystems.com>}]
 		create_link_tag_in_text_widget $middle_frame.text
 		convert_all_https_to_links $middle_frame.text
 		$middle_frame.text tag add tag_big_bold 1.0 4.0

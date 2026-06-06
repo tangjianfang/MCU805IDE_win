@@ -1,9 +1,12 @@
 #!/usr/bin/tclsh
-# Part of MCU 8051 IDE ( http://mcu8051ide.sf.net )
+# Part of MCU 8051 IDE ( http://http://www.moravia-microsystems.com/mcu8051ide )
 
 ############################################################################
 #    Copyright (C) 2007, 2008, 2009, 2010, 2011, 2012 by Martin Ošmera     #
 #    martin.osmera@gmail.com                                               #
+#                                                                          #
+#    Copyright (C) 2014 by Moravia Microsystems, s.r.o.                    #
+#    martin.osmera@moravia-microsystems.com                                #
 #                                                                          #
 #    This program is free software; you can redistribute it and#or modify  #
 #    it under the terms of the GNU General Public License as published by  #
@@ -33,18 +36,18 @@ set _CALCULATOR_TCL _
 
 class Calculator {
 
-	common calc_count	0	;# counter of instances
+	public common calc_count	0	;# counter of instances
 	# Font for numerical keypad
-	common large_font	[font create			\
+	public common large_font	[font create			\
 		-family {helveticat}				\
 		-size [expr {int(-12 * $::font_size_factor)}]	\
 		-weight {bold}					\
 	]
 
-	common oper_fg_color	{#0000FF}	;# Foreground color for operator display
-	common error_bg_color	{#FF6666}	;# Background color for display containing too many characters
-	common display_bg_color	{#DDFFDD}	;# Background color for main display
-	common buffer_bg_color	{#DDDDFF}	;# Background color for buffer display
+	public common oper_fg_color	{#0000FF}	;# Foreground color for operator display
+	public common error_bg_color	{#FF6666}	;# Background color for display containing too many characters
+	public common display_bg_color	{#DDFFDD}	;# Background color for main display
+	public common buffer_bg_color	{#DDDDFF}	;# Background color for buffer display
 
 	# Variables related to object initialization
 	private variable parent				;# Teportary variable -- GUI parent
@@ -112,7 +115,7 @@ class Calculator {
 	#		{separator}
 	#	}
 	# }
-	common calculator_keyboard {
+	public common calculator_keyboard {
 		{
 			{{AND}	{and}	{calc_opr and 1} {} {}
 				{Bit-wise AND}

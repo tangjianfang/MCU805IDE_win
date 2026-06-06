@@ -1,9 +1,12 @@
 #!/usr/bin/tclsh
-# Part of MCU 8051 IDE ( http://mcu8051ide.sf.net )
+# Part of MCU 8051 IDE ( http://http://www.moravia-microsystems.com/mcu8051ide )
 
 ############################################################################
 #    Copyright (C) 2007, 2008, 2009, 2010, 2011, 2012 by Martin Ošmera     #
 #    martin.osmera@gmail.com                                               #
+#                                                                          #
+#    Copyright (C) 2014 by Moravia Microsystems, s.r.o.                    #
+#    martin.osmera@moravia-microsystems.com                                #
 #                                                                          #
 #    This program is free software; you can redistribute it and#or modify  #
 #    it under the terms of the GNU General Public License as published by  #
@@ -34,21 +37,21 @@ set _MESSAGES_TCL _
 class Messages {
 
 	## COMMON
-	common set_shortcuts	{}		;# Currently set shortcut bindigs for messages text
-	common shortcuts_cat	{messages}	;# Key shortcut categories related to messages text
+	public common set_shortcuts	{}		;# Currently set shortcut bindigs for messages text
+	public common shortcuts_cat	{messages}	;# Key shortcut categories related to messages text
 	# Normal font for messages text
-	common messages_normal_font [font create		\
+	public common messages_normal_font [font create		\
 		-family $::DEFAULT_FIXED_FONT			\
 		-size [expr {int(-12 * $::font_size_factor)}]	\
 	]
 	# Bold font for messages text
-	common messages_bold_font [font create			\
+	public common messages_bold_font [font create			\
 		-family $::DEFAULT_FIXED_FONT			\
 		-size [expr {int(-12 * $::font_size_factor)}]	\
 		-weight bold					\
 	]
 	# Definition of popup menu for messages text
-	common MESSAGESMENU {
+	public common MESSAGESMENU {
 		{command	{Select all}	{Ctrl+A}		0	"select_all_messages_text"
 			{}		"Select all text in this TextBox"}
 		{command	{Copy}		{Ctrl+C}		0	"copy_messages_text"

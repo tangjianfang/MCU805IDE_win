@@ -1,9 +1,12 @@
 #!/usr/bin/tclsh
-# Part of MCU 8051 IDE ( http://mcu8051ide.sf.net )
+# Part of MCU 8051 IDE ( http://http://www.moravia-microsystems.com/mcu8051ide )
 
 ############################################################################
 #    Copyright (C) 2007, 2008, 2009, 2010, 2011, 2012 by Martin Ošmera     #
 #    martin.osmera@gmail.com                                               #
+#                                                                          #
+#    Copyright (C) 2014 by Moravia Microsystems, s.r.o.                    #
+#    martin.osmera@moravia-microsystems.com                                #
 #                                                                          #
 #    This program is free software; you can redistribute it and#or modify  #
 #    it under the terms of the GNU General Public License as published by  #
@@ -33,36 +36,36 @@ set _BITMAP_TCL _
 
 class BitMap {
 	## COMMON
-	common btmap_count	0	;# Int: Counter of object instances
+	public common btmap_count	0	;# Int: Counter of object instances
 	# Last window geometry
-	common win_geometry	[lindex $::CONFIG(BITMAP_CONFIG) 0]
+	public common win_geometry	[lindex $::CONFIG(BITMAP_CONFIG) 0]
 
-	common bit_addr_clr	{#0000FF}	;# Color: Bit address
-	common reg_addr_clr	{#00DD00}	;# Color: Register address
-	common rect_size	14		;# Int: Size of rectangle repersenting one bit
-	common rect_sep		2		;# Int: Space between bits
-	common reg_sep		4		;# Int: Space between octetes
-	common row_sep		4		;# Int: Space between rows
-	common bm_x_org		50		;# Int: Bitmap origin (X)
-	common bm_y_org		20		;# Int: Bitmap origin (Y)
+	public common bit_addr_clr	{#0000FF}	;# Color: Bit address
+	public common reg_addr_clr	{#00DD00}	;# Color: Register address
+	public common rect_size	14		;# Int: Size of rectangle repersenting one bit
+	public common rect_sep		2		;# Int: Space between bits
+	public common reg_sep		4		;# Int: Space between octetes
+	public common row_sep		4		;# Int: Space between rows
+	public common bm_x_org		50		;# Int: Bitmap origin (X)
+	public common bm_y_org		20		;# Int: Bitmap origin (Y)
 
-	common zero_fill	#FF0000		;# Color: Bit fill color for log. 0	(Non-selected)
-	common zero_outline	#FF8888		;# Color: Bit outline color for log. 0	(Non-selected)
-	common zero_a_fill	#FF8888		;# Color: Bit fill color for log. 0	(Selected bit)
-	common zero_a_outline	#FFDDDD		;# Color: Bit outline color for log. 0	(Selected bit)
+	public common zero_fill	#FF0000		;# Color: Bit fill color for log. 0	(Non-selected)
+	public common zero_outline	#FF8888		;# Color: Bit outline color for log. 0	(Non-selected)
+	public common zero_a_fill	#FF8888		;# Color: Bit fill color for log. 0	(Selected bit)
+	public common zero_a_outline	#FFDDDD		;# Color: Bit outline color for log. 0	(Selected bit)
 
-	common one_fill		#00FF00		;# Color: Bit color for log. 1		(Non-selected)
-	common one_outline	#88FF88		;# Color: Bit outline color for log. 1	(Non-selected)
-	common one_a_fill	#88FF88		;# Color: Bit fill color for log. 1	(Selected bit)
-	common one_a_outline	#DDFFDD		;# Color: Bit outline color for log. 1	(Selected bit)
+	public common one_fill		#00FF00		;# Color: Bit color for log. 1		(Non-selected)
+	public common one_outline	#88FF88		;# Color: Bit outline color for log. 1	(Non-selected)
+	public common one_a_fill	#88FF88		;# Color: Bit fill color for log. 1	(Selected bit)
+	public common one_a_outline	#DDFFDD		;# Color: Bit outline color for log. 1	(Selected bit)
 
 	# Font: Normal font for canvas widget
-	common bitmap_n_font	[font create			\
+	public common bitmap_n_font	[font create			\
 		-family $::DEFAULT_FIXED_FONT			\
 		-size [expr {int(-12 * $::font_size_factor)}]	\
 	]
 	# Font: Bold font for canvas widget
-	common bitmap_b_font	[font create			\
+	public common bitmap_b_font	[font create			\
 		-family $::DEFAULT_FIXED_FONT			\
 		-size [expr {int(-12 * $::font_size_factor)}]	\
 		-weight bold					\

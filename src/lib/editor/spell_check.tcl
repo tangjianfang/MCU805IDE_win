@@ -1,9 +1,12 @@
 #!/usr/bin/tclsh
-# Part of MCU 8051 IDE ( http://mcu8051ide.sf.net )
+# Part of MCU 8051 IDE ( http://http://www.moravia-microsystems.com/mcu8051ide )
 
 ############################################################################
 #    Copyright (C) 2007, 2008, 2009, 2010, 2011, 2012 by Martin Ošmera     #
 #    martin.osmera@gmail.com                                               #
+#                                                                          #
+#    Copyright (C) 2014 by Moravia Microsystems, s.r.o.                    #
+#    martin.osmera@moravia-microsystems.com                                #
 #                                                                          #
 #    This program is free software; you can redistribute it and#or modify  #
 #    it under the terms of the GNU General Public License as published by  #
@@ -55,17 +58,17 @@ set _SPELL_CHECK_TCL _
 # --------------------------------------------------------------------------
 
 ## COMMON
-common spellchecker_enabled			0	;# Bool: Flag spell checking enabled
-common spellchecker_dictionary			{}	;# String: Dictionary to use (e.g. en_US or cs_CZ)
-common spellchecker_process_pid			[list]	;# List of Ints: Process identifiers of the spell checker and support processes
-common spellchecker_command_LIFO		[list]	;# List: LIFO for commands invoked by spell checker {correct_spelling_cmd wrong_spelling_cmd}
-common spellchecker_RAP_ID			{}	;# String: Application name of ``receive_and_print'' for IPC
-common spellchecker_attempts_to_restart		0	;# Int: Number of failed attempts to restart the spell checker process
-common spellchecker_started_flag			;# None: When this variable is set that means that the spell checker process has been started
-common spellchecker_start_failed		0	;# Bool: Flag spellchecker_started_flag was set but the spell checker process was not actually started
-common spellchecker_start_timer			{}	;# AfterTimer: Watch dog timer for start of of the spell checker process
-common available_dictionaries			[list]	;# List of Strings: Dictionaries available to the Hunspell
-common hunspell_process				{}	;# Channel: Hunspell process invoked by command open in order to gain list of dictionaries
+	public common spellchecker_enabled			0	;# Bool: Flag spell checking enabled
+	public common spellchecker_dictionary			{}	;# String: Dictionary to use (e.g. en_US or cs_CZ)
+	public common spellchecker_process_pid			[list]	;# List of Ints: Process identifiers of the spell checker and support processes
+	public common spellchecker_command_LIFO		[list]	;# List: LIFO for commands invoked by spell checker {correct_spelling_cmd wrong_spelling_cmd}
+	public common spellchecker_RAP_ID			{}	;# String: Application name of ``receive_and_print'' for IPC
+	public common spellchecker_attempts_to_restart		0	;# Int: Number of failed attempts to restart the spell checker process
+	public common spellchecker_started_flag			;# None: When this variable is set that means that the spell checker process has been started
+	public common spellchecker_start_failed		0	;# Bool: Flag spellchecker_started_flag was set but the spell checker process was not actually started
+	public common spellchecker_start_timer			{}	;# AfterTimer: Watch dog timer for start of of the spell checker process
+	public common available_dictionaries			[list]	;# List of Strings: Dictionaries available to the Hunspell
+	public common hunspell_process				{}	;# Channel: Hunspell process invoked by command open in order to gain list of dictionaries
 
 ## PRIVATE
 private variable spellcheck_line_pre		{}	;# String: Content of the line where change_detected_pre was performed
@@ -80,7 +83,7 @@ private variable spellcheck_lock		0	;# Bool: Inhibit method ``spellcheck_check_a
  #		{ Language_Name  Language_Code }
  #		...
  #	}
-common LANGUAGE_CODES_AND_NAMES {
+	public common LANGUAGE_CODES_AND_NAMES {
 	{{Abkhazian}		{ab}}	{{Afar}			{aa}}
 	{{Afrikaans}		{af}}	{{Akan}			{ak}}
 	{{Albanian}		{sq}}	{{Amharic}		{am}}
@@ -198,7 +201,7 @@ common LANGUAGE_CODES_AND_NAMES {
  #		{ Country_Name  Country_Code  Flag_File_Name_Without_Extension }
  #		...
  #	}
-common COUNTRY_CODES_AND_FLAGS {
+	public common COUNTRY_CODES_AND_FLAGS {
 	{{Afghanistan}					AF	Afghanistan}
 	{{Åland Islands}				AX	{}}
 	{{Albania}					AL	Albania}

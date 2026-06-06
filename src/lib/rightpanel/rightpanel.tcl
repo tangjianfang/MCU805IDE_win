@@ -1,9 +1,12 @@
 #!/usr/bin/tclsh
-# Part of MCU 8051 IDE ( http://mcu8051ide.sf.net )
+# Part of MCU 8051 IDE ( http://http://www.moravia-microsystems.com/mcu8051ide )
 
 ############################################################################
 #    Copyright (C) 2007, 2008, 2009, 2010, 2011, 2012 by Martin Ošmera     #
 #    martin.osmera@gmail.com                                               #
+#                                                                          #
+#    Copyright (C) 2014 by Moravia Microsystems, s.r.o.                    #
+#    martin.osmera@moravia-microsystems.com                                #
 #                                                                          #
 #    This program is free software; you can redistribute it and#or modify  #
 #    it under the terms of the GNU General Public License as published by  #
@@ -48,17 +51,17 @@ class RightPanel {
 
 	## COMMON
 	 # Background color for selected rows -- light
-	common selection_color		{#EEFFDD}
+	public common selection_color		{#EEFFDD}
 	 # Background color for selected rows -- dark
-	common selection_color_dark	{#DDDDFF}
+	public common selection_color_dark	{#DDDDFF}
 	 # Default font size for text widgets
-	common fontSize		${Editor::fontSize}
+	public common fontSize		${Editor::fontSize}
 	 # Default font family for text widgets
-	common fontFamily	${Editor::fontFamily}
+	public common fontFamily	${Editor::fontFamily}
 	 # Font used in Editor
-	common editor_font	[font create -size -$fontSize -family $fontFamily]
+	public common editor_font	[font create -size -$fontSize -family $fontFamily]
 	 # Definition of popup menu for bookmark list
-	common BOOKMARKMENU {
+	public common BOOKMARKMENU {
 		{command	{Remove}	{$edit:bookmark}	0	"editor_procedure {} Bookmark {}"
 			{button_cancel}	"Add/Remove editor bookmark to/from current line"}
 		{separator}
@@ -71,7 +74,7 @@ class RightPanel {
 			{editdelete}	"Remove all bookmarks from the editor"}
 	}
 	 # Definition of popup menu for breakpoint list
-	common BREAKPOINTMENU {
+	public common BREAKPOINTMENU {
 		{command	{Remove}	{$edit:breakpoint}	0	"editor_procedure {} Breakpoint {}"
 			{button_cancel}	"Add/Remove editor breakpoint to/from current line"}
 		{separator}
@@ -84,7 +87,7 @@ class RightPanel {
 			{editdelete}	"Remove all breakpoints from the editor"}
 	}
 	 # Definition of popup menu for symbols list
-	common SYMBOLSKMENU {}
+	public common SYMBOLSKMENU {}
 
 	## PRIVATE
 	private variable notebook_frame		;# ID of panel main frame
