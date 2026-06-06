@@ -148,6 +148,7 @@ if {[string first {Windows} ${tcl_platform(os)}] != -1} {
 			set env(ITCL_LIBRARY) "${::ROOT_DIRNAME}/libraries/itcl"
 		}
 
+}
 # Set directory containing configuration files according to the host OS
 if {!$::MICROSOFT_WINDOWS} {
 	set CONFIG_DIR [file join ${::env(HOME)} .[string tolower ${::SHORTNAME}]]
