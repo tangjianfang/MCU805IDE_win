@@ -1,9 +1,12 @@
 #!/usr/bin/tclsh
-# Part of MCU 8051 IDE ( http://mcu8051ide.sf.net )
+# Part of MCU 8051 IDE ( http://http://www.moravia-microsystems.com/mcu8051ide )
 
 ############################################################################
 #    Copyright (C) 2007, 2008, 2009, 2010, 2011, 2012 by Martin Ošmera     #
 #    martin.osmera@gmail.com                                               #
+#                                                                          #
+#    Copyright (C) 2014 by Moravia Microsystems, s.r.o.                    #
+#    martin.osmera@moravia-microsystems.com                                #
 #                                                                          #
 #    This program is free software; you can redistribute it and#or modify  #
 #    it under the terms of the GNU General Public License as published by  #
@@ -33,16 +36,16 @@ set _STOPWATCH_TCL _
 
 class Stopwatch {
 	## Class variables
-	common stopw_count	0	;# Int: Counter of class instances
+	public common stopw_count	0	;# Int: Counter of class instances
 	# List: Short names of stopwatch entries
-	common stats_keys {
+	public common stats_keys {
 		US		CC		IC
 		IP		PB		IN
 		SC		RT		RI
 		BR
 	}
 	#  List: Full names of stopwatch entries
-	common stats_names {
+	public common stats_names {
 		{Micro seconds}		{Clock cycles}	{Instruction cycles}
 		{Instructions passed}	{Program bytes}	{Interrupts}
 		{Subprogram calls}	{RET}		{RETI}

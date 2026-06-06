@@ -1,9 +1,12 @@
 #!/usr/bin/tclsh
-# Part of MCU 8051 IDE ( http://mcu8051ide.sf.net )
+# Part of MCU 8051 IDE ( http://http://www.moravia-microsystems.com/mcu8051ide )
 
 ############################################################################
 #    Copyright (C) 2007, 2008, 2009, 2010, 2011, 2012 by Martin Ošmera     #
 #    martin.osmera@gmail.com                                               #
+#                                                                          #
+#    Copyright (C) 2014 by Moravia Microsystems, s.r.o.                    #
+#    martin.osmera@moravia-microsystems.com                                #
 #                                                                          #
 #    This program is free software; you can redistribute it and#or modify  #
 #    it under the terms of the GNU General Public License as published by  #
@@ -35,9 +38,9 @@ class InstructionDetails {
 
 	## COMMON
 	 # Conter of instances
-	common instd_count		0
+	public common instd_count		0
 	 # Font for instruction details
-	common instruction_font	[font create			\
+	public common instruction_font	[font create			\
 		-size [expr {int(-12 * $::font_size_factor)}]	\
 		-family $::DEFAULT_FIXED_FONT			\
 	]
@@ -46,7 +49,7 @@ class InstructionDetails {
 	  #	{tag_name foreground_color ?bold_or_italic?}
 	  #	...
 	  # }
-	common instruction_tags {
+	public common instruction_tags {
 		{tag_code8	#00AA00	0}
 		{tag_code11	#00AA33	0}
 		{tag_code16	#00AA55	0}
@@ -75,8 +78,8 @@ class InstructionDetails {
 	 # 	    .		 .
 	 # 	    .		 .
 	 # }
-	common HELP_FOR_DIRECTIVES {}
-	common HELP_FOR_DIRECTIVES_RAW {
+	public common HELP_FOR_DIRECTIVES {}
+	public common HELP_FOR_DIRECTIVES_RAW {
 		elseif		{Conditional assembly\n\nSyntax:\n  ELSEIF <expr>\n\nExample:\n  IF(2 * 4 - CND)\n    MOV  A, #20h\n  ELSEIF SOMETHING_ELSE\n    MOV  A, #40h\n  ENDIF\n\n}
 		ifn		{IF Not, conditional assembly\n\nSyntax:\n  IFN <expr>\n\nExample:\n  IF(2 * 4 - CND)\n    MOV  A, #20h\n  ELSE\n    MOV  A, #40h\n  ENDIF\n\n}
 		elseifn		{ELSE IF Not\n\nSyntax:\n  ELSEIFN <expr>\n\nExample:\n  IF(2 * 4 - CND)\n    MOV  A, #20h\n  ELSEIFN SOMETHING_ELSE\n    MOV  A, #40h\n  ENDIF\n\n}
@@ -199,7 +202,7 @@ class InstructionDetails {
 	 #		{affected flags in order: C OV AC, for instance "{0 X 1}"}
 	 #	}
 	 # }
-	common INSTRUCTION_DESCRIPTION {
+	public common INSTRUCTION_DESCRIPTION {
 		{ADD	A, Rn} {
 			{Add register to Accumulator}
 			{Arithmetic Operations}

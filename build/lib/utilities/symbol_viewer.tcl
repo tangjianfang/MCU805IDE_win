@@ -1,9 +1,12 @@
 #!/usr/bin/tclsh
-# Part of MCU 8051 IDE ( http://mcu8051ide.sf.net )
+# Part of MCU 8051 IDE ( http://http://www.moravia-microsystems.com/mcu8051ide )
 
 ############################################################################
 #    Copyright (C) 2007, 2008, 2009, 2010, 2011, 2012 by Martin Ošmera     #
 #    martin.osmera@gmail.com                                               #
+#                                                                          #
+#    Copyright (C) 2014 by Moravia Microsystems, s.r.o.                    #
+#    martin.osmera@moravia-microsystems.com                                #
 #                                                                          #
 #    This program is free software; you can redistribute it and#or modify  #
 #    it under the terms of the GNU General Public License as published by  #
@@ -34,15 +37,15 @@ set _SYMBOL_VIEWER_TCL _
 class SymbolViewer {
 	## Class variables
 	 # Int: Counter of object intances
-	common count	0
+	public common count	0
 	 # Font: Just normal font used in the table
-	common normal_font	[font create			\
+	public common normal_font	[font create			\
 		-family $::DEFAULT_FIXED_FONT			\
 		-size [expr {int(-14 * $::font_size_factor)}]	\
 		-weight normal					\
 	]
 	 # Font: Bold font (the same size as $normal_font)
-	common bold_font	[font create			\
+	public common bold_font	[font create			\
 		-family $::DEFAULT_FIXED_FONT			\
 		-size [expr {int(-14 * $::font_size_factor)}]	\
 		-weight bold					\
@@ -52,7 +55,7 @@ class SymbolViewer {
 		set bold_font $normal_font
 	}
 	 # Dialog configuration
-	common config_list	$::CONFIG(SYMBOL_VIEWER_CONFIG)
+	public common config_list	$::CONFIG(SYMBOL_VIEWER_CONFIG)
 
 	## Private object variables
 	private variable obj_idx			;# Int: Current object number

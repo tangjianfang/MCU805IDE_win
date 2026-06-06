@@ -1,9 +1,12 @@
 #!/usr/bin/tclsh
-# Part of MCU 8051 IDE ( http://mcu8051ide.sf.net )
+# Part of MCU 8051 IDE ( http://http://www.moravia-microsystems.com/mcu8051ide )
 
 ############################################################################
 #    Copyright (C) 2007, 2008, 2009, 2010, 2011, 2012 by Martin Ošmera     #
 #    martin.osmera@gmail.com                                               #
+#                                                                          #
+#    Copyright (C) 2014 by Moravia Microsystems, s.r.o.                    #
+#    martin.osmera@moravia-microsystems.com                                #
 #                                                                          #
 #    This program is free software; you can redistribute it and#or modify  #
 #    it under the terms of the GNU General Public License as published by  #
@@ -58,20 +61,20 @@ class Simulator_ENGINE {
 	inherit Hibernate	;# Import hibernation facility
 
 	## COMMON
-	common symbol		;# Array of SFR symbolic names (eg. $symbol(P0) == "80")
-	common PIN		;# Array describing pins with some special function
-	common PORT_LATCHES	;# List: Port latch registers
-	common GUI_UPDATE_INT 66;# Int: Time interval [ms] in which the GUI is regulary updated in the run mode
+	public common symbol		;# Array of SFR symbolic names (eg. $symbol(P0) == "80")
+	public common PIN		;# Array describing pins with some special function
+	public common PORT_LATCHES	;# List: Port latch registers
+	public common GUI_UPDATE_INT 66;# Int: Time interval [ms] in which the GUI is regulary updated in the run mode
 
 	# Default values for SFR (values to set after reset)
-	common reset_reg_values {
+	public common reset_reg_values {
 		{A	0}	{B	0}	{DP0L	0}	{DP0H	0}
 		{IE	0}	{IP	0}	{PSW	0}	{TCON	0}
 		{TMOD	0}	{TH0	0}	{TH1	0}	{TL0	0}
 		{TL1	0}	{PCON	0}	{SP	7}
 	}
 	# Default values for special (uC dependend) SFR (values to set after reset)
-	common reset_reg_values_1 {
+	public common reset_reg_values_1 {
 		{T2CON	0}	{T2MOD	0}	{RCAP2L	0}	{RCAP2H	0}
 		{TL2	0}	{TH2	0}	{AUXR1	0}	{ACSR	0}
 		{AUXR	0}	{P0	255}	{P1	255}	{P2	255}

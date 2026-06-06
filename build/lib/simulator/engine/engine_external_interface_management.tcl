@@ -1,9 +1,12 @@
 #!/usr/bin/tclsh
-# Part of MCU 8051 IDE ( http://mcu8051ide.sf.net )
+# Part of MCU 8051 IDE ( http://http://www.moravia-microsystems.com/mcu8051ide )
 
 ############################################################################
 #    Copyright (C) 2007, 2008, 2009, 2010, 2011, 2012 by Martin Ošmera     #
 #    martin.osmera@gmail.com                                               #
+#                                                                          #
+#    Copyright (C) 2014 by Moravia Microsystems, s.r.o.                    #
+#    martin.osmera@moravia-microsystems.com                                #
 #                                                                          #
 #    This program is free software; you can redistribute it and#or modify  #
 #    it under the terms of the GNU General Public License as published by  #
@@ -1100,8 +1103,8 @@ public method getTime {} {
 	}
 
 	# Local variables
-	set us [expr {($ms % 1000)}]	;# Number of micro seconds
-	set ms [expr {$ms / 1000}]	;# Number of mili seconds
+	set us [expr {($ms % 1000)}]	;# Number of microseconds
+	set ms [expr {$ms / 1000}]	;# Number of miliseconds
 	set s [expr {int($s)}]		;# Number of seconds
 	set h [expr {$s / 3600}]	;# Number of hours
 	set s [expr {$s % 3600}]
@@ -1111,7 +1114,7 @@ public method getTime {} {
 	# Adjust length of nano-seconds string
 	set len [string length $ns]
 	if {$len < 3} {
-		set ns_s "[string repeat { } [expr {3 - $len}]]$ns"
+		set ns_s "[string repeat {0} [expr {3 - $len}]]$ns"
 	} else {
 		set ns_s $ns
 	}
@@ -1165,11 +1168,7 @@ public method getTime {} {
 	}
 	# Append micro-seconds
 	if {$us > 0 || $result != {}} {
-		append result " ${us_s}µs"
-	}
-	# Append nano-seconds
-	if {$ns > 0 || $result != {}} {
-		append result " ${ns_s}ns"
+		append result " ${us_s}.${ns_s}µs"
 	}
 
 	# Done ...

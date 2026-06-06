@@ -1,9 +1,12 @@
 #!/usr/bin/tclsh
-# Part of MCU 8051 IDE ( http://mcu8051ide.sf.net )
+# Part of MCU 8051 IDE ( http://http://www.moravia-microsystems.com/mcu8051ide )
 
 ############################################################################
 #    Copyright (C) 2007, 2008, 2009, 2010, 2011, 2012 by Martin Ošmera     #
 #    martin.osmera@gmail.com                                               #
+#                                                                          #
+#    Copyright (C) 2014 by Moravia Microsystems, s.r.o.                    #
+#    martin.osmera@moravia-microsystems.com                                #
 #                                                                          #
 #    This program is free software; you can redistribute it and#or modify  #
 #    it under the terms of the GNU General Public License as published by  #
@@ -43,12 +46,12 @@ set _LCD_HD44780_TCL _
 class LcdHD44780 {
 	inherit VirtualHWComponent
 
-	common COMPONENT_NAME	"LCD display"	;# Name of this component
-	common CLASS_NAME	"LcdHD44780"	;# Name of this class
-	common COMPONENT_ICON	{hd44780}	;# Icon for this panel (16x16)
+	public common COMPONENT_NAME	"LCD display"	;# Name of this component
+	public common CLASS_NAME	"LcdHD44780"	;# Name of this class
+	public common COMPONENT_ICON	{hd44780}	;# Icon for this panel (16x16)
 
 	# Configuration menu
-	common CONFMENU {
+	public common CONFMENU {
 		{cascade	"Set font"		0	"hd44780"	.set_rom_code		false 1 {
 			{radiobutton	"ROM code A00"		{}
 				::LcdHD44780::font_id		{0}
@@ -101,34 +104,34 @@ class LcdHD44780 {
 	}
 
 	# Font: Font to be used in the panel -- bold
-	common common_font	[font create			\
+	public common common_font	[font create			\
 		-weight bold					\
 		-size [expr {int(-10 * ($::font_size_factor > 1.2 ? 1.2 : $font_size_factor))}]	\
 		-family {helvetica}				\
 	]
 	# Font: Font to be used in the panel -- bold, underline
-	common common_font_u	[font create			\
+	public common common_font_u	[font create			\
 		-weight bold					\
 		-size [expr {int(-10 * ($::font_size_factor > 1.2 ? 1.2 : $font_size_factor))}]	\
 		-family {helvetica}				\
 		-underline 1					\
 	]
 
-	common ON_COLOR			{#000000}	;# RGB: Color for darken pixels
-	common OFF_COLOR		{#DDDDDD}	;# RGB: Color for blank pixels
-	common USER_DEF_COLOR		{#AAAAFF}	;# RGB: Color used in CGROM table for user defined characters
+	public common ON_COLOR			{#000000}	;# RGB: Color for darken pixels
+	public common OFF_COLOR		{#DDDDDD}	;# RGB: Color for blank pixels
+	public common USER_DEF_COLOR		{#AAAAFF}	;# RGB: Color used in CGROM table for user defined characters
 
 	# List: Names of IO signals of the simulated LCD display controller
-	common SIGNAL_NAMES		[list {RS} {R/W} {E} {D7} {D6} {D5} {D4} {D3} {D2} {D1} {D0}]
+	public common SIGNAL_NAMES		[list {RS} {R/W} {E} {D7} {D6} {D5} {D4} {D3} {D2} {D1} {D0}]
 
 	# List: Keys for the array (status_led) of status LEDs
-	common STATUS_LEDS_NAMES	[list {B} {S} {D} {C} {N} {F} {ID}  {DL} {OMN} {BF}]
+	public common STATUS_LEDS_NAMES	[list {B} {S} {D} {C} {N} {F} {ID}  {DL} {OMN} {BF}]
 
 	# List: Labels displayed beside of the status LEDs
-	common STATUS_LEDS_TEXTS	[list {B} {S} {D} {C} {N} {F} {I/D} {DL} {OMN} {BF}]
+	public common STATUS_LEDS_TEXTS	[list {B} {S} {D} {C} {N} {F} {I/D} {DL} {OMN} {BF}]
 
 	# List: Help texts for the labels of the status LEDs
-	common STATUS_LEDS_HELPTEXTS	[list					\
+	public common STATUS_LEDS_HELPTEXTS	[list					\
 		[mc "Cursor blinking"]						\
 		[mc "Accompanies display shift"]				\
 		[mc "Display ON/OFF"]						\
@@ -140,14 +143,14 @@ class LcdHD44780 {
 		[mc "One More Nibble to transfer / data transfer complete"]	\
 		[mc "Internally operating / Instructions acceptable"]		\
 	]
-	common MAX_LOG_LENGTH		100	;# Int: Maximum number of row in the log window
-	common CURSOR_BLINK_FREQUENCY	 3	;# Int: Frequency (in Hz) of cursor blinking
+	public common MAX_LOG_LENGTH		100	;# Int: Maximum number of row in the log window
+	public common CURSOR_BLINK_FREQUENCY	 3	;# Int: Frequency (in Hz) of cursor blinking
 
 	# Values used by the configuration menu
-	common _no_delays		0	;# Bool: Disable delays (simulated execution times)
-	common _ignore_errors		0	;# Bool: Do not display special error message dialog in cases when an error occurs
-	common font_id			0	;# Int: Font ID to be used for addressing the CGROM
-	common char_size		0	;# Bool: Character height from the HW point of view, 0 == 5x8; 1==5x10
+	public common _no_delays		0	;# Bool: Disable delays (simulated execution times)
+	public common _ignore_errors		0	;# Bool: Do not display special error message dialog in cases when an error occurs
+	public common font_id			0	;# Int: Font ID to be used for addressing the CGROM
+	public common char_size		0	;# Bool: Character height from the HW point of view, 0 == 5x8; 1==5x10
 
 	# Load CGROM
 	source "${::LIB_DIRNAME}/pale/hd44780_cgrom.tcl"
@@ -1671,6 +1674,7 @@ class LcdHD44780 {
 			} else {
 				incr display_shift
 			}
+			set display_shift [expr {$display_shift % 0x80}]
 		# Move cursor
 		} else {
 			set address_counter_old $address_counter
@@ -1681,6 +1685,7 @@ class LcdHD44780 {
 			} else {
 				incr address_counter -1
 			}
+			set address_counter [expr {$address_counter % 0x80}]
 			move_cursor $address_counter
 		}
 
@@ -2569,14 +2574,14 @@ class LcdHD44780 {
 					set signal_value 0
 				}
 				default {
-					if {$diver_cfg(DL) || $i >= 7} {
+# 					if {$diver_cfg(DL) || $i >= 7} {
 						set input_error 1
 						set input_error_desc [mc \
 							"Received an invalid input on signal %s" \
 							[lindex $SIGNAL_NAMES $i]
 						]
 						set signal_value [expr {rand() > 0.5 ? 1 : 0}]
-					}
+# 					}
 				}
 			}
 

@@ -1,9 +1,12 @@
 #!/usr/bin/tclsh
-# Part of MCU 8051 IDE ( http://mcu8051ide.sf.net )
+# Part of MCU 8051 IDE ( http://http://www.moravia-microsystems.com/mcu8051ide )
 
 ############################################################################
 #    Copyright (C) 2007, 2008, 2009, 2010, 2011, 2012 by Martin Ošmera     #
 #    martin.osmera@gmail.com                                               #
+#                                                                          #
+#    Copyright (C) 2014 by Moravia Microsystems, s.r.o.                    #
+#    martin.osmera@moravia-microsystems.com                                #
 #                                                                          #
 #    This program is free software; you can redistribute it and#or modify  #
 #    it under the terms of the GNU General Public License as published by  #
@@ -40,20 +43,20 @@ set _SIMULATOR_GUI_TCL _
 
 class Simulator_GUI {
 	## COMMON
-	common sim_gui_count	0		;# Counter of instances
-	common name_color	{#0000DD}	;# Color for register name labels (eg. 'SP')
-	common name_nr_color	{#8800DD}	;# Color for not-register name labels (eg. 'Clock')
+	public common sim_gui_count	0		;# Counter of instances
+	public common name_color	{#0000DD}	;# Color for register name labels (eg. 'SP')
+	public common name_nr_color	{#8800DD}	;# Color for not-register name labels (eg. 'Clock')
 
-	common on_color		{#00CC00}	;# Foreground color for bits in state 1 (for bit maps)
-	common off_color	{#DD0000}	;# Foreground color for bits in state 0 (for bit maps)
+	public common on_color		{#00CC00}	;# Foreground color for bits in state 1 (for bit maps)
+	public common off_color	{#DD0000}	;# Foreground color for bits in state 0 (for bit maps)
 	# Font for bit labels (eg. 'EA')
-	common bitfont		[font create					\
+	public common bitfont		[font create					\
 		-family {helvetica}						\
 		-size [expr {int(-11 * $::font_size_factor)}]			\
 		-weight [expr {$::MICROSOFT_WINDOWS ? "normal" : "bold"}]	\
 	]
 	# Same as $bitfont but underlined
-	common bitfont_under	[font create					\
+	public common bitfont_under	[font create					\
 		-family {helvetica}						\
 		-size [expr {int(-11 * $::font_size_factor)}]			\
 		-underline 1							\
@@ -61,9 +64,9 @@ class Simulator_GUI {
 	]
 
 	# Color for small labels (eg. 'HEX')
-	common small_color	{#5599BB}
+	public common small_color	{#5599BB}
 	# Font for small labels (eg. 'OCT')
-	common smallfont $::smallfont
+	public common smallfont $::smallfont
 	if {$::MICROSOFT_WINDOWS} {	;# On MS Windows we need some smaller font to fit in
 		set smallfont	[font create				\
 			-size [expr {int(-9 * $::font_size_factor)}]	\
@@ -72,18 +75,18 @@ class Simulator_GUI {
 		]
 	}
 
-	common hcolor		{#FFAA00}	;# Highlight foreground color for entry widgets
-	common hbcolor		{#CCCCCC}	;# Highlight background color for entry widgets
+	public common hcolor		{#FFAA00}	;# Highlight foreground color for entry widgets
+	public common hbcolor		{#CCCCCC}	;# Highlight background color for entry widgets
 
 	# Font for other memory entries (eg. PCON)
-	common entry_font [font create						\
+	public common entry_font [font create						\
 		-size [expr {int(-12 * $::font_size_factor)}]			\
 		-family $::DEFAULT_FIXED_FONT					\
 		-weight [expr {$::MICROSOFT_WINDOWS ? "normal" : "bold"}]	\
 	]
 
 	# Postfixes for entry text variables
-	common entry_variables {
+	public common entry_variables {
 		B_char	A_bin	IP	DPH	T0	T1	DPL	PCON	P1_bin
 		P3_bin	TMOD	A_hex	PC_dec	B_oct	SCON	B_dec	A_char	TL0
 		TL1	DATA	SP	P0	P1	B_bin	P2	P3	PC_hex
@@ -588,7 +591,7 @@ class Simulator_GUI {
 			{Interrupt 0 Edge Flag\nCleared by hardware when interrupt is processed if edge-triggered (see IT0).\nSet by hardware when external interrupt is detected on INT0# pin.}
 			{Interrupt 0 Type Control Bit\nClear to select low level active (level triggered) for external interrupt 0 (INT0#).\nSet to select falling edge active (edge triggered) for external interrupt 0.}
 		}
-		create_bitmap_register $timers_frame_reg 2 TMOD {G1 CT1 M11 M10 G0 CT0 M01 M00} 1 {
+		create_bitmap_register $timers_frame_reg 2 TMOD {G1 CT1 M11 M01 G0 CT0 M10 M00} 1 {
 			{Timer 1 Gating Control Bit}
 			{Timer 1 Counter/Timer Select Bit}
 			{Timer 1 Mode Select Bit}
@@ -611,7 +614,7 @@ class Simulator_GUI {
 		# Create hexadecimal entries for registers: TCON TMOD
 		foreach reg	{TCON TMOD}	\
 			addr	{136 137}	\
-			bits	{{TF1 TR1 TF0 TR0 IE1 IT1 IE0 IT0} {G1 CT1 M11 M10 G0 CT0 M01 M00}}	\
+			bits	{{TF1 TR1 TF0 TR0 IE1 IT1 IE0 IT0} {G1 CT1 M11 M01 G0 CT0 M10 M00}}	\
 			stip	{
 				{SFR 0x88: Timer/Counter control register}
 				{SFR 0x89: Timer/Counter mode control register}
@@ -1521,6 +1524,7 @@ class Simulator_GUI {
 			-style TEntry						\
 			-textvariable ::Simulator_GUI::ENV${obj_idx}_TIME	\
 			-state readonly						\
+			-justify right						\
 			-font [font create -size [expr {int(-12 * $::font_size_factor)}] -family $::DEFAULT_FIXED_FONT]		\
 		]
 		setStatusTip -widget  $frame1_top_right_1._TIME_e -text [mc "Overall time"]
@@ -2418,10 +2422,9 @@ class Simulator_GUI {
 
 		# Create progress bar
 		set ::Simulator_GUI::ENV${obj_idx}_EEPROM_prg 0
-		set eeprom_progressbar [ttk::progressbar	\
+		set eeprom_progressbar [ProgressBar		\
 			$eeprom_operation_frame.progressbar	\
-			-mode determinate			\
-			-orient horizontal			\
+			-type normal				\
 			-maximum 100				\
 			-variable ::Simulator_GUI::ENV${obj_idx}_EEPROM_prg	\
 		]

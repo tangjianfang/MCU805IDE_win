@@ -1,9 +1,12 @@
 #!/usr/bin/tclsh
-# Part of MCU 8051 IDE ( http://mcu8051ide.sf.net )
+# Part of MCU 8051 IDE ( http://http://www.moravia-microsystems.com/mcu8051ide )
 
 ############################################################################
 #    Copyright (C) 2007, 2008, 2009, 2010, 2011, 2012 by Martin Ošmera     #
 #    martin.osmera@gmail.com                                               #
+#                                                                          #
+#    Copyright (C) 2014 by Moravia Microsystems, s.r.o.                    #
+#    martin.osmera@moravia-microsystems.com                                #
 #                                                                          #
 #    This program is free software; you can redistribute it and#or modify  #
 #    it under the terms of the GNU General Public License as published by  #
@@ -33,30 +36,30 @@ set _GRAPH_WDG_TCL _
 
 class GraphWidget {
 	## COMMON
-	common step_y		13	;# Int: Vertical distance between graph rows
-	common half_edge	5	;# Int: Half length of bit edge
-	common full_edge	10	;# Int: Full length of bit edge
+	public common step_y		13	;# Int: Vertical distance between graph rows
+	public common half_edge	5	;# Int: Half length of bit edge
+	public common full_edge	10	;# Int: Full length of bit edge
 
 	# Big font (vertical header)
-	common big_font		[font create	\
+	public common big_font		[font create	\
 		-family $::DEFAULT_FIXED_FONT	\
 		-size -14			\
 		-weight bold			\
 	]
 	# Small font (horizontal header)
-	common small_font	[font create	\
+	public common small_font	[font create	\
 		-family $::DEFAULT_FIXED_FONT	\
 		-size -14			\
 		-weight bold			\
 	]
 	# Font for booleans values for each port
-	common bool_font	[font create	\
+	public common bool_font	[font create	\
 		-family $::DEFAULT_FIXED_FONT	\
 		-size -12			\
 		-weight bold			\
 	]
 	# Definition of graph popup menu
-	common GRAPHMENU {
+	public common GRAPHMENU {
 		{command	{ON/OFF}	{}	0	"graph_change_status_on"
 			{}		"Enable/Disable graph"}
 		{separator}

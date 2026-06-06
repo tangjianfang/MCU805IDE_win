@@ -1,9 +1,12 @@
 #!/usr/bin/tclsh
-# Part of MCU 8051 IDE ( http://mcu8051ide.sf.net )
+# Part of MCU 8051 IDE ( http://http://www.moravia-microsystems.com/mcu8051ide )
 
 ############################################################################
 #    Copyright (C) 2007, 2008, 2009, 2010, 2011, 2012 by Martin Ošmera     #
 #    martin.osmera@gmail.com                                               #
+#                                                                          #
+#    Copyright (C) 2014 by Moravia Microsystems, s.r.o.                    #
+#    martin.osmera@moravia-microsystems.com                                #
 #                                                                          #
 #    This program is free software; you can redistribute it and#or modify  #
 #    it under the terms of the GNU General Public License as published by  #
@@ -34,10 +37,10 @@ set _BASECONVERTER_TCL _
 
 class BaseConverter {
 	## COMMON
-	common base_c_count			0	;# Int: Counter of class instances
-	common INITIAL_HEIGHT			130	;# Int: Initial heightof the window  in pixels
-	common INITIAL_WIDTH			150	;# Int: Initial width of the window in pixels
-	common EXTENDED_WIDTH			340	;# Int: Width of the window when it is in extended mode
+	public common base_c_count			0	;# Int: Counter of class instances
+	public common INITIAL_HEIGHT			130	;# Int: Initial heightof the window  in pixels
+	public common INITIAL_WIDTH			150	;# Int: Initial width of the window in pixels
+	public common EXTENDED_WIDTH			340	;# Int: Width of the window when it is in extended mode
 
 	# On MS Windows these values has to be a bit different
 	if {$::MICROSOFT_WINDOWS} {
@@ -46,7 +49,7 @@ class BaseConverter {
 		set EXTENDED_WIDTH	355
 	}
 	 # Font entryboxes
-	common entry_font [font create		\
+	public common entry_font [font create		\
 		-size -12			\
 		-family $::DEFAULT_FIXED_FONT	\
 		-weight bold			\

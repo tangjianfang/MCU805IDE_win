@@ -17,3 +17,5 @@ build/error_output.txt
 # OS files
 Thumbs.db
 .DS_Storesrc/demo/*.mcu8051ide~
+build-old/
+src-1.4.7/

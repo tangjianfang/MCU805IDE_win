@@ -1,9 +1,12 @@
 #!/usr/bin/tclsh
-# Part of MCU 8051 IDE ( http://mcu8051ide.sf.net )
+# Part of MCU 8051 IDE ( http://http://www.moravia-microsystems.com/mcu8051ide )
 
 ############################################################################
 #    Copyright (C) 2007, 2008, 2009, 2010, 2011, 2012 by Martin Ošmera     #
 #    martin.osmera@gmail.com                                               #
+#                                                                          #
+#    Copyright (C) 2014 by Moravia Microsystems, s.r.o.                    #
+#    martin.osmera@moravia-microsystems.com                                #
 #                                                                          #
 #    This program is free software; you can redistribute it and#or modify  #
 #    it under the terms of the GNU General Public License as published by  #
@@ -35,18 +38,18 @@ set _STACKMONITOR_TCL _
 class StackMonitor {
 
 	## COMMON
-	common push_value	{}				;# String: Value to PUSH onto the stack by user
-	common stack_mon_count	0				;# Int: Counter of intances
-	common geometry		${::CONFIG(STACK_MON_GEOMETRY)}	;# Geometry: Last window geometry
-	common collapsed	${::CONFIG(STACK_MON_COLLAPSED)};# Bool: Bottom bar hidden
+	public common push_value	{}				;# String: Value to PUSH onto the stack by user
+	public common stack_mon_count	0				;# Int: Counter of intances
+	public common geometry		${::CONFIG(STACK_MON_GEOMETRY)}	;# Geometry: Last window geometry
+	public common collapsed	${::CONFIG(STACK_MON_COLLAPSED)};# Bool: Bottom bar hidden
 	 # Font for the text widget representing the stack (bold)
-	common font0		[font create			\
+	public common font0		[font create			\
 		-family $::DEFAULT_FIXED_FONT			\
 		-size [expr {int(-12 * $::font_size_factor)}]	\
 		-weight bold					\
 	]
 	 # Font for the text widget representing the stack (normal)
-	common font1		[font create			\
+	public common font1		[font create			\
 		-family $::DEFAULT_FIXED_FONT			\
 		-size [expr {int(-12 * $::font_size_factor)}]	\
 		-weight normal					\

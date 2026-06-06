@@ -1,9 +1,12 @@
 #!/usr/bin/tclsh
-# Part of MCU 8051 IDE ( http://mcu8051ide.sf.net )
+# Part of MCU 8051 IDE ( http://http://www.moravia-microsystems.com/mcu8051ide )
 
 ############################################################################
 #    Copyright (C) 2007, 2008, 2009, 2010, 2011, 2012 by Martin Ošmera     #
 #    martin.osmera@gmail.com                                               #
+#                                                                          #
+#    Copyright (C) 2014 by Moravia Microsystems, s.r.o.                    #
+#    martin.osmera@moravia-microsystems.com                                #
 #                                                                          #
 #    This program is free software; you can redistribute it and#or modify  #
 #    it under the terms of the GNU General Public License as published by  #
@@ -35,18 +38,18 @@ class SFRWatches {
 
 	## COMMON
 	 # Font for addresses and register names
-	common main_font	[font create			\
+	public common main_font	[font create			\
 		-family $::DEFAULT_FIXED_FONT			\
 		-size [expr {int(-14 * $::font_size_factor)}]	\
 		-weight bold					\
 	]
 	 # Just another font but not bold
-	common roman_font	[font create			\
+	public common roman_font	[font create			\
 		-family $::DEFAULT_FIXED_FONT			\
 		-size [expr {int(-14 * $::font_size_factor)}]	\
 	]
 	 # Fonr for register entry boxes
-	common entry_font	[font create			\
+	public common entry_font	[font create			\
 		-family $::DEFAULT_FIXED_FONT			\
 		-size [expr {int(-12 * $::font_size_factor)}]	\
 		-weight bold					\

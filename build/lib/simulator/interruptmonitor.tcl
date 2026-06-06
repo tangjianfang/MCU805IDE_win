@@ -1,9 +1,12 @@
 #!/usr/bin/tclsh
-# Part of MCU 8051 IDE ( http://mcu8051ide.sf.net )
+# Part of MCU 8051 IDE ( http://http://www.moravia-microsystems.com/mcu8051ide )
 
 ############################################################################
 #    Copyright (C) 2007, 2008, 2009, 2010, 2011, 2012 by Martin Ošmera     #
 #    martin.osmera@gmail.com                                               #
+#                                                                          #
+#    Copyright (C) 2014 by Moravia Microsystems, s.r.o.                    #
+#    martin.osmera@moravia-microsystems.com                                #
 #                                                                          #
 #    This program is free software; you can redistribute it and#or modify  #
 #    it under the terms of the GNU General Public License as published by  #
@@ -33,34 +36,34 @@ set _INTERRUPTMONITOR_TCL _
 
 class InterruptMonitor {
 	## COMMON
-	common geometry		${::CONFIG(INTR_MON_GEOMETRY)}	;# Last window geometry
-	common intr_mon_count	0				;# Counter of intances
-	common bg_color		{#0088FF}			;# Color for highlighted background
+	public common geometry		${::CONFIG(INTR_MON_GEOMETRY)}	;# Last window geometry
+	public common intr_mon_count	0				;# Counter of intances
+	public common bg_color		{#0088FF}			;# Color for highlighted background
 	 # Small header font
-	common header_font	[font create			\
+	public common header_font	[font create			\
 		-size [expr {int(-17 * $::font_size_factor)}]	\
 		-weight bold					\
 		-family {helvetica}				\
 	]
 	 # Big header font
-	common header_font_big	[font create			\
+	public common header_font_big	[font create			\
 		-size [expr {int(-21 * $::font_size_factor)}]	\
 		-weight bold					\
 		-family {helvetica}				\
 	]
 	 # Common label font
-	common lbl_font		[font create			\
+	public common lbl_font		[font create			\
 		-size [expr {int(-12 * $::font_size_factor)}]	\
 		-family {helvetica}				\
 	]
 	 # Font for value labels
-	common val_font		[font create			\
+	public common val_font		[font create			\
 		-size [expr {int(-12 * $::font_size_factor)}]	\
 		-weight bold					\
 		-family {helvetica}				\
 	]
 	 # Font for value labels - underline
-	common val_font_under	[font create			\
+	public common val_font_under	[font create			\
 		-size [expr {int(-12 * $::font_size_factor)}]	\
 		-weight bold					\
 		-family {helvetica}				\

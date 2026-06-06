@@ -1,9 +1,12 @@
 #!/usr/bin/tclsh
-# Part of MCU 8051 IDE ( http://mcu8051ide.sf.net )
+# Part of MCU 8051 IDE ( http://http://www.moravia-microsystems.com/mcu8051ide )
 
 ############################################################################
 #    Copyright (C) 2007, 2008, 2009, 2010, 2011, 2012 by Martin Ošmera     #
 #    martin.osmera@gmail.com                                               #
+#                                                                          #
+#    Copyright (C) 2014 by Moravia Microsystems, s.r.o.                    #
+#    martin.osmera@moravia-microsystems.com                                #
 #                                                                          #
 #    This program is free software; you can redistribute it and#or modify  #
 #    it under the terms of the GNU General Public License as published by  #
@@ -53,9 +56,10 @@ private method undefined_octet {} {
 }
 
 ## Add value to accumulator and affect PSW flags
- # @parm Int val - value to add
+ # @parm Int val   - value to add
+ # @parm Int carry - addtional value to add (ment for the Carry flag)
  # @return void
-private method alo_add {val} {
+private method alo_add {val {carry 0}} {
 
 	# Adjust stepback stack
 	if {${::Simulator::reverse_run_steps}} {
@@ -69,7 +73,7 @@ private method alo_add {val} {
 	set val_l [expr {$val & 15}]		;# Low-order  nibble of val
 
 	# Compute low-order nibble of result
-	set result [expr {$val_l + $A_l}]
+	set result [expr {$val_l + $A_l + $carry}]
 
 	# Flag AC
 	if {$result > 15} {
@@ -109,10 +113,7 @@ private method alo_add {val} {
  # @parm Int val - value to add
  # @return void
 private method alo_addc {val} {
-	if {[getBit $symbol(C)]} {
-		incr val
-	}
-	alo_add $val
+	alo_add $val [getBit $symbol(C)]
 }
 
 ## Subtract tegister from ACC with borrow and affect PSW flags
@@ -126,8 +127,9 @@ private method alo_subb {val} {
 	}
 
 	# Flag PSW.C
+	set carry 0
 	if {[getBit $symbol(C)]} {
-		incr val
+		set carry 1
 	}
 
 	# Local variables
@@ -137,7 +139,7 @@ private method alo_subb {val} {
 	set val_l [expr {$val & 15}]		;# Low-order  nibble of val
 
 	# Compute low-order nibble of result
-	set result_l [expr {$A_l - $val_l}]
+	set result_l [expr {$A_l - $val_l - $carry}]
 
 	# Flag AC
 	if {$result_l < 0} {

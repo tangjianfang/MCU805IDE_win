@@ -1,9 +1,12 @@
 #!/usr/bin/tclsh
-# Part of MCU 8051 IDE ( http://mcu8051ide.sf.net )
+# Part of MCU 8051 IDE ( http://http://www.moravia-microsystems.com/mcu8051ide )
 
 ############################################################################
 #    Copyright (C) 2007, 2008, 2009, 2010, 2011, 2012 by Martin Ošmera     #
 #    martin.osmera@gmail.com                                               #
+#                                                                          #
+#    Copyright (C) 2014 by Moravia Microsystems, s.r.o.                    #
+#    martin.osmera@moravia-microsystems.com                                #
 #                                                                          #
 #    This program is free software; you can redistribute it and#or modify  #
 #    it under the terms of the GNU General Public License as published by  #
@@ -38,14 +41,14 @@ set _SPECCALC_TCL _
 
 class SpecCalc {
 	## COMMON
-	common count		0	;# Int: Counter of class instances
-	common diagram_counter	0	;# Int: Counter of diagram dialogues instances
+	public common count		0	;# Int: Counter of class instances
+	public common diagram_counter	0	;# Int: Counter of diagram dialogues instances
 	 # List of pages descriptors for PagesManager
-	common page_list {
+	public common page_list {
 		loops timer01 timer2 spi
 	}
 	 # Configuration list
-	common config		$::CONFIG(SPEC_CALC)
+	public common config		$::CONFIG(SPEC_CALC)
 
 	## PRIVATE
 	private variable win			;# Widget: The dialog window

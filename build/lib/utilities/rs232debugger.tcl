@@ -1,9 +1,12 @@
 #!/usr/bin/tclsh
-# Part of MCU 8051 IDE ( http://mcu8051ide.sf.net )
+# Part of MCU 8051 IDE ( http://http://www.moravia-microsystems.com/mcu8051ide )
 
 ############################################################################
 #    Copyright (C) 2007, 2008, 2009, 2010, 2011, 2012 by Martin Ošmera     #
 #    martin.osmera@gmail.com                                               #
+#                                                                          #
+#    Copyright (C) 2014 by Moravia Microsystems, s.r.o.                    #
+#    martin.osmera@moravia-microsystems.com                                #
 #                                                                          #
 #    This program is free software; you can redistribute it and#or modify  #
 #    it under the terms of the GNU General Public License as published by  #
@@ -34,41 +37,41 @@ set _RS232DEBUGGER_TCL _
 
 class RS232Debugger {
 	## COMMON
-	common count	0	;# Int: Counter of class instances
+	public common count	0	;# Int: Counter of class instances
 	 # Font: Big bold font
-	common bold_font [font create				\
+	public common bold_font [font create				\
 		-family {helvetica}				\
 		-size [expr {int(-12 * $::font_size_factor)}]	\
 		-weight {bold}					\
 	]
 	 # Font: Tiny normal font
-	common tiny_font [font create				\
+	public common tiny_font [font create				\
 		-family {helvetica}				\
 		-size [expr {int(-9 * $::font_size_factor)}]	\
 		-weight {normal}				\
 	]
 	 # Font: Tiny bold font
-	common tiny_font_bold [font create			\
+	public common tiny_font_bold [font create			\
 		-family {helvetica}				\
 		-size [expr {int(-9 * $::font_size_factor)}]	\
 		-weight {bold}					\
 	]
 	 # Font: Normal font
-	common normal_font [font create				\
+	public common normal_font [font create				\
 		-family {helvetica}				\
 		-size [expr {int(-11 * $::font_size_factor)}]	\
 		-weight {normal}				\
 	]
 	 # Font: Also normal font, but a bit larger
-	common big_font [font create				\
+	public common big_font [font create				\
 		-family {helvetica}				\
 		-size [expr {int(-12 * $::font_size_factor)}]	\
 		-weight {normal}				\
 	]
 	 # Int: Pool interval for selected RS232 interface
-	common POOL_INTERVAL	50	;# mili-seconds
+	public common POOL_INTERVAL	50	;# mili-seconds
 	 # List of Int: Available baud rates for RS232
-	common available_baud_rates {
+	public common available_baud_rates {
 		50	75	110	134	150	200
 		300	600	1200	1800	2400	4800
 		9600	19200	38400	57600	115200	230400
@@ -76,7 +79,7 @@ class RS232Debugger {
 	}
 
 	 # List: Configuration list
-	common config_list	$::CONFIG(RS232_DEBUGGER)
+	public common config_list	$::CONFIG(RS232_DEBUGGER)
 
 
 	## PRIVATE
@@ -1101,7 +1104,12 @@ class RS232Debugger {
 	 # @return void
 	public method receive_data {} {
 		# Read binary data
-		set data [read $channel]
+                if {[catch {
+                    set data [read $channel]
+                }]} then {
+                        unknown_port_io_error
+                        return
+                }
 
 		# Discard the data if reception is not enabled
 		if {!$reception_enabled} {
@@ -1293,7 +1301,7 @@ class RS232Debugger {
 			-parent $win		\
 			-title [mc "IO Error"]	\
 			-type ok -icon warning	\
-			-message [mc "There is something wrong with the port. Closing connection and disabling reception on this channel !"]
+			-message [mc "There is something wrong with the port. Closing connection and disabling reception on this channel!"]
 
 		update
 	}

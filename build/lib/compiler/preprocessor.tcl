@@ -1,9 +1,12 @@
 #!/usr/bin/tclsh
-# Part of MCU 8051 IDE ( http://mcu8051ide.sf.net )
+# Part of MCU 8051 IDE ( http://http://www.moravia-microsystems.com/mcu8051ide )
 
 ############################################################################
 #    Copyright (C) 2007, 2008, 2009, 2010, 2011, 2012 by Martin Ošmera     #
 #    martin.osmera@gmail.com                                               #
+#                                                                          #
+#    Copyright (C) 2014 by Moravia Microsystems, s.r.o.                    #
+#    martin.osmera@moravia-microsystems.com                                #
 #                                                                          #
 #    This program is free software; you can redistribute it and#or modify  #
 #    it under the terms of the GNU General Public License as published by  #
@@ -1390,6 +1393,32 @@ namespace eval PreProcessor {
 			]
 		}
 
+		# Resolve: "DW <label>", and "DB ..., <label>, ..."
+		if {${::Compiler::Settings::PRINT}} {
+			set new_lst {}
+			foreach lst_line $CodeListing::lst {
+				set op_code [lindex $lst_line 1]
+				if {[llength $op_code] > 1} {
+					set take_next 0
+					set new_op_code {}
+					foreach op $op_code {
+						if {{} == $op} {
+							set take_next 1
+							continue
+						} elseif {$take_next} {
+							set take_next 0
+							append new_op_code [format %02X [ComputeExpr $op 0]]
+						} else {
+							append new_op_code $op
+						}
+					}
+					lset lst_line 1 $new_op_code
+				}
+				lappend new_lst $lst_line
+			}
+			set CodeListing::lst $new_lst
+		}
+
 		# Replace old code with the new one
 		set asm $tmp_asm
 	}
@@ -2633,7 +2662,7 @@ namespace eval PreProcessor {
 	 # @return List - code of the macro
 	proc getMacro {macro_name args} {
 		variable macro		;# Array: Code of defined macro instructions
-		variable local_M_labels		;# Array of lists: Local labels in macros $local_M_labels($macro_name) == {integer label0 ... labelN}
+		variable local_M_labels	;# Array of lists: Local labels in macros $local_M_labels($macro_name) == {integer label0 ... labelN}
 		variable lineNum	;# Number of the current line
 		variable fileNum	;# Number of the current file
 
@@ -2671,10 +2700,10 @@ namespace eval PreProcessor {
 			if {![regexp {^(\?\?)?[A-Za-z_][^\s:]*:\s*} $line label]} {
 				set label {}
 			} else {
-				regsub {^(\?\?)?[A-Za-z_][^\s:]:*\s*} $line {} line
+				regsub {^(\?\?)?[A-Za-z_][^\s:]*:\s*} $line {} line
 				regsub -all {\s+} $label {} label
 				set label [string trimright $label {:}]
-				if {[lsearch -ascii -exact $local_M_labels($macro_name) $label] != -1} {
+				if {[lsearch -ascii -exact [lrange $local_M_labels($macro_name) 1 end] $label] != -1} {
 					set label "${macro_name}_[lindex $local_M_labels($macro_name) 0]__${label}"
 				}
 			}
@@ -2687,7 +2716,11 @@ namespace eval PreProcessor {
 			}
 			regsub {^\.?\w+\s*} $line {} operands
 			if {$operands == {}} {
-				lappend result $instruction
+				if {$label != {}} {
+					lappend result "${label}:\t${instruction}"
+				} else {
+					lappend result $instruction
+				}
 				continue
 			}
 
@@ -2724,6 +2757,8 @@ namespace eval PreProcessor {
 						if {[isReservedKeyword [lindex $m_pars $idx] 1]} {
 							Warning $lineNum $fileNum [mc "Reserved keyword substituted with macro argument: %s --> %s" [lindex $m_pars $idx] [lindex $args $idx]]
 						}
+					} elseif {[lsearch -exact -ascii [lrange $local_M_labels($macro_name) 1 end] $o] != -1} {
+						set o "${macro_name}_[lindex $local_M_labels($macro_name) 0]__${o}"
 					}
 
 					append new_opr $o { }

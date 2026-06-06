@@ -2,11 +2,14 @@
 # the next line restarts using wish \
 exec tclsh "$0" "$@"
 
-# Part of MCU 8051 IDE ( http://mcu8051ide.sf.net )
+# Part of MCU 8051 IDE ( http://http://www.moravia-microsystems.com/mcu8051ide )
 
 ############################################################################
 #    Copyright (C) 2007, 2008, 2009, 2010, 2011, 2012 by Martin Ošmera     #
 #    martin.osmera@gmail.com                                               #
+#                                                                          #
+#    Copyright (C) 2014 by Moravia Microsystems, s.r.o.                    #
+#    martin.osmera@moravia-microsystems.com                                #
 #                                                                          #
 #    This program is free software; you can redistribute it and#or modify  #
 #    it under the terms of the GNU General Public License as published by  #
@@ -39,14 +42,18 @@ set _MAIN_TCL _
 # -----------------------------
 set DEBUG		0				;# Turn on debugging
 encoding system {utf-8}					;# System encoding
-# When running via freewrap, the entry script sets these variables before
-# sourcing this file. When running from source, compute from argv0.
+# On Windows freewrap, the entry script (mcu8051ide_entry.tcl) sets these
+# variables correctly for the VFS environment. Don't override them.
 if {![info exists ::LIB_DIRNAME]} {
 	set LIB_DIRNAME	[file normalize [file dirname $argv0]]	;# Path to directory where the *.tcl file are located
-	set INSTALLATION_DIR [file normalize "$LIB_DIRNAME/.."]	;# Path to the main executable (this file)
-	set ROOT_DIRNAME [file normalize "$LIB_DIRNAME/.."]	;# On Linux it is the same as INSTALLATION_DIR, but different on MS Windows
 }
-set VERSION		"1.4.7"				;# Version of this IDE
+if {![info exists ::INSTALLATION_DIR]} {
+	set INSTALLATION_DIR [file normalize "$LIB_DIRNAME/.."]	;# Path to the main executable (this file)
+}
+if {![info exists ::ROOT_DIRNAME]} {
+	set ROOT_DIRNAME [file normalize "$LIB_DIRNAME/.."]	;# On Linux it's the same as INSTALLATION_DIR but it's different on Windows
+}
+set VERSION		"1.4.9"				;# Version of this IDE
 set SHORTNAME		"MCU8051IDE"			;# Program short name (without white space)
 set APPNAME		"MCU 8051 IDE v$VERSION"	;# Full program name
 set MIN_TCL_VER		"8.5"				;# Minimum required Tcl version
@@ -82,9 +89,15 @@ set LIBRARIES_TO_LOAD {
 	{md5		2.0}
 	{Tk		8.5}
 	{img::png	1.3}
-	{tdom		0.9}
+	{tdom		0.8}
 	{Tclx		8.0}
+	{Signal		1.4}
 	{Tcl		8.2}
+}
+
+set OPTIONAL_LIBRARIES {
+	Signal
+	Tclx
 }
 
 ## Bool:
@@ -101,6 +114,11 @@ set ::GUI_AVAILABLE 1
  # we are not able to handle signals, but everything else works normally.
 set ::TCLX_AVAILABLE 1
 
+## Bool:
+ #     1 == library Signal is available
+ #     0 == library Signal is NOT available
+set ::SIGNAL_AVAILABLE 1
+
 ## Determinate the host OS
 set ::MICROSOFT_WINDOWS 0
 if {[string first {Windows} ${tcl_platform(os)}] != -1} {
@@ -109,27 +127,28 @@ if {[string first {Windows} ${tcl_platform(os)}] != -1} {
 	#   to do some workarounds here in order to make the IDE functional.
 	set ::MICROSOFT_WINDOWS 1
 
-	# When running via freewrap, the entry script (mcu8051ide_entry.tcl)
-	# sets these variables before sourcing this file. When running from
-	# source (e.g. tclsh), we compute them from the script location.
-	if {[info exists ::AUTO_PATH_FOR_MS_WINDOWS] && [info exists ::LIB_DIRNAME_SPECIFIC_FOR_MS_WINDOWS]} {
-		# All variables already set by the freewrap entry script — use them
-	} else {
-		# Fallback: compute from script location (for development/source runs)
-		set LIB_DIRNAME_SPECIFIC_FOR_MS_WINDOWS [file dirname [info script]]
-		set ROOT_DIRNAME [file normalize [file join $LIB_DIRNAME_SPECIFIC_FOR_MS_WINDOWS ..]]
-		set AUTO_PATH_FOR_MS_WINDOWS [list libraries/bwidget libraries/md5 libraries/tdom libraries/itcl libraries/tclx8.4 libraries/img_png]
-	}
-	# On Windows, the lib directory path is platform-specific
-	set INSTALLATION_DIR $ROOT_DIRNAME
-	set LIB_DIRNAME $LIB_DIRNAME_SPECIFIC_FOR_MS_WINDOWS
+		# On Windows freewrap, the entry script (mcu8051ide_entry.tcl) already
+		# sets all path variables correctly using argv0. Only do the
+		# legacy AIPCS path adjustments if the entry script has NOT run.
+		if {![info exists ::LIB_DIRNAME_SPECIFIC_FOR_MS_WINDOWS]} {
+			set LIB_DIRNAME_SPECIFIC_FOR_MS_WINDOWS "<AIPCS:LIB_DIRNAME_SPECIFIC_FOR_MS_WINDOWS>" ;# <-- The auto. inst. pkg. creation script will fill this in
+		}
+		if {![info exists ::AUTO_PATH_FOR_MS_WINDOWS]} {
+			set AUTO_PATH_FOR_MS_WINDOWS "<AIPCS:AUTO_PATH_FOR_MS_WINDOWS>" ;# <-- The auto. inst. pkg. creation script will fill this in
+		}
+		# When entry script has NOT set these, use legacy AIPCS/argv0 logic
+		if {![info exists ::MCU8051IDE_FREWRAP_ENTRY]} {
+			set INSTALLATION_DIR $LIB_DIRNAME
+			set LIB_DIRNAME $LIB_DIRNAME_SPECIFIC_FOR_MS_WINDOWS
+			set ROOT_DIRNAME [regsub {\/w+\/?$} $LIB_DIRNAME {}]
 
-	foreach dir $AUTO_PATH_FOR_MS_WINDOWS {
-		lappend ::auto_path [file join $::ROOT_DIRNAME $dir]
-	}
-	set env(ITCL_LIBRARY) [file join $::ROOT_DIRNAME libraries itcl]
+			foreach dir $AUTO_PATH_FOR_MS_WINDOWS {
+				lappend ::auto_path "${::ROOT_DIRNAME}/${dir}"
+			}
+			set env(ITCL_LIBRARY) "${::ROOT_DIRNAME}/libraries/itcl"
+		}
+
 }
-
 # Set directory containing configuration files according to the host OS
 if {!$::MICROSOFT_WINDOWS} {
 	set CONFIG_DIR [file join ${::env(HOME)} .[string tolower ${::SHORTNAME}]]
@@ -153,7 +172,7 @@ if {!$::CLI_OPTION(quiet)} {
 		puts "\tLicense: GNU General Public License version 2 or later"
 		puts "\tPlease report bugs at http://mcu8051ide.sf.net"
 		puts "Authors:"
-		puts "\tMartin Osmera <martin.osmera@gmail.com>"
+		puts "\tMartin Osmera <martin.osmera@moravia-microsystems.com>"
 	} else {
 		puts "IMPORTANT INFORMATION :"
 		puts "\tThis program is distributed in the hope that it will be useful, but with \033\[31;1mABSOLUTELY NO WARRANTY !\033\[m"
@@ -161,7 +180,7 @@ if {!$::CLI_OPTION(quiet)} {
 		puts "\tLicense: GNU General Public License version 2 or later"
 		puts "\tPlease report bugs at \033\[34;1mhttp://mcu8051ide.sf.net\033\[m"
 		puts "Authors:"
-		puts "\tMartin Osmera \033\[33;1m<martin.osmera@gmail.com>\033\[m"
+		puts "\tMartin Osmera \033\[33;1m<martin.osmera@moravia-microsystems.com>\033\[m"
 	}
 }
 
@@ -172,28 +191,21 @@ proc libraryLoadFailed {library} {
 
 	# Itcl workarond for Debian
 	if {$library == {Itcl}} {
+		if {[package vcompare $::tcl_version "8.6"] >= 0} {
+			if {![catch {package require Itcl}]} {
+				return
+			}
+		}
+
 		set library_version "3.4"
 		set libname "libitcl"
 
 		set ::env(ITCL_LIBRARY) ${::LIB_DIRNAME}
 
-		puts stderr "\nERROR: Unable to load Itcl library compatible with this version of Tcl/Tk !"
+		puts stderr "\nERROR: Unable to load Itcl library compatible with this version of Tcl/Tk!"
 		puts stderr "Trying to workaround ..."
 
-		if {${::tcl_platform(platform)} == {windows}} {
-			# Windows: try loading itcl DLL directly
-			puts stderr "Loading Itcl DLL for Windows ..." 
-			if {[catch {load [file join ${::ROOT_DIRNAME} libraries itcl itcl34.dll] Itcl} error_info]} {
-				puts stderr "FAILED !"
-				puts stderr "Reason: ${error_info}"
-				puts stderr "
-Please try to run mcu8051ide with --check-libraries to see what's wrong."
-				exit 1
-			} else {
-				puts stderr "WORKAROUND SUCCESSFUL ... "
-				return
-			}
-		} elseif {[lsearch {Linux} ${::tcl_platform(os)}] == -1} {
+		if {[lsearch {Linux} ${::tcl_platform(os)}] == -1} {
 			puts stderr "FATAL ERROR: Unsupported operating system. ${::tcl_platform(os)}"
 			puts stderr "You can contact authors of the project at <martin.osmera@gmail.com> if you want to get you OS supported."
 			exit 1
@@ -217,10 +229,18 @@ Please try to run mcu8051ide with --check-libraries to see what's wrong."
 			return
 		}
 
-	# Tclx workarond for Debian
+	# Tclx workarond for Debian (1/2)
 	} elseif {$library == {Tclx}} {
 		set ::TCLX_AVAILABLE 0
-		puts stderr "\nERROR: Unable to load Tclx library, functionality will be limited"
+		puts stderr "\nERROR: Unable to load library Tclx, MCU 805 1IDE functionality might be limited."
+		return
+
+	# Tclx workarond for Debian (2/2)
+	} elseif { $library == {Signal} } {
+		set ::SIGNAL_AVAILABLE 0
+		if {!$::TCLX_AVAILABLE} {
+			puts stderr "\nERROR: Unable to load library Signal, MCU 805 1IDE functionality might be limited."
+		}
 		return
 	}
 
@@ -774,7 +794,7 @@ if {$CLI_OPTION(minimalized)} {
 }
 
 # Configure signal handling
-if {$::TCLX_AVAILABLE} {
+if {$::TCLX_AVAILABLE || $::SIGNAL_AVAILABLE} {
 	proc signal_handler {signal_name} {
 		global cntrlc_flag
 		puts stderr [mc "\nExiting on signal %s" $signal_name]
@@ -785,8 +805,13 @@ if {$::TCLX_AVAILABLE} {
 		exit 1
 	}
 
-	signal trap SIGINT	{signal_handler SIGINT}
-	signal trap SIGTERM	{signal_handler SIGTERM}
+	if {$::TCLX_AVAILABLE} {
+		signal trap SIGINT	{signal_handler SIGINT}
+		signal trap SIGTERM	{signal_handler SIGTERM}
+	} else {
+		signal add SIGINT	{signal_handler SIGINT}
+		signal add SIGTERM	{signal_handler SIGTERM}
+	}
 }
 
 
@@ -801,12 +826,14 @@ catch {
 			return ${::COMMON_BG_COLOR}
 		}
 
-		set value [Widget::cget $path.f$page $option]
-		if {![string length $value]} {
-			set value [Widget::cget $path $option]
-		}
+		catch {
+			set value [Widget::cget $path.f$page $option]
+			if {![string length $value]} {
+				set value [Widget::cget $path $option]
+			}
 
-		return $value
+			return $value
+		}
 	}
 	destroy .foo
 }

@@ -1,9 +1,12 @@
 #!/usr/bin/wish
-# Part of MCU 8051 IDE ( http://mcu8051ide.sf.net )
+# Part of MCU 8051 IDE ( http://http://www.moravia-microsystems.com/mcu8051ide )
 
 ############################################################################
 #    Copyright (C) 2007, 2008, 2009, 2010, 2011, 2012 by Martin Ošmera     #
 #    martin.osmera@gmail.com                                               #
+#                                                                          #
+#    Copyright (C) 2014 by Moravia Microsystems, s.r.o.                    #
+#    martin.osmera@moravia-microsystems.com                                #
 #                                                                          #
 #    This program is free software; you can redistribute it and#or modify  #
 #    it under the terms of the GNU General Public License as published by  #
@@ -207,6 +210,8 @@ namespace eval X {
 	 #	2 == Sim -> Hex
 	 #	3 == Sim -> Bin
 	variable hex__bin
+	variable input_file			{}	;# Input file
+	variable output_file			{}	;# Output file
 
 	## XDATA/CODE/ERAM/EEPROM/UNI memory hexadecimal editors
 	variable opened_code_mem_windows	{}	;# List of project object with opened CODE memory hex editor
@@ -3543,10 +3548,14 @@ namespace eval X {
 		variable compilation_in_progress	;# Bool: Compiler engaged
 		variable critical_procedure_in_progress	;# Bool: Disables procedures which takes a long time
 		variable project_menu_locked		;# Bool: Indicates than there is at least one opened project
-		variable compiler_pid			;# Int: PID of external compiler if used
+		variable compiler_pid			;# Int: PID of external compiler, if used
 		variable compilation_start_simulator	;# Bool: Start simulator after successful compilation
 		variable compile_this_file_only		;# Bool: Compile the current file only
 		variable compilation_mess_project	;# Object: Project related to running compilation
+
+		if {!${::APPLICATION_LOADED}} {
+			return {}
+		}
 
 		# It is not allowed to compile the source code while simulator is engaged
 		if {[lindex $simulator_enabled $actualProjectIdx]} {
@@ -4712,7 +4721,7 @@ namespace eval X {
 			SUBP_MON_CONFIG			{1 1}
 			OPEN_WITH_DLG			{}
 			FS_BROWSER_MASK			{*.asm}
-			FIND_IN_FILES_CONFIG		{1 0 1 ~ {*.asm,*.c,*.h} {}}
+			FIND_IN_FILES_CONFIG		{1 0 1 {} {*.asm,*.c,*.h} {}}
 			SYMBOL_VIEWER_CONFIG		{1 1 1 1 1 1 1 0 0 0 620x450}
 			LINE2PC_JUMP			1
 			STOPWATCH_CONFIG		{{} 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0}
@@ -5872,6 +5881,8 @@ namespace eval X {
 	## Invoke conversion dialog -- auxiliary procedure for '__bin2hex', '__hex2bin', '__sim2hex', '__sim2bin'
 	 # @return void
 	proc hex2bin2hex {} {
+		variable input_file			;# Input file
+		variable output_file			;# Output file
 		variable hex__bin			;# Type of conversion
 		variable critical_procedure_in_progress	;# Bool: Disables procedures which takes a long time
 
@@ -6533,7 +6544,10 @@ namespace eval X {
 		# Create dialog header
 		pack [label $win.header			\
 			-compound left			\
-			-image ::ICONS::32::mcu8051ide	\
+			-image [image create photo	\
+				-format png	\
+				-file "${::ROOT_DIRNAME}/icons/other/Moravia_Microsystems.png"	\
+			]	\
 			-text "  ${::APPNAME}"		\
 			-font [font create	\
 				-size -20	\
@@ -6570,8 +6584,9 @@ namespace eval X {
 		] -fill y -side right
 		# fill in the about tab
 		$about_tab.text insert end "${::APPNAME}\n"
-		$about_tab.text insert end [mc "An open source IDE for MCS-51 based microconrollers for POSIX Systems, this software is licenced under the GNU GPL v2 licence. You can find more at the project web page http://mcu8051ide.sourceforge.net\n"]
+		$about_tab.text insert end [mc "An open source IDE for MCS-51 based microconrollers for POSIX Systems, this software is licenced under the GNU GPL v2 licence. You can find more at the project web page http://www.moravia-microsystems.com/mcu-8051-ide/\n"]
 		$about_tab.text insert end "\n(c) 2007, 2008, 2009, 2010, 2011, 2012 Martin Ošmera <mailto:martin.osmera@gmail.com>\n"
+		$about_tab.text insert end "\n(c) 2014 Moravia Micorsystems, s.r.o. <mailto:martin.osmera@moravia-microsystems.com>\n"
 		if {$::MICROSOFT_WINDOWS} {
 			$about_tab.text insert end "\n"
 			$about_tab.text insert end [mc "You are currently using version for Microsoft® Windows®.\n"]
@@ -11414,10 +11429,10 @@ namespace eval X {
 	}
 
 	## Perform secure send command
-	# Secure means that it will not crash or something like that in case of any errors.
-	# But instead it will popup an error message to the user (Tk dialog).
-	# @parm List args - Arguments for the send command
-	# @return void
+	 # Secure means that it will not crash or something like that in case of any errors.
+	 # But instead it will popup an error message to the user (Tk dialog).
+	 # @parm List args - Arguments for the send command
+	 # @return void
 	proc secure_send args {
 		if {[catch {
 			eval "send $args"

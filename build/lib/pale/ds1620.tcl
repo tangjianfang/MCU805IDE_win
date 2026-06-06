@@ -1,9 +1,12 @@
 #!/usr/bin/tclsh
-# Part of MCU 8051 IDE ( http://mcu8051ide.sf.net )
+# Part of MCU 8051 IDE ( http://http://www.moravia-microsystems.com/mcu8051ide )
 
 ############################################################################
 #    Copyright (C) 2007, 2008, 2009, 2010, 2011, 2012 by Martin Ošmera     #
 #    martin.osmera@gmail.com                                               #
+#                                                                          #
+#    Copyright (C) 2014 by Moravia Microsystems, s.r.o.                    #
+#    martin.osmera@moravia-microsystems.com                                #
 #                                                                          #
 #    This program is free software; you can redistribute it and#or modify  #
 #    it under the terms of the GNU General Public License as published by  #
@@ -40,23 +43,23 @@ class Ds1620 {
 	inherit VirtualHWComponent
 
 	# Font: Font to be used in the panel -- bold
-	common cb_font	[font create				\
+	public common cb_font	[font create				\
 		-weight bold					\
 		-size [expr {int(-10 * $::font_size_factor)}]	\
 		-family {helvetica}				\
 	]
 	# Font: Font to be used in the panel -- bold
-	common small_font	[font create			\
+	public common small_font	[font create			\
 		-size [expr {int(-9 * $::font_size_factor)}]	\
 		-family {helvetica}				\
 	]
 
-	common COMPONENT_NAME	"DS1620 temperature sensor"	;# Name of this component
-	common CLASS_NAME	"Ds1620"			;# Name of this class
-	common COMPONENT_ICON	{ds1620}			;# Icon for this panel (16x16)
+	public common COMPONENT_NAME	"DS1620 temperature sensor"	;# Name of this component
+	public common CLASS_NAME	"Ds1620"			;# Name of this class
+	public common COMPONENT_ICON	{ds1620}			;# Icon for this panel (16x16)
 
 	# Configuration menu
-	common CONFMENU {
+	public common CONFMENU {
 		{checkbutton	"Disable delays"	{}	{::Ds1620::_no_delays}
 			1 0 0	{no_delays_changed}
 			""}
@@ -77,12 +80,12 @@ class Ds1620 {
 	}
 
 	#
-	common STATUS_BITS		{DONE THF TLF NVB 1 0 CPU 1SHOT}
-	common MAX_LOG_LENGTH		100		;# Int: Maximum number of row in the log window
-	common SIGNAL_NAMES		{DQ CLK RST TH TL TCOM}
-	common EEPROM_WRITE_CYCLE_TIME	10000
-	common T_CONVERSION_TIME_MS	750
-	common _no_delays		0
+	public common STATUS_BITS		{DONE THF TLF NVB 1 0 CPU 1SHOT}
+	public common MAX_LOG_LENGTH		100		;# Int: Maximum number of row in the log window
+	public common SIGNAL_NAMES		{DQ CLK RST TH TL TCOM}
+	public common EEPROM_WRITE_CYCLE_TIME	10000
+	public common T_CONVERSION_TIME_MS	750
+	public common _no_delays		0
 
 	private variable input_error
 	private variable input_error_desc

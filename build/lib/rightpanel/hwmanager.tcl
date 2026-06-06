@@ -1,9 +1,12 @@
 #!/usr/bin/tclsh
-# Part of MCU 8051 IDE ( http://mcu8051ide.sf.net )
+# Part of MCU 8051 IDE ( http://http://www.moravia-microsystems.com/mcu8051ide )
 
 ############################################################################
 #    Copyright (C) 2007, 2008, 2009, 2010, 2011, 2012 by Martin Ošmera     #
 #    martin.osmera@gmail.com                                               #
+#                                                                          #
+#    Copyright (C) 2014 by Moravia Microsystems, s.r.o.                    #
+#    martin.osmera@moravia-microsystems.com                                #
 #                                                                          #
 #    This program is free software; you can redistribute it and#or modify  #
 #    it under the terms of the GNU General Public License as published by  #
@@ -33,14 +36,14 @@ set _HWMANAGER_TCL _
 
 class HwManager {
 	## COMMON
-	common PLUGIN_SEARCH_PATHS {
+	public common PLUGIN_SEARCH_PATHS {
 		/usr/share/mcu8051ide/hwplugins
 		/usr/local/share/mcu8051ide/hwplugins
 	}
 	if {$::MICROSOFT_WINDOWS} {
 		set PLUGIN_SEARCH_PATHS ${::INSTALLATION_DIR}/hwplugins
 	}
-	common inst_plg_count			0	;# Int: Number of installed plugins
+	public common inst_plg_count			0	;# Int: Number of installed plugins
 
 	## PRIVATE
 	private variable parent				;# Widget: parent widget

@@ -1,9 +1,12 @@
 #!/usr/bin/tclsh
-# Part of MCU 8051 IDE ( http://mcu8051ide.sf.net )
+# Part of MCU 8051 IDE ( http://http://www.moravia-microsystems.com/mcu8051ide )
 
 ############################################################################
 #    Copyright (C) 2011 by Martin Ošmera                                   #
 #    martin.osmera@gmail.com                                               #
+#                                                                          #
+#    Copyright (C) 2014 by Moravia Microsystems, s.r.o.                    #
+#    martin.osmera@moravia-microsystems.com                                #
 #                                                                          #
 #    This program is free software; you can redistribute it and#or modify  #
 #    it under the terms of the GNU General Public License as published by  #
@@ -33,46 +36,46 @@ set _UART_MONITOR_TCL _
 
 class UARTMonitor {
 
-	common geometry		${::CONFIG(UART_MON_GEOMETRY)}	;# Last window geometry
-	common uart_mon_count	0				;# Counter of intances
+	public common geometry		${::CONFIG(UART_MON_GEOMETRY)}	;# Last window geometry
+	public common uart_mon_count	0				;# Counter of intances
 
 	 # Font: Tiny normal font
-	common tiny_font [font create		\
+	public common tiny_font [font create		\
 		-family {helvetica}		\
 		-size [expr {int(-9 * $::font_size_factor)}]	\
 		-weight {normal}	\
 	]
 	 # Font: Big bold font
-	common big_font [font create		\
+	public common big_font [font create		\
 		-family {helvetica}		\
 		-size [expr {int(-14 * $::font_size_factor)}]	\
 		-weight {bold}	\
 	]
 	 # Font: Normal font
-	common normal_font [font create		\
+	public common normal_font [font create		\
 		-family {helvetica}		\
 		-size [expr {int(-11 * $::font_size_factor)}]	\
 		-weight {normal}	\
 	]
 	 # Font:
-	common normal_fixed_font [font create			\
+	public common normal_fixed_font [font create			\
 		-family $::DEFAULT_FIXED_FONT			\
 		-size [expr {int(-11 * $::font_size_factor)}]	\
 		-weight {normal}				\
 	]
 	 # Font:
-	common bold_fixed_font [font create			\
+	public common bold_fixed_font [font create			\
 		-family $::DEFAULT_FIXED_FONT			\
 		-size [expr {int(-11 * $::font_size_factor)}]	\
 		-weight {bold}				\
 	]
 
-	common rect_size	12
-	common empty_fill	{#888888}
-	common empty_outline	{#AAAAAA}
+	public common rect_size	12
+	public common empty_fill	{#888888}
+	public common empty_outline	{#AAAAAA}
 
-	common MAX_G_LOG_LENGTH		100		;# Int:
-	common MAX_D_LOG_LENGTH		100		;# Int:
+	public common MAX_G_LOG_LENGTH		100		;# Int:
+	public common MAX_D_LOG_LENGTH		100		;# Int:
 
 	private variable dialog_opened		0	;# Bool: Dialog window opened
 	private variable win				;# Widget: Dialog window

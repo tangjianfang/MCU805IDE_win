@@ -1,9 +1,12 @@
 #!/usr/bin/tclsh
-# Part of MCU 8051 IDE ( http://mcu8051ide.sf.net )
+# Part of MCU 8051 IDE ( http://http://www.moravia-microsystems.com/mcu8051ide )
 
 ############################################################################
 #    Copyright (C) 2007, 2008, 2009, 2010, 2011, 2012 by Martin Ošmera     #
 #    martin.osmera@gmail.com                                               #
+#                                                                          #
+#    Copyright (C) 2014 by Moravia Microsystems, s.r.o.                    #
+#    martin.osmera@moravia-microsystems.com                                #
 #                                                                          #
 #    This program is free software; you can redistribute it and#or modify  #
 #    it under the terms of the GNU General Public License as published by  #
@@ -32,44 +35,44 @@ set _TODO_TCL _
 # --------------------------------------------------------------------------
 
 class Todo {
-	common buttonActiveBg	{#2222FF}	;# Color for button representing currently active text tags
-	common buttonSemiActBg	{#8888FF}	;#		- || -			 semi active tags
+	public common buttonActiveBg	{#2222FF}	;# Color for button representing currently active text tags
+	public common buttonSemiActBg	{#8888FF}	;#		- || -			 semi active tags
 
 	# Normal font for messages text
-	common todo_normal_font [font create	\
+	public common todo_normal_font [font create	\
 		-family ${Editor::fontFamily}	\
 		-size -${Editor::fontSize}	\
 	]
-	common normal_font [font create				\
+	public common normal_font [font create				\
 		-family {helvetica}				\
 		-size [expr {int(-12 * $::font_size_factor)}]	\
 		-weight {normal}				\
 	]
-	common bold_font [font create				\
+	public common bold_font [font create				\
 		-family {helvetica}				\
 		-size [expr {int(-12 * $::font_size_factor)}]	\
 		-weight {bold}					\
 	]
 	# List of used text tags
-	common textTags		{
+	public common textTags		{
 		tag_bold tag_italic tag_overstrike tag_underline
 	}
 	# List of XML tags for text tags (above)
-	common xmlTags		{
+	public common xmlTags		{
 		b i s u
 	}
 	# List "tagging" buttons
-	common tagButtons	{
+	public common tagButtons	{
 		button_bold button_italic button_strike button_under
 	}
 	# List of self closing tags
-	common selfCtags {bookmark}
-	common set_shortcuts	{}	;# Currently set shortcut bindigs
-	common shortcuts_cat	{todo}	;# Key shortcut categories related to this segment
+	public common selfCtags {bookmark}
+	public common set_shortcuts	{}	;# Currently set shortcut bindigs
+	public common shortcuts_cat	{todo}	;# Key shortcut categories related to this segment
 	# ID of bookmark image
-	common bookmarkImage	ok
+	public common bookmarkImage	ok
 	# Definition of the popup menu
-	common TODOMENU {
+	public common TODOMENU {
 		{command	{Undo}			{Ctrl+Z}	0	"undo"		{undo}
 			"Undo last operation"}
 		{command	{Redo}			{Ctrl+Shift+Z}	2	"redo"		{redo}

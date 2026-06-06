@@ -1,9 +1,12 @@
 #!/usr/bin/tclsh
-# Part of MCU 8051 IDE ( http://mcu8051ide.sf.net )
+# Part of MCU 8051 IDE ( http://http://www.moravia-microsystems.com/mcu8051ide )
 
 ############################################################################
 #    Copyright (C) 2007, 2008, 2009, 2010, 2011, 2012 by Martin Ošmera     #
 #    martin.osmera@gmail.com                                               #
+#                                                                          #
+#    Copyright (C) 2014 by Moravia Microsystems, s.r.o.                    #
+#    martin.osmera@moravia-microsystems.com                                #
 #                                                                          #
 #    This program is free software; you can redistribute it and#or modify  #
 #    it under the terms of the GNU General Public License as published by  #
@@ -46,34 +49,34 @@ set _HIBERNATE_TCL _
 
 class Hibernate {
 	## COMMON
-	common version		{1.0}	;# Float: Hibernate facility version
-	common hib_progress_d	0	;# Int: Variable for hibernation progress dialog -- Memory
-	common hib_progress_s	0	;# Int: Variable for hibernation progress dialog -- Program steps
-	common hib_abort	0	;# Bool: Abort hibernation process
-	common expected			;# String: Expected next XML element
-	common take_data		;# Bool: Take element data on next parsing cycle
-	common current_element	{}	;# String: Current XML element -- auxiliary variable for XML parser handler
-	common xml_tmp		{}	;# Mixed: Auxiliary variable of any kind for XML parser handler
-	common source_file	{}	;# String: Filename of the file from which the given file was generated
-	common exclude_stepback	0	;# Bool: Exclude program steps
-	common counter		0	;# Int: Counter of iterations for resume function for XML parser handler
-	common xdata_size	0	;# Int: Size of external data memory
-	common eeprom_size	0	;# Int: Size of data EEPROM
-	common sbs_length	0	;# Int: Size of stepback stack
-	common file_variable		;# Bool: Checkbox variable for "Different filename"
-	common mcu_variable		;# Bool: Checkbox variable for "Different processor"
-	common xdata_variable		;# Int: RadioButton variable for "Different XDATA size"
-	common md5_variable		;# Bool: Checkbox variable for "Different MD5 hash"
+	public common version		{1.0}	;# Float: Hibernate facility version
+	public common hib_progress_d	0	;# Int: Variable for hibernation progress dialog -- Memory
+	public common hib_progress_s	0	;# Int: Variable for hibernation progress dialog -- Program steps
+	public common hib_abort	0	;# Bool: Abort hibernation process
+	public common expected			;# String: Expected next XML element
+	public common take_data		;# Bool: Take element data on next parsing cycle
+	public common current_element	{}	;# String: Current XML element -- auxiliary variable for XML parser handler
+	public common xml_tmp		{}	;# Mixed: Auxiliary variable of any kind for XML parser handler
+	public common source_file	{}	;# String: Filename of the file from which the given file was generated
+	public common exclude_stepback	0	;# Bool: Exclude program steps
+	public common counter		0	;# Int: Counter of iterations for resume function for XML parser handler
+	public common xdata_size	0	;# Int: Size of external data memory
+	public common eeprom_size	0	;# Int: Size of data EEPROM
+	public common sbs_length	0	;# Int: Size of stepback stack
+	public common file_variable		;# Bool: Checkbox variable for "Different filename"
+	public common mcu_variable		;# Bool: Checkbox variable for "Different processor"
+	public common xdata_variable		;# Int: RadioButton variable for "Different XDATA size"
+	public common md5_variable		;# Bool: Checkbox variable for "Different MD5 hash"
 
 	if {$::GUI_AVAILABLE} {
 		# Big font for dialog "Program resumption"
-		common big_font		[font create			\
+	public common big_font		[font create			\
 			-family {helvetica}				\
 			-weight bold					\
 			-size [expr {int(-35 * $::font_size_factor)}]	\
 		]
 		# Normal font for dialog "Program resumption"
-		common text_font	[font create			\
+	public common text_font	[font create			\
 			-family {helvetica}				\
 			-weight bold					\
 			-size [expr {int(-14 * $::font_size_factor)}]	\

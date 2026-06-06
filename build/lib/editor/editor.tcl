@@ -1,9 +1,12 @@
 #!/usr/bin/tclsh
-# Part of MCU 8051 IDE ( http://mcu8051ide.sf.net )
+# Part of MCU 8051 IDE ( http://http://www.moravia-microsystems.com/mcu8051ide )
 
 ############################################################################
 #    Copyright (C) 2007, 2008, 2009, 2010, 2011, 2012 by Martin Ošmera     #
 #    martin.osmera@gmail.com                                               #
+#                                                                          #
+#    Copyright (C) 2014 by Moravia Microsystems, s.r.o.                    #
+#    martin.osmera@moravia-microsystems.com                                #
 #                                                                          #
 #    This program is free software; you can redistribute it and#or modify  #
 #    it under the terms of the GNU General Public License as published by  #
@@ -59,29 +62,29 @@ class Editor {
 	  # 3 - Nano
 	  # 4 - dav
 	  # 5 - le
-	common editor_to_use	0
-	common intentation_mode	{normal};# Editor indentation mode
-	common spaces_no_tabs	0	;# Bool: Use spaces instead of tabs
-	common number_of_spaces	8	;# Number of spaces to use instead of tab
-	common auto_brackets	1	;# Automaticaly insert oposite brackets, quotes, etc.
-	common auto_completion	1	;# Enable popup-base completion for code editor
-	common cline_completion	1	;# Enable popup-base completion for command line
-	common autosave		0	;# Int: 0 == Disable autosave; N > 0 == minutes
-	common hg_trailing_sp	1	;# Bool: Highlight trailing spaces
+	public common editor_to_use	0
+	public common intentation_mode	{normal};# Editor indentation mode
+	public common spaces_no_tabs	0	;# Bool: Use spaces instead of tabs
+	public common number_of_spaces	8	;# Number of spaces to use instead of tab
+	public common auto_brackets	1	;# Automaticaly insert oposite brackets, quotes, etc.
+	public common auto_completion	1	;# Enable popup-base completion for code editor
+	public common cline_completion	1	;# Enable popup-base completion for command line
+	public common autosave		0	;# Int: 0 == Disable autosave; N > 0 == minutes
+	public common hg_trailing_sp	1	;# Bool: Highlight trailing spaces
 
-	common finishigh_hg_dlg_max 	;# Int: Highlight dialog -- maximum value for progress bar
-	common finishigh_hg_dlg_const	;# Int: Highlight dialog -- current value for progress bar
+	public common finishigh_hg_dlg_max 	;# Int: Highlight dialog -- maximum value for progress bar
+	public common finishigh_hg_dlg_const	;# Int: Highlight dialog -- current value for progress bar
 
-	common set_shortcuts	{}	;# Currently set shortcut bindigs
-	common shortcuts_cat	{edit}	;# Key shortcut categories related to this segment
-	common count		0	;# Counter of class instances
-	common bookmark		0	;# Auxiliary variable for popup menu for Icon Border
-	common breakpoint	0	;# Auxiliary variable for popup menu for Line Numbers
-	common pmenu_cline	0	;# Auxiliary variable for popup menu for Icon Border and Line Numbers
-	common wrap_char	"\uB7"	;# Character intended for marking wrapped lines
+	public common set_shortcuts	{}	;# Currently set shortcut bindigs
+	public common shortcuts_cat	{edit}	;# Key shortcut categories related to this segment
+	public common count		0	;# Counter of class instances
+	public common bookmark		0	;# Auxiliary variable for popup menu for Icon Border
+	public common breakpoint	0	;# Auxiliary variable for popup menu for Line Numbers
+	public common pmenu_cline	0	;# Auxiliary variable for popup menu for Icon Border and Line Numbers
+	public common wrap_char	"\uB7"	;# Character intended for marking wrapped lines
 
 	# Commands supported by editor command line
-	common editor_commands {
+	public common editor_commands {
 		animate		assemble	auto-indent	bookmark	breakpoint
 		capitalize	clear		comment		copy		custom
 		cut		date		exit		exit-program	find
@@ -95,10 +98,10 @@ class Editor {
 		switch-mcu	set-xcode	set-xdata
 	}
 	# Editor commands wich can take options
-	common commands_with_option {find replace}
+	public common commands_with_option {find replace}
 	## Tags which defines background color for specific type of lines
 	 # {{tagname	bg-color	bool-priority} ...}
-	common line_markers {
+	public common line_markers {
 		{sel			#AAAAFF}
 		{tag_current_line	#FFFF88}
 		{tag_bookmark		#DDDDFF}
@@ -110,34 +113,34 @@ class Editor {
 	}
 
 	# Font for command line: Normal help window text
-	common cl_hw_nrml_font	[font create			\
+	public common cl_hw_nrml_font	[font create			\
 		-family $::DEFAULT_FIXED_FONT			\
 		-size [expr {int(-14 * $::font_size_factor)}]	\
 	]
 	# Font for command line: Bold help window text
-	common cl_hw_bold_font	[font create			\
+	public common cl_hw_bold_font	[font create			\
 		-family $::DEFAULT_FIXED_FONT			\
 		-size [expr {int(-14 * $::font_size_factor)}]	\
 		-weight bold					\
 	]
 	# Font for command line: Subheader in help window text
-	common cl_hw_hdr_font	[font create			\
+	public common cl_hw_hdr_font	[font create			\
 		-family $::DEFAULT_FIXED_FONT			\
 		-size [expr {int(-14 * $::font_size_factor)}]	\
 		-weight bold					\
 	]
 	# Font for command line: Main header in help window text
-	common cmd_line_win_font [font create			\
+	public common cmd_line_win_font [font create			\
 		-size [expr {int(-17 * $::font_size_factor)}]	\
 		-weight bold					\
 		-family {helvetica}				\
 	]
 	# Font size for command line
-	common cmd_line_fontSize	[expr {int(14 * $::font_size_factor)}]
+	public common cmd_line_fontSize	[expr {int(14 * $::font_size_factor)}]
 	# Font family for command line
-	common cmd_line_fontFamily	$::DEFAULT_FIXED_FONT
+	public common cmd_line_fontFamily	$::DEFAULT_FIXED_FONT
 	# Font for editor command line
-	common cmd_line_font	[font create	\
+	public common cmd_line_font	[font create	\
 		-family $cmd_line_fontFamily	\
 		-size -$cmd_line_fontSize	\
 	]
@@ -145,65 +148,65 @@ class Editor {
 	 # {
 	 #	{tag_name ?foreground? ?overstrike? ?italic? ?bold?}
 	 # }
-	common cmd_line_highlighting	{
+	public common cmd_line_highlighting	{
 		{tag_cmd		#0000DD	0 0 1}
 		{tag_argument		#00DD00	0 0 0}
 		{tag_option		#DD0000	0 0 1}
 	}
 
-	common normal_text_bg	#FFFFFF	;# Default background color for editor
-	common iconBorder_bg	#C8C5FF	;# Default background color for icon border
-	common lineNumbers_bg	#9497D8	;# Default background color for line numbers
-	common lineNumbers_fg	#FFFFFF	;# Default foreground color for line numbers
+	public common normal_text_bg	#FFFFFF	;# Default background color for editor
+	public common iconBorder_bg	#C8C5FF	;# Default background color for icon border
+	public common lineNumbers_bg	#9497D8	;# Default background color for line numbers
+	public common lineNumbers_fg	#FFFFFF	;# Default foreground color for line numbers
 	# Items in editor menu, which should be disabled when editor goes to simulator mode
-	common freezable_menu_items {
+	public common freezable_menu_items {
 		Cut Paste Undo Redo Comment Uncomment Indent
 		Unindent Uppercase Lowercase Capitalize
 	}
 	# Items in editor menu, which should be disabled when editor is in read only mode
-	common read_na_only_menu_items {
+	public common read_na_only_menu_items {
 		Cut Paste Undo Redo Comment Uncomment Indent
 		Unindent Uppercase Lowercase Capitalize
 	}
 
 	# Maximum width of the tab character, measured in number of spaces
-	common tab_width		8
+	public common tab_width		8
 
 	# Default font size
-	common fontSize		[expr {int(13 * $::font_size_factor)}]
+	public common fontSize		[expr {int(13 * $::font_size_factor)}]
 	# Default font family
-	common fontFamily	$::DEFAULT_FIXED_FONT
+	public common fontFamily	$::DEFAULT_FIXED_FONT
 
 	# Default font for editor
-	common defaultFont		\
+	public common defaultFont		\
 		[font create		\
 		-size -$fontSize	\
 		-family $fontFamily	\
 		-weight {normal}	\
 	]
-	common defaultFont_bold		\
+	public common defaultFont_bold		\
 		[font create		\
 		-size -$fontSize	\
 		-family $fontFamily	\
 		-weight {bold}		\
 	]
-	common defaultCharWidth		0	;# Width of one character of the default font
-	common defaultCharHeight	0	;# Height of one character of the default font
+	public common defaultCharWidth		0	;# Width of one character of the default font
+	public common defaultCharHeight	0	;# Height of one character of the default font
 	# Font for status bar (Normal)
-	common statusBarFont					\
+	public common statusBarFont					\
 		[font create					\
 		-size [expr {int(-12 * $::font_size_factor)}]	\
 		-family $::DEFAULT_FIXED_FONT			\
 	]
 	# Font for status bar (Bold)
-	common statusBarBoldFont				\
+	public common statusBarBoldFont				\
 		[font create					\
 		-size [expr {int(-12 * $::font_size_factor)}]	\
 		-weight bold					\
 		-family $::DEFAULT_FIXED_FONT			\
 	]
 	# Definition of editor popup menu
-	common EDITORMENU {
+	public common EDITORMENU {
 		{command	{LJMP this line} {$edit:jmp}	2	"ljmp_this_line {}"
 			{exec}		"Program jump"}
 		{command	{LCALL this line} {$edit:call}	4	"lcall_this_line {}"
@@ -250,7 +253,7 @@ class Editor {
 			{filesave}	"Save this file"}
 	}
 	# Definition of popup menu for icon border
-	common IBMENU {
+	public common IBMENU {
 		{checkbutton	"Bookmark"	{$edit:bookmark}	{::Editor::bookmark}	1 0 0
 			{Bookmark ${::Editor::pmenu_cline}}}
 		{separator}
@@ -260,7 +263,7 @@ class Editor {
 			{2leftarrow}	"Hide this panel"}
 	}
 	# Definition of popup menu for line numbers
-	common LNMENU {
+	public common LNMENU {
 		{checkbutton	"Breakpoint"	{$edit:breakpoint}	{::Editor::breakpoint}	1 0 0
 			{Breakpoint ${::Editor::pmenu_cline}}}
 		{separator}
@@ -270,7 +273,7 @@ class Editor {
 			{2leftarrow}	"Hide this panel"}
 	}
 	# Definition of popup menu for editor statis bar
-	common STATMENU {
+	public common STATMENU {
 		{command	"Split vertical" 	{$edit:split_v}		8	{__split_vertical}
 			{view_left_right}	"Split the editor vertically"}
 		{command	"Split horizontal" 	{$edit:split_h}		6	{__split_horizontal}
@@ -349,7 +352,7 @@ class Editor {
 	private variable editor_height		0
 	private variable cmd_line			;# ID of command line entry widget
 	private variable cmd_line_listbox	{}	;# Widget: ListBox of command line auto-completion window
-	private variable completion_listbox		;# Widget: ListBox of editor popup-based completion
+	private variable completion_listbox	{}	;# Widget: ListBox of editor popup-based completion
 	private variable do_not_hide_comp_win	0	;# Bool: Disable highing of editor completion win. on KeyRelease
 	private variable autosave_timer		{}	;# ID of autosave timer (command "after")
 	private variable key_handler_buffer	{}	;# List: Buffer for <Key> event handler

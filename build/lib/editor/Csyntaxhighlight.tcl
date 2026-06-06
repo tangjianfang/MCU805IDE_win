@@ -1,9 +1,12 @@
 #!/usr/bin/tclsh
-# Part of MCU 8051 IDE ( http://mcu8051ide.sf.net )
+# Part of MCU 8051 IDE ( http://http://www.moravia-microsystems.com/mcu8051ide )
 
 ############################################################################
 #    Copyright (C) 2007, 2008, 2009, 2010, 2011, 2012 by Martin Ošmera     #
 #    martin.osmera@gmail.com                                               #
+#                                                                          #
+#    Copyright (C) 2014 by Moravia Microsystems, s.r.o.                    #
+#    martin.osmera@moravia-microsystems.com                                #
 #                                                                          #
 #    This program is free software; you can redistribute it and#or modify  #
 #    it under the terms of the GNU General Public License as published by  #
@@ -55,32 +58,38 @@ namespace eval CsyntaxHighlight {
 
 		__data	__near	__xdata	__far	__idata	__pdata	__code
 		__bit	__sfr	__sfr16	__sfr32	__sbit	__at
+
+		bool	size_t		addr_t
+		uint8_t	uint16_t	uint32_t	uint64_t
+		int8_t	int16_t		int32_t 	int64_t
 	}
 	# List of C keywords
 	variable keywords {
 		auto	break	case	_endasm	while	union	continue
 		default	do	else	enum	sizeof	for	namespace
 		if	goto	return	struct	switch	typedef	using
-		_asm	__asm	__endasm
+		inline	_asm	__asm	__endasm
 	}
 	# List of doxygen tags -- No argument
 	variable doxy_tags_type0 {
 		@return		@see		@sa		@arg
-		@li		@nosubgrouping	@subpage	@f$
-		@f[		@f]		@interface
+		@li		@nosubgrouping	@subpage	@interface
+		@f[		@f]		@f$		@{
+		@}
 	}
 	# List of doxygen tags -- Word after tag
 	variable doxy_tags_type1 {
-		@param		@defgroup	@addtogroup	@weakgroup
+		@class		@defgroup	@addtogroup	@weakgroup
 		@ref		@page		@struct		@union
 		@enum		@def		@file		@namespace
-		@package
+		@package	@param		@param[in]	@param[out]
+		@param[in,out]
 	}
 	# List of doxygen tags -- Name after tag
 	variable doxy_tags_type2 {
 		@brief		@ingroup	@name		@mainpage
 		@fn		@var		@typedef        @author
-		@authors
+		@authors	@warning	@deprecated
 	}
 	# List of HTML tags (HTML 4.0 Strict)
 	variable html_tags {
@@ -551,7 +560,7 @@ namespace eval CsyntaxHighlight {
 		 # Determinate string to highlight
 		set string [string range $line_content $idx0 [expr {$idx1 - 1}]]
 		 # Split line into words
-		set words [split [regsub -all {>} [regsub -all {<} $string { &}] {& }]]
+		set words [split [regsub -all {>} [regsub -all {<} [regsub -all "\"" $string {\"}] { &}] {& }]]
 
 		# Adjust HTML tags with argument(s) (they must be represented as a single word)
 		set tag_opened 0
@@ -589,16 +598,16 @@ namespace eval CsyntaxHighlight {
 			# Detect dogygen tag
 			} elseif {[string index $word 0] == {@}} {
 				# Tags without argument
-				if {[lsearch $doxy_tags_type0 $word] != -1 || $word == {@f[}} {
+				if {[lsearch -ascii -exact $doxy_tags_type0 $word] != -1 || $word == {@f[}} {
 					set tags {tag_c_dox_tag}
 
 				# Tags with one argument
-				} elseif {[lsearch $doxy_tags_type1 $word] != -1} {
+				} elseif {[lsearch -ascii -exact $doxy_tags_type1 $word] != -1} {
 					set tags {tag_c_dox_tag}
 					set is_word 1
 
 				# Tags witch has name after
-				} elseif {[lsearch $doxy_tags_type2 $word] != -1} {
+				} elseif {[lsearch -ascii -exact $doxy_tags_type2 $word] != -1} {
 					$editor tag add tag_c_dox_tag			\
 						$line_number.[expr {$idx0 + $idx}]	\
 						$line_number.[expr {$idx0 + $idx + $len}]
@@ -740,7 +749,7 @@ namespace eval CsyntaxHighlight {
 				$editor tag add tag_c_bracket $line_number.$j $line_number.$j+1c
 
 			# Other symbols
-			} elseif {[lsearch {; = , + - < > ! | & * / ? : % ^} $char] != -1} {
+			} elseif {[lsearch -ascii -exact {; = , + - < > ! | & * / ? : % ^} $char] != -1} {
 				$editor tag add tag_c_symbol $line_number.$j $line_number.$j+1c
 			}
 		}
@@ -780,6 +789,8 @@ namespace eval CsyntaxHighlight {
 			incr idx
 			set len [string length $word]
 			set idx [string first $word $string $idx]
+
+			regsub {[uU]?[lL]?[lL]?[uU]?$} $word {} word
 
 			# Char
 			if {![string is digit -strict [string index $word 0]]} {

@@ -1,9 +1,12 @@
 #!/usr/bin/tclsh
-# Part of MCU 8051 IDE ( http://mcu8051ide.sf.net )
+# Part of MCU 8051 IDE ( http://http://www.moravia-microsystems.com/mcu8051ide )
 
 ############################################################################
 #    Copyright (C) 2007, 2008, 2009, 2010, 2011, 2012 by Martin Ošmera     #
 #    martin.osmera@gmail.com                                               #
+#                                                                          #
+#    Copyright (C) 2014 by Moravia Microsystems, s.r.o.                    #
+#    martin.osmera@moravia-microsystems.com                                #
 #                                                                          #
 #    This program is free software; you can redistribute it and#or modify  #
 #    it under the terms of the GNU General Public License as published by  #
@@ -54,6 +57,7 @@ namespace eval editor {
 	variable highlight_tab_asm	;# Widget: Tab "Syntax highlight"/"Assembler"
 	variable highlight_tab_C	;# Widget: Tab "Syntax highlight"/"C language"
 	variable highlight_tab_lst	;# Widget: Tab "Syntax highlight"/"Code listing"
+	variable tab_created_so_far	;# List: ID of already created tabs.
 
 	## Tab "Editor"
 	## Int: Editor to use
@@ -145,6 +149,7 @@ namespace eval editor {
 		variable highlight_tab_asm	;# Widget: Tab "Syntax highlight"/"Assembler"
 		variable highlight_tab_C	;# Widget: Tab "Syntax highlight"/"C language"
 		variable highlight_tab_lst	;# Widget: Tab "Syntax highlight"/"Code listing"
+		variable tab_created_so_far	;# List: ID of already created tabs.
 
 		variable apply_button		;# ID of button "Apply"
 		variable anything_modified	;# Bool: Settings changed (stay set to 1 even after APPLY)
@@ -195,7 +200,7 @@ namespace eval editor {
 
 		# Create notebook
 		set nb [ModernNoteBook $win.nb]
-		set ::configDialogues::editor::tab_created_so_far [list]
+		set tab_created_so_far [list]
 		 # Create Tab "Editor"
 		if {!$::MICROSOFT_WINDOWS} {	;# External editors are not available on Microsoft Windows
 			set editor_tab [$nb insert end editor_tab -text [mc "Editor"] -createcmd {::configDialogues::editor::create_tab editor}]
@@ -299,6 +304,7 @@ namespace eval editor {
 		variable highlight_tab_asm	;# Widget: Tab "Syntax highlight"/"Assembler"
 		variable highlight_tab_C	;# Widget: Tab "Syntax highlight"/"C language"
 		variable highlight_tab_lst	;# Widget: Tab "Syntax highlight"/"Code listing"
+		variable tab_created_so_far	;# List: ID of already created tabs.
 
 		variable editor_to_use		;# Int: Prefred editor
 		variable sample_text		;# ID of text widget for sample text
@@ -308,6 +314,12 @@ namespace eval editor {
 		variable win			;# ID of dialog toplevel window
 		variable dialog_opened		;# Bool: True if this dialog is already opened
 		variable button_index		;# Button index (for creating many buttons)
+
+		if {[lsearch $tab_created_so_far $tab_name] != -1} {
+			return
+		} else {
+			lappend tab_created_so_far $tab_name
+		}
 
 		switch -- $tab_name {
 			{editor} {	;# Tab "Editor selection"
@@ -1081,7 +1093,7 @@ namespace eval editor {
 			set state normal
 		}
 		foreach tab [list general_tab highlight_tab] {
-			$nb itemconfigure tab -state $state
+			$nb itemconfigure $tab -state $state
 		}
 	}
 

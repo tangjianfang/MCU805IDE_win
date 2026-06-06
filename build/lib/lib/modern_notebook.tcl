@@ -1,9 +1,12 @@
 #! /usr/bin/tclsh
-# Part of MCU 8051 IDE ( http://mcu8051ide.sf.net )
+# Part of MCU 8051 IDE ( http://http://www.moravia-microsystems.com/mcu8051ide )
 
 ############################################################################
 #    Copyright (C) 2012 by Martin Ošmera                                   #
 #    martin.osmera@gmail.com                                               #
+#                                                                          #
+#    Copyright (C) 2014 by Moravia Microsystems, s.r.o.                    #
+#    martin.osmera@moravia-microsystems.com                                #
 #                                                                          #
 #    This program is free software; you can redistribute it and#or modify  #
 #    it under the terms of the GNU General Public License as published by  #
@@ -29,8 +32,8 @@ proc ModernNoteBook {pathname args} {
 	}
 }
 class ModernNoteBookClass {
-	common font_size	12
-	common button_font [font create -family {helvetica} -size [expr {int(-$font_size * $::font_size_factor)}] -weight {normal}]
+	public common font_size	12
+	public common button_font [font create -family {helvetica} -size [expr {int(-$font_size * $::font_size_factor)}] -weight {normal}]
 
 	private variable button_counter		0
 	private variable tab_but_enter_cmd	{}

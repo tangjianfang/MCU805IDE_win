@@ -1,9 +1,12 @@
 #!/usr/bin/tclsh
-# Part of MCU 8051 IDE ( http://mcu8051ide.sf.net )
+# Part of MCU 8051 IDE ( http://http://www.moravia-microsystems.com/mcu8051ide )
 
 ############################################################################
 #    Copyright (C) 2007, 2008, 2009, 2010, 2011, 2012 by Martin Ošmera     #
 #    martin.osmera@gmail.com                                               #
+#                                                                          #
+#    Copyright (C) 2014 by Moravia Microsystems, s.r.o.                    #
+#    martin.osmera@moravia-microsystems.com                                #
 #                                                                          #
 #    This program is free software; you can redistribute it and#or modify  #
 #    it under the terms of the GNU General Public License as published by  #
@@ -34,7 +37,7 @@ set _FSBROWSER_TCL _
 class FSBrowser {
 
 	# Definition of popup menu for file system browser, part: configure
-	common FSMENU_CONFIGURE {
+	public common FSMENU_CONFIGURE {
 		{cascade	"Sorting"		0	""	.sorting	false 1 {
 			{radiobutton	"By Name"	""	{::KIFSD::FSD::config(sorting)}
 				{name}	{filelist_fsb_reload} 3
@@ -59,7 +62,7 @@ class FSBrowser {
 	}
 
 	# Definition of popup menu for file system browser, part: listbox
-	common FSMENU_LISTBOX {
+	public common FSMENU_LISTBOX {
 		{command	{Up}		{} 0	"filelist_fsb_up"	{up}
 			"Go to parent folder"}
 		{command	{Back}		{} 0	"filelist_fsb_back"	{left}
@@ -86,7 +89,7 @@ class FSBrowser {
 	}
 
 	# Definition of popup menu for file system browser, part: bookmarks
-	common FSMENU_BOOKMARKS {
+	public common FSMENU_BOOKMARKS {
 		{command	{Add bookmark}		{} 0	"filelist_fsb_add_bookmark"
 			{bookmark_add}	"Bookmark the current folder"}
 		{command	{Edit bookmarks}	{} 0	"filelist_fsb_edit_bookmarks"
@@ -963,7 +966,7 @@ class FSBrowser {
 
 		# Pack NoteBook and bottom frame
 		pack [$nb get_nb] -fill both -expand 1 -padx 10 -pady 5
-		pack $bottom_frame -anchor e -after $nb -padx 10 -pady 5
+		pack $bottom_frame -anchor e -after [$nb get_nb] -padx 10 -pady 5
 
 		# Configure dialog window
 		wm title $dialog [mc "Item properties"]

@@ -1,9 +1,12 @@
 #!/usr/bin/tclsh
-# Part of MCU 8051 IDE ( http://mcu8051ide.sf.net )
+# Part of MCU 8051 IDE ( http://http://www.moravia-microsystems.com/mcu8051ide )
 
 ############################################################################
 #    Copyright (C) 2007, 2008, 2009, 2010, 2011, 2012 by Martin Ošmera     #
 #    martin.osmera@gmail.com                                               #
+#                                                                          #
+#    Copyright (C) 2014 by Moravia Microsystems, s.r.o.                    #
+#    martin.osmera@moravia-microsystems.com                                #
 #                                                                          #
 #    This program is free software; you can redistribute it and#or modify  #
 #    it under the terms of the GNU General Public License as published by  #
@@ -36,9 +39,9 @@ source "${::LIB_DIRNAME}/bottompanel/graph_wdg.tcl"	;# Graph widget
 class Graph {
 	## COMMON
 	 # Bool: The message: "Performance warning" was already displayed to the user
-	common performance_warning_already_shown	0
+	public common performance_warning_already_shown	0
 	 # Bool: show performance warning when enabling external HW simulation
-	common show_sim_per_warn			${::CONFIG(SHOW_PALE_WARN)}
+	public common show_sim_per_warn			${::CONFIG(SHOW_PALE_WARN)}
 
 	# Variables related to object initialization
 	private variable data_list			;# Teportary variable -- Configuration list

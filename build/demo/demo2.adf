@@ -1,6 +1,6 @@
-# Assembler debug file for MCU 8051 IDE v1.4.7
+# Assembler debug file for MCU 8051 IDE v1.4.9
 # Used assembler: MCU 8051 IDE
-# Date: 12/28/2012
+# Date: 10/12/2014
 37AFD8BE8D1F3D6436C93B0B9616E95A "demo2.asm" 
 0 47 0 128 28
 0 50 11 128 0

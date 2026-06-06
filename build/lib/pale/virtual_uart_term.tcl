@@ -1,9 +1,12 @@
 #!/usr/bin/tclsh
-# Part of MCU 8051 IDE ( http://mcu8051ide.sf.net )
+# Part of MCU 8051 IDE ( http://http://www.moravia-microsystems.com/mcu8051ide )
 
 ############################################################################
 #    Copyright (C) 2011 by Martin Ošmera                                   #
 #    martin.osmera@gmail.com                                               #
+#                                                                          #
+#    Copyright (C) 2014 by Moravia Microsystems, s.r.o.                    #
+#    martin.osmera@moravia-microsystems.com                                #
 #                                                                          #
 #    This program is free software; you can redistribute it and#or modify  #
 #    it under the terms of the GNU General Public License as published by  #
@@ -35,51 +38,51 @@ class VirtualUARTTerminal {
 	inherit VirtualHWComponent
 
 	# Font: Big bold font
-	common bold_font [font create		\
+	public common bold_font [font create		\
 		-family {helvetica}		\
 		-size [expr {int(-12 * $::font_size_factor)}] -weight {bold}	\
 	]
 	 # Font: Tiny normal font
-	common tiny_font [font create		\
+	public common tiny_font [font create		\
 		-family {helvetica}		\
 		-size [expr {int(-9 * $::font_size_factor)}] -weight {normal}	\
 	]
 	 # Font: Tiny bold font
-	common tiny_font_bold [font create	\
+	public common tiny_font_bold [font create	\
 		-family {helvetica}		\
 		-size [expr {int(-9 * $::font_size_factor)}] -weight {bold}	\
 	]
 	 # Font: Normal font
-	common normal_font [font create		\
+	public common normal_font [font create		\
 		-family {helvetica}		\
 		-size [expr {int(-11 * $::font_size_factor)}] -weight {normal}	\
 	]
 	 # Font: Also normal font, but a bit larger
-	common big_font [font create		\
+	public common big_font [font create		\
 		-family {helvetica}		\
 		-size [expr {int(-12 * $::font_size_factor)}] -weight {normal}	\
 	]
 	# Font: Font to be used in the panel -- bold
-	common cb_font	[font create				\
+	public common cb_font	[font create				\
 		-weight bold					\
 		-size [expr {int(-10 * $::font_size_factor)}]	\
 		-family {helvetica}				\
 	]
 
 	 # List of Int: Available baud rates for RS232
-	common available_baud_rates {
+	public common available_baud_rates {
 		50	75	110	134	150	200
 		300	600	1200	1800	2400	4800
 		9600	19200	38400	57600	115200	230400
 		460800
 	}
 
-	common COMPONENT_NAME	"Virtual UART Terminal"		;# Name of this component
-	common CLASS_NAME	"VirtualUARTTerminal"		;# Name of this class
-	common COMPONENT_ICON	{chardevice}			;# Icon for this panel (16x16)
+	public common COMPONENT_NAME	"Virtual UART Terminal"		;# Name of this component
+	public common CLASS_NAME	"VirtualUARTTerminal"		;# Name of this class
+	public common COMPONENT_ICON	{chardevice}			;# Icon for this panel (16x16)
 
 	# Configuration menu
-	common CONFMENU {
+	public common CONFMENU {
 		{command	{Show log window}	{}	5	"show_log"	{bar5}
 			"Display the log of events which are currently happening in the simulated UART driver"}
 		{separator}
@@ -96,11 +99,11 @@ class VirtualUARTTerminal {
 			""}
 	}
 
-	common rect_size	12
-	common empty_fill	{#888888}
-	common empty_outline	{#AAAAAA}
+	public common rect_size	12
+	public common empty_fill	{#888888}
+	public common empty_outline	{#AAAAAA}
 
-	common MAX_LOG_LENGTH		100		;# Int: Maximum number of row in the log window
+	public common MAX_LOG_LENGTH		100		;# Int: Maximum number of row in the log window
 
 	## PRIVATE
 	private variable status_bar_label		;# Widget: Status bar
