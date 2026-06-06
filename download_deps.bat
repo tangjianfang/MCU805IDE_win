@@ -2,10 +2,10 @@
 setlocal enabledelayedexpansion
 
 echo ============================================================
-echo MCU 8051 IDE - Download Dependencies
+echo MCU 8051 IDE - Extract Dependencies
 echo ============================================================
 echo.
-echo This script will download required dependencies to resources/
+echo This script will extract required dependencies from local zip files.
 echo.
 
 set "PROJECT_DIR=%~dp0"
@@ -17,62 +17,62 @@ if not exist "%RESOURCES_DIR%" mkdir "%RESOURCES_DIR%"
 :: Check if PowerShell is available
 where powershell >nul 2>&1
 if !errorlevel! neq 0 (
-    echo ERROR: PowerShell not found. Please download manually.
+    echo ERROR: PowerShell not found. Cannot extract zip files.
+    echo Please install PowerShell or extract manually:
     echo.
-    echo 1. FreeWrap 6.61
-    echo    Download URL
-    echo    https^://github.com/tjwei/MCU8051IDE_win/releases/download/deps/freewrap.zip
-    echo    Extract to: resources\freewrap\
-    echo.
-    echo 2. lib_pkg_dir ^(Tcl libraries^)
-    echo    Download URL
-    echo    https^://github.com/tjwei/MCU8051IDE_win/releases/download/deps/lib_pkg_dir.zip
-    echo    Extract to: resources\lib_pkg_dir\
+    echo 1. freewrap.zip -^> resources\freewrap\
+    echo 2. lib_pkg_dir.zip -^> resources\lib_pkg_dir\
     echo.
     pause
     exit /b 1
 )
 
-echo [1/2] Downloading FreeWrap 6.61...
-set "FREEWRAP_URL=https://github.com/tjwei/MCU8051IDE_win/releases/download/deps/freewrap.zip"
-set "FREEWRAP_FILE=%RESOURCES_DIR%\freewrap.zip"
+echo [1/2] Extracting FreeWrap 6.61...
+set "FREEWRAP_ZIP=%PROJECT_DIR%\freewrap.zip"
 set "FREEWRAP_DIR=%RESOURCES_DIR%\freewrap"
 
 if not exist "%FREEWRAP_DIR%" (
-    echo     Downloading from GitHub...
-    powershell -Command "Invoke-WebRequest -Uri '%FREEWRAP_URL%' -OutFile '%FREEWRAP_FILE%' -UseBasicParsing" 2>nul
-    if exist "%FREEWRAP_FILE%" (
-        echo     Extracting...
-        powershell -Command "Expand-Archive -Path '%FREEWRAP_FILE%' -DestinationPath '%RESOURCES_DIR%' -Force"
-        del "%FREEWRAP_FILE%" >nul 2>&1
+    if not exist "%FREEWRAP_ZIP%" (
+        echo     ERROR: freewrap.zip not found in project root.
+        echo     Please ensure freewrap.zip is present in: %PROJECT_DIR%
+        pause
+        exit /b 1
+    )
+    echo     Extracting from local zip...
+    powershell -Command "Expand-Archive -Path '%FREEWRAP_ZIP%' -DestinationPath '%RESOURCES_DIR%' -Force" 2>nul
+    if exist "%FREEWRAP_DIR%" (
         echo     Done.
     ) else (
-        echo     ERROR: Download failed. Please download manually.
-        echo     %FREEWRAP_URL%
-        echo     Extract to: %FREEWRAP_DIR%
+        echo     ERROR: Extraction failed.
+        echo     Please extract freewrap.zip to resources\freewrap\ manually.
+        pause
+        exit /b 1
     )
 ) else (
     echo     Already exists, skipping.
 )
 
 echo.
-echo [2/2] Downloading Tcl libraries (lib_pkg_dir)...
-set "LIBS_URL=https://github.com/tjwei/MCU8051IDE_win/releases/download/deps/lib_pkg_dir.zip"
-set "LIBS_FILE=%RESOURCES_DIR%\lib_pkg_dir.zip"
+echo [2/2] Extracting Tcl libraries (lib_pkg_dir)...
+set "LIBS_ZIP=%PROJECT_DIR%\lib_pkg_dir.zip"
 set "LIBS_DIR=%RESOURCES_DIR%\lib_pkg_dir"
 
 if not exist "%LIBS_DIR%" (
-    echo     Downloading from GitHub...
-    powershell -Command "Invoke-WebRequest -Uri '%LIBS_URL%' -OutFile '%LIBS_FILE%' -UseBasicParsing" 2>nul
-    if exist "%LIBS_FILE%" (
-        echo     Extracting...
-        powershell -Command "Expand-Archive -Path '%LIBS_FILE%' -DestinationPath '%RESOURCES_DIR%' -Force"
-        del "%LIBS_FILE%" >nul 2>&1
+    if not exist "%LIBS_ZIP%" (
+        echo     ERROR: lib_pkg_dir.zip not found in project root.
+        echo     Please ensure lib_pkg_dir.zip is present in: %PROJECT_DIR%
+        pause
+        exit /b 1
+    )
+    echo     Extracting from local zip...
+    powershell -Command "Expand-Archive -Path '%LIBS_ZIP%' -DestinationPath '%RESOURCES_DIR%' -Force" 2>nul
+    if exist "%LIBS_DIR%" (
         echo     Done.
     ) else (
-        echo     ERROR: Download failed. Please download manually:
-        echo     %LIBS_URL%
-        echo     Extract to: %LIBS_DIR%
+        echo     ERROR: Extraction failed.
+        echo     Please extract lib_pkg_dir.zip to resources\lib_pkg_dir\ manually.
+        pause
+        exit /b 1
     )
 ) else (
     echo     Already exists, skipping.
@@ -80,7 +80,7 @@ if not exist "%LIBS_DIR%" (
 
 echo.
 echo ============================================================
-echo Dependency download complete!
+echo Dependency extraction complete!
 echo.
 echo Next steps:
 echo   1. Run build_exe.bat to build the IDE
