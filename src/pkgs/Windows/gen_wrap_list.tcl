@@ -27,6 +27,10 @@ set exclude_patterns [list \
     "mcu8051ide.ico" \
     "external_command.exe" \
     "startup_log.txt" \
+    "mcu8051ide-*.exe" \
+    "mcu8051ide-*.zip" \
+    "*.iss" \
+    "ext_cmd_entry.tcl" \
 ]
 
 # Directories to skip entirely (build-only, not needed in VFS)

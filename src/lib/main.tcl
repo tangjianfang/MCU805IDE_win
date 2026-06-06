@@ -127,24 +127,26 @@ if {[string first {Windows} ${tcl_platform(os)}] != -1} {
 	#   to do some workarounds here in order to make the IDE functional.
 	set ::MICROSOFT_WINDOWS 1
 
-		# On Windows freewrap, the entry script sets these variables
-		# with correct VFS paths. Only use AIPCS placeholders if
-		# the entry script hasn't already provided the values.
+		# On Windows freewrap, the entry script (mcu8051ide_entry.tcl) already
+		# sets all path variables correctly using argv0. Only do the
+		# legacy AIPCS path adjustments if the entry script has NOT run.
 		if {![info exists ::LIB_DIRNAME_SPECIFIC_FOR_MS_WINDOWS]} {
 			set LIB_DIRNAME_SPECIFIC_FOR_MS_WINDOWS "<AIPCS:LIB_DIRNAME_SPECIFIC_FOR_MS_WINDOWS>" ;# <-- The auto. inst. pkg. creation script will fill this in
 		}
 		if {![info exists ::AUTO_PATH_FOR_MS_WINDOWS]} {
 			set AUTO_PATH_FOR_MS_WINDOWS "<AIPCS:AUTO_PATH_FOR_MS_WINDOWS>" ;# <-- The auto. inst. pkg. creation script will fill this in
 		}
-	set INSTALLATION_DIR $LIB_DIRNAME
-	set LIB_DIRNAME $LIB_DIRNAME_SPECIFIC_FOR_MS_WINDOWS
-	set ROOT_DIRNAME [regsub {\/\w+\/?$} $LIB_DIRNAME {}]
+		# When entry script has NOT set these, use legacy AIPCS/argv0 logic
+		if {![info exists ::MCU8051IDE_FREWRAP_ENTRY]} {
+			set INSTALLATION_DIR $LIB_DIRNAME
+			set LIB_DIRNAME $LIB_DIRNAME_SPECIFIC_FOR_MS_WINDOWS
+			set ROOT_DIRNAME [regsub {\/w+\/?$} $LIB_DIRNAME {}]
 
-	foreach dir $AUTO_PATH_FOR_MS_WINDOWS {
-		lappend ::auto_path "${::ROOT_DIRNAME}/${dir}"
-	}
-	set env(ITCL_LIBRARY) "${::ROOT_DIRNAME}/libraries/itcl"
-}
+			foreach dir $AUTO_PATH_FOR_MS_WINDOWS {
+				lappend ::auto_path "${::ROOT_DIRNAME}/${dir}"
+			}
+			set env(ITCL_LIBRARY) "${::ROOT_DIRNAME}/libraries/itcl"
+		}
 
 # Set directory containing configuration files according to the host OS
 if {!$::MICROSOFT_WINDOWS} {
