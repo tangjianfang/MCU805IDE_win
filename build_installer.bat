@@ -26,6 +26,9 @@ if not exist "%BUILD_DIR%\mcu8051ide.exe" (
 :: ---- Copy ISS script to build/ ----
 copy /y "%WIN_PKG_DIR%\mcu8051ide_win_setup.iss" "%BUILD_DIR%\mcu8051ide_win_setup.iss" >nul
 
+:: ---- Copy setup image to build/ (required by Inno Setup) ----
+copy /y "%WIN_PKG_DIR%\setup_image.bmp" "%BUILD_DIR%\setup_image.bmp" >nul
+
 set "ISS_FILE=%BUILD_DIR%\mcu8051ide_win_setup.iss"
 
 :: ---- Find Inno Setup 6 compiler (ISCC.exe) ----

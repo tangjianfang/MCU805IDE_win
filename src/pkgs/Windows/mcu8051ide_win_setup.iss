@@ -51,7 +51,7 @@ SetupIconFile=mcu8051ide.ico
 WizardSmallImageFile=mcu8051ide.png
 
 ; Use the original setup_image.bmp for the large wizard banner
-WizardImageFile=..\src\pkgs\Windows\setup_image.bmp
+WizardImageFile=setup_image.bmp
 
 ; Architecture - the freewrap exe is 32-bit, runs on both x86 and x64
 ; Allow installation on any x86-compatible system (32-bit or 64-bit)
