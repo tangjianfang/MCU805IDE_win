@@ -10,12 +10,28 @@ build/diag_*.tcl
 build/detect_output.txt
 build/wrap_error.txt
 build/error_output.txt
+build/mcu8051ide-*.exe
+build/mcu8051ide-*.zip
+
+# Installer artifacts at repo root
+mcu8051ide-*.exe
+mcu8051ide-*.zip
+
+# Icon source and temp copies at root
+NewLogo.png
+/mcu8051ide.png
+/mcu8051ide_win_setup.iss
+
+# Error artifacts from bad sed/echo commands
+0}
+src/lib/0}
 
 # IDE config directory (user-specific)
 .mcu8051ide/
 
 # OS files
 Thumbs.db
-.DS_Storesrc/demo/*.mcu8051ide~
+.DS_Store
+src/demo/*.mcu8051ide~
 build-old/
 src-1.4.7/
