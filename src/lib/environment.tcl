@@ -1,9 +1,12 @@
 #!/usr/bin/tclsh
-# Part of MCU 8051 IDE ( http://mcu8051ide.sf.net )
+# Part of MCU 8051 IDE ( http://http://www.moravia-microsystems.com/mcu8051ide )
 
 ############################################################################
 #    Copyright (C) 2007, 2008, 2009, 2010, 2011, 2012 by Martin Ošmera     #
 #    martin.osmera@gmail.com                                               #
+#                                                                          #
+#    Copyright (C) 2014 by Moravia Microsystems, s.r.o.                    #
+#    martin.osmera@moravia-microsystems.com                                #
 #                                                                          #
 #    This program is free software; you can redistribute it and#or modify  #
 #    it under the terms of the GNU General Public License as published by  #
@@ -131,12 +134,12 @@ set smallfont_bold [font create -size [expr {int(-10 * $::font_size_factor)}] -f
 # -----------------------------
 foreach directory {16x16 22x22 32x32 flag} ns {16 22 32 flag} {
 	namespace eval ::ICONS::${ns} {}
-	if {!$::MICROSOFT_WINDOWS} {
-		# Use glob
-		set list_of_icons [glob "${::ROOT_DIRNAME}/icons/${directory}/*.png"]
-	} else {
-		# Use ZIP Virtual File System (freeWrap)
-		set list_of_icons [zvfs::list "${::ROOT_DIRNAME}/icons/${directory}/*.png"]
+	# Use glob everywhere - freewrap's glob searches both VFS and filesystem
+	if {[catch {glob "${::ROOT_DIRNAME}/icons/${directory}/*.png"} list_of_icons]} {
+		# Fallback: try zvfs::list for freewrap ZIP VFS
+		if {[catch {zvfs::list "${::ROOT_DIRNAME}/icons/${directory}/*.png"} list_of_icons]} {
+			set list_of_icons {}
+		}
 	}
 	foreach filename $list_of_icons {
 		set iconname [file tail $filename]
@@ -1010,7 +1013,7 @@ proc create_link_tag_in_text_widget {widget} {
  # @parm Widget widget - Target text widget
  # @return void
 proc convert_all_https_to_links {widget} {
-	foreach re [list {http://[^\s]+} {[\w\.]+@[\w\.]+}] {
+	foreach re [list {http://[^\s]+} {[\w\-\._]+@[\w\-\._]+}] {
 		set idx {1.0}
 		set end {1.0}
 		set org {1.0}
@@ -3021,6 +3024,18 @@ namespace eval toolbar {
 		foreach wdg [pack slaves .mainIconBar] {
 			destroy $wdg
 		}
+
+		# Logo of our company: Moravia Microsystems, s.r.o.
+		pack [ttk::button .mainIconBar.company_logo	\
+			-image [image create photo	\
+					-format png	\
+					-file "${::ROOT_DIRNAME}/icons/other/Moravia_Microsystems.png"	\
+				]	\
+			-style ToolButton.TButton	\
+			-command {::X::open_uri {http://www.moravia-microsystems.com/}}
+		] -side right -padx 15
+		DynamicHelp::add .mainIconBar.company_logo	\
+			-text [mc "Visit webside of the Moravia Microsystems, s.r.o. company."]
 
 		# Create hide button
 		pack [Label .mainIconBar.hide_label	\
