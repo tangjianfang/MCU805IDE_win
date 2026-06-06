@@ -26,6 +26,7 @@ mcu8051ide-*.zip
 # Icon source and temp copies at root
 NewLogo.png
 /mcu8051ide.png
+/mcu8051ide.ico
 /mcu8051ide_win_setup.iss
 
 # Error artifacts from bad sed/echo commands
