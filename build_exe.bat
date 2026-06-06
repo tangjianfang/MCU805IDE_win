@@ -12,11 +12,11 @@ set "PROJECT_DIR=%PROJECT_DIR:~0,-1%"
 
 set "BUILD_DIR=%PROJECT_DIR%\build"
 set "SRC_DIR=%PROJECT_DIR%\src"
-set "DEPS_DIR=%PROJECT_DIR%\deps"
+set "RESOURCES_DIR=%PROJECT_DIR%\resources"
 set "WIN_PKG_DIR=%SRC_DIR%\pkgs\Windows"
-set "FREEWRAP_TCLSH=%DEPS_DIR%\freewrap\freewrapTCLSH32.exe"
-set "FREEWRAP_WRAPPER=%DEPS_DIR%\freewrap\freewrap32.exe"
-set "ACTIVETCL_DIR=%DEPS_DIR%\ActiveTcl-master\lib"
+set "FREEWRAP_TCLSH=%RESOURCES_DIR%\freewrap\freewrapTCLSH32.exe"
+set "FREEWRAP_WRAPPER=%RESOURCES_DIR%\freewrap\freewrap32.exe"
+set "ACTIVETCL_DIR=%RESOURCES_DIR%\ActiveTcl-master\lib"
 
 echo ============================================================
 echo Building MCU8051IDE Windows exe
@@ -27,15 +27,23 @@ echo.
 :: PHASE 1: Check prerequisites
 :: ============================================================
 
+if not exist "%RESOURCES_DIR%" (
+    echo ERROR: resources/ directory not found
+    echo Please run download_deps.bat first to download dependencies.
+    exit /b 1
+)
+
 if not exist "%FREEWRAP_TCLSH%" (
     echo ERROR: freewrapTCLSH32.exe not found
     echo Path: %FREEWRAP_TCLSH%
+    echo Please run download_deps.bat to download dependencies.
     exit /b 1
 )
 
 if not exist "%FREEWRAP_WRAPPER%" (
     echo ERROR: freewrap32.exe not found
     echo Path: %FREEWRAP_WRAPPER%
+    echo Please run download_deps.bat to download dependencies.
     exit /b 1
 )
 
@@ -86,23 +94,23 @@ xcopy /y /q "%SRC_DIR%\hwplugins\*.*" "%BUILD_DIR%\hwplugins\" >nul 2>&1
 :: ---- Copy library dependencies ----
 echo   Copying libraries/bwidget/ ...
 if not exist "%BUILD_DIR%\libraries\bwidget" mkdir "%BUILD_DIR%\libraries\bwidget"
-xcopy /y /s /q "%DEPS_DIR%\lib_pkg_dir\bwidget\*.*" "%BUILD_DIR%\libraries\bwidget\" >nul 2>&1
+xcopy /y /s /q "%RESOURCES_DIR%\lib_pkg_dir\bwidget\*.*" "%BUILD_DIR%\libraries\bwidget\" >nul 2>&1
 
 echo   Copying libraries/img_png/ ...
 if not exist "%BUILD_DIR%\libraries\img_png" mkdir "%BUILD_DIR%\libraries\img_png"
-xcopy /y /q "%DEPS_DIR%\lib_pkg_dir\img_png\*.*" "%BUILD_DIR%\libraries\img_png\" >nul 2>&1
+xcopy /y /q "%RESOURCES_DIR%\lib_pkg_dir\img_png\*.*" "%BUILD_DIR%\libraries\img_png\" >nul 2>&1
 
 echo   Copying libraries/itcl/ (Itcl 3.4) ...
 if not exist "%BUILD_DIR%\libraries\itcl" mkdir "%BUILD_DIR%\libraries\itcl"
-xcopy /y /q "%DEPS_DIR%\lib_pkg_dir\itcl\*.*" "%BUILD_DIR%\libraries\itcl\" >nul 2>&1
+xcopy /y /q "%RESOURCES_DIR%\lib_pkg_dir\itcl\*.*" "%BUILD_DIR%\libraries\itcl\" >nul 2>&1
 
 echo   Copying libraries/tclx8.4/ ...
 if not exist "%BUILD_DIR%\libraries\tclx8.4" mkdir "%BUILD_DIR%\libraries\tclx8.4"
-xcopy /y /q "%DEPS_DIR%\lib_pkg_dir\tclx8.4\*.*" "%BUILD_DIR%\libraries\tclx8.4\" >nul 2>&1
+xcopy /y /q "%RESOURCES_DIR%\lib_pkg_dir\tclx8.4\*.*" "%BUILD_DIR%\libraries\tclx8.4\" >nul 2>&1
 
 echo   Copying libraries/tdom/ ...
 if not exist "%BUILD_DIR%\libraries\tdom" mkdir "%BUILD_DIR%\libraries\tdom"
-xcopy /y /q "%DEPS_DIR%\lib_pkg_dir\tdom\*.*" "%BUILD_DIR%\libraries\tdom\" >nul 2>&1
+xcopy /y /q "%RESOURCES_DIR%\lib_pkg_dir\tdom\*.*" "%BUILD_DIR%\libraries\tdom\" >nul 2>&1
 
 :: ---- Copy md5 library from ActiveTcl ----
 echo   Copying libraries/md5/ ...
