@@ -17,14 +17,16 @@ if not exist "%RESOURCES_DIR%" mkdir "%RESOURCES_DIR%"
 :: Check if PowerShell is available
 where powershell >nul 2>&1
 if !errorlevel! neq 0 (
-    echo ERROR: PowerShell not found. Please download manually:
+    echo ERROR: PowerShell not found. Please download manually.
     echo.
-    echo 1. FreeWrap 6.61:
-    echo    https://sourceforge.net/projects/freewrap/files/freewrap/6.61/freewrap-6.61-win32.exe/download
+    echo 1. FreeWrap 6.61
+    echo    Download URL
+    echo    https^://sourceforge.net/projects/freewrap/files/freewrap/6.61/freewrap-6.61-win32.exe/download
     echo    Extract to: resources\freewrap\
     echo.
-    echo 2. lib_pkg_dir (Tcl libraries):
-    echo    https://github.com/tjwei/MCU8051IDE_win/releases/download/deps/lib_pkg_dir.zip
+    echo 2. lib_pkg_dir ^(Tcl libraries^)
+    echo    Download URL
+    echo    https^://github.com/tjwei/MCU8051IDE_win/releases/download/deps/lib_pkg_dir.zip
     echo    Extract to: resources\lib_pkg_dir\
     echo.
     pause
