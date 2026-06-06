@@ -21,7 +21,7 @@ if !errorlevel! neq 0 (
     echo.
     echo 1. FreeWrap 6.61
     echo    Download URL
-    echo    https^://sourceforge.net/projects/freewrap/files/freewrap/6.61/freewrap-6.61-win32.exe/download
+    echo    https^://github.com/tjwei/MCU8051IDE_win/releases/download/deps/freewrap.zip
     echo    Extract to: resources\freewrap\
     echo.
     echo 2. lib_pkg_dir ^(Tcl libraries^)
@@ -34,21 +34,20 @@ if !errorlevel! neq 0 (
 )
 
 echo [1/2] Downloading FreeWrap 6.61...
-set "FREEWRAP_URL=https://sourceforge.net/projects/freewrap/files/freewrap/6.61/freewrap-6.61-win32.exe/download"
-set "FREEWRAP_FILE=%RESOURCES_DIR%\freewrap-6.61-win32.exe"
+set "FREEWRAP_URL=https://github.com/tjwei/MCU8051IDE_win/releases/download/deps/freewrap.zip"
+set "FREEWRAP_FILE=%RESOURCES_DIR%\freewrap.zip"
 set "FREEWRAP_DIR=%RESOURCES_DIR%\freewrap"
 
 if not exist "%FREEWRAP_DIR%" (
-    echo     Downloading from SourceForge...
+    echo     Downloading from GitHub...
     powershell -Command "Invoke-WebRequest -Uri '%FREEWRAP_URL%' -OutFile '%FREEWRAP_FILE%' -UseBasicParsing" 2>nul
     if exist "%FREEWRAP_FILE%" (
         echo     Extracting...
-        mkdir "%FREEWRAP_DIR%" >nul 2>&1
-        "%FREEWRAP_FILE%" /S /D=%FREEWRAP_DIR%
+        powershell -Command "Expand-Archive -Path '%FREEWRAP_FILE%' -DestinationPath '%RESOURCES_DIR%' -Force"
         del "%FREEWRAP_FILE%" >nul 2>&1
         echo     Done.
     ) else (
-        echo     ERROR: Download failed. Please download manually:
+        echo     ERROR: Download failed. Please download manually.
         echo     %FREEWRAP_URL%
         echo     Extract to: %FREEWRAP_DIR%
     )
