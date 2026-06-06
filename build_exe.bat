@@ -196,24 +196,12 @@ echo Building external_command.exe ...
 taskkill /f /im mcu8051ide.exe >nul 2>&1
 taskkill /f /im external_command.exe >nul 2>&1
 
-:: Create a temporary TCL script that runs the external command handler
-set "EXT_CMD_SCRIPT=%BUILD_DIR%\ext_cmd_entry.tcl"
-(
-    echo # external_command entry script - wraps the bat file behavior
-    echo # Passes arguments through to the system shell
-    echo if {$argc > 0} {
-    echo     set cmd [lindex $argv 0]
-    echo     for {set i 1} {$i < $argc} {incr i} {
-    echo         append cmd " [lindex $argv $i]"
-    echo     }
-    echo     catch {exec $cmd} result
-    echo     puts $result
-    echo }
-) > "%EXT_CMD_SCRIPT%"
+:: Copy the external command entry script from source
+copy /y "%WIN_PKG_DIR%\ext_cmd_entry.tcl" "%BUILD_DIR%\ext_cmd_entry.tcl" >nul 2>&1
 
 cd /d "%BUILD_DIR%"
 "%FREEWRAP_TCLSH%" ext_cmd_entry.tcl -forcewrap -w "%FREEWRAP_WRAPPER%" -o external_command.exe 2>nul
-del "%EXT_CMD_SCRIPT%" >nul 2>&1
+del "%BUILD_DIR%\ext_cmd_entry.tcl" >nul 2>&1
 
 cd /d "%PROJECT_DIR%"
 
