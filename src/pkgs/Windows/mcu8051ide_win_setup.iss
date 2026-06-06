@@ -24,8 +24,8 @@ AppPublisherURL={#MyAppURL}
 AppSupportURL={#MyAppURL}
 AppUpdatesURL={#MyAppURL}
 
-; Install directory
-DefaultDirName={autopf}\{#MyAppName}
+; Install directory - 32-bit app goes to Program Files (x86) on 64-bit Windows
+DefaultDirName={commonpf32}\{#MyAppName}
 DefaultGroupName={#MyAppName}
 AllowNoIcons=yes
 
@@ -54,8 +54,10 @@ WizardSmallImageFile=mcu8051ide.png
 WizardImageFile=..\src\pkgs\Windows\setup_image.bmp
 
 ; Architecture - the freewrap exe is 32-bit, runs on both x86 and x64
+; Allow installation on any x86-compatible system (32-bit or 64-bit)
 ArchitecturesAllowed=x86compatible
-ArchitecturesInstallIn64BitMode=x86compatible
+; Do NOT install in 64-bit mode - this is a 32-bit application
+ArchitecturesInstallIn64BitMode=
 
 ; Privileges - admin needed for file association registry entries
 PrivilegesRequired=admin
