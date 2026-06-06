@@ -55,11 +55,14 @@ echo   OK: Build directory ready
 echo.
 
 echo [Step 4/5] Building executable...
-call build_exe.bat > build_exe.log 2>&1
+chcp 65001 >nul 2>&1
+cmd /c "%PROJECT_DIR%build_exe.bat" > build_exe.log 2>&1
 if %errorlevel% neq 0 (
     echo ERROR: build_exe.bat failed
     echo Check build_exe.log for details
-    type build_exe.log
+    echo.
+    echo Last 20 lines of log:
+    type build_exe.log | findstr /C:"ERROR" /C:"Error" /C:"failed" /C:"Build"
     goto :fail
 )
 if not exist "build\mcu8051ide.exe" (
@@ -72,11 +75,13 @@ for %%A in (build\mcu8051ide.exe) do echo     %%~zA bytes
 echo.
 
 echo [Step 5/5] Building installer...
-call build_installer.bat > build_installer.log 2>&1
+cmd /c "%PROJECT_DIR%build_installer.bat" > build_installer.log 2>&1
 if %errorlevel% neq 0 (
     echo ERROR: build_installer.bat failed
     echo Check build_installer.log for details
-    type build_installer.log
+    echo.
+    echo Last 20 lines of log:
+    type build_installer.log | findstr /C:"ERROR" /C:"Error" /C:"failed" /C:"compile"
     goto :fail
 )
 if not exist "build\mcu8051ide-1.4.9-setup.exe" (
