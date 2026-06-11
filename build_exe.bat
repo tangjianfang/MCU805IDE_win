@@ -204,13 +204,15 @@ echo Building external_command.exe ...
 taskkill /f /im mcu8051ide.exe >nul 2>&1
 taskkill /f /im external_command.exe >nul 2>&1
 
-:: Copy the external command entry script from source
-copy /y "%WIN_PKG_DIR%\ext_cmd_entry.tcl" "%BUILD_DIR%\ext_cmd_entry.tcl" >nul 2>&1
+:: external_command.exe must wrap lib/external_command.tcl which:
+::   - loads Tk + DDE
+::   - reads compiler output from stdin
+::   - calls back into IDE via DDE (dde eval "mcu8051ide" callback)
+:: Must use freewrap32.exe (GUI/wish subsystem) to enable Tk+DDE.
+:: freewrapTCLSH32 (console) cannot load Tk or use DDE.
 
 cd /d "%BUILD_DIR%"
-"%FREEWRAP_TCLSH%" ext_cmd_entry.tcl -forcewrap -w "%FREEWRAP_WRAPPER%" -o external_command.exe 2>nul
-del "%BUILD_DIR%\ext_cmd_entry.tcl" >nul 2>&1
-
+"%FREEWRAP_TCLSH%" lib/external_command.tcl -forcewrap -w "%FREEWRAP_WRAPPER%" -o external_command.exe 2>nul
 cd /d "%PROJECT_DIR%"
 
 if not exist "%BUILD_DIR%\external_command.exe" (
