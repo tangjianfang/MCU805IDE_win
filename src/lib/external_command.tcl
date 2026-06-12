@@ -90,6 +90,28 @@ proc secure_send args {
 	}
 }
 
+## Perform secure dde eval (Windows)
+ # Wraps dde eval in catch and logs failures. Without this, a failed DDE
+ # connection (e.g. service name not registered on the target app) would
+ # crash external_command.exe silently, leaving the IDE's compilation
+ # callback never fired and the progress bar stuck forever.
+proc secure_dde_eval {target_app callback arg} {
+	if {[catch {
+		eval "dde eval $target_app $callback {$arg}"
+	} result]} then {
+		set diag "[clock format [clock seconds]] DDE eval FAILED: target=$target_app callback=$callback error=$result"
+		puts stderr $diag
+		# Also write to a diagnostic log so the user can find it after the fact
+		catch {
+			set fh [open [file join $::env(USERPROFILE) .mcu8051ide_dde_errors.log] a]
+			puts $fh $diag
+			close $fh
+		}
+		return 1
+	}
+	return 0
+}
+
 ## Read standard input
  # All output will be sended at once
 if {$line_cmd == {}} {
@@ -101,7 +123,7 @@ if {$line_cmd == {}} {
 	if {!${::MICROSOFT_WINDOWS}} {
 		secure_send $target_app $final_cmd "{" [regsub -all {[\{\}]} $result {\\&}] "}"
 	} else {
-		dde eval $target_app $final_cmd "{ [regsub -all {[\{\}]} $result {\\&}] }"
+		secure_dde_eval $target_app $final_cmd [regsub -all {[\{\}]} $result {\\&}]
 	}
 
  # Output will be sended line by line as executed command generates it
@@ -110,14 +132,15 @@ if {$line_cmd == {}} {
 		if {!${::MICROSOFT_WINDOWS}} {
 			secure_send $target_app $line_cmd "{" [regsub -all {[\{\}]} [gets stdin] {\\&}] "}"
 		} else {
-			dde eval $target_app $line_cmd "{ [regsub -all {[\{\}]} [gets stdin] {\\&}] }"
+			set line [regsub -all {[\{\}]} [gets stdin] {\\&}]
+			secure_dde_eval $target_app $line_cmd $line
 		}
 	}
 
 	if {!${::MICROSOFT_WINDOWS}} {
 		secure_send $target_app $final_cmd
 	} else {
-		dde eval $target_app $final_cmd
+		secure_dde_eval $target_app $final_cmd ""
 	}
 }
 

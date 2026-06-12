@@ -296,9 +296,15 @@ namespace eval ExternalCompiler {
 				]
 			}
 		} else { ;# Microsoft Windows way
+			# NOTE: The Windows path previously omitted --iram-size / --xram-size /
+			# --code-size. The Linux path includes them. We pass them explicitly here
+			# to fix the silent flag drop on Windows.
 			eval [subst -nocommands {
 				return [exec -- "${::INSTALLATION_DIR}/startsdcc.bat"		\
 					"${work_dir}"						\
+					--iram-size	$iram					\
+					--xram-size	$xram					\
+					--code-size	$code					\
 					$sdcc_opts						\
 					"${input_file}"						\
 						|&						\
