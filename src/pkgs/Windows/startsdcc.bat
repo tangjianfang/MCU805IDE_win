@@ -1,57 +1,32 @@
 @echo off
 rem ============================================================
 rem startsdcc.bat - Run SDCC compiler from MCU 8051 IDE on Windows
-rem Called by ::ExternalCompiler::compile_C in external_compiler.tcl.
 rem
 rem Usage: startsdcc.bat <work_dir> <sdcc_opts...> <input_file>
-rem   work_dir   - directory to cd into before invoking sdcc
-rem   sdcc_opts  - arguments to pass through to sdcc
-rem   input_file - C source file
 rem
-rem SDCC must be on PATH, OR located in one of these common install
-rem locations. We auto-detect and add it to PATH so the child sdcc
-rem process can find its helpers (sdcpp.exe, sdas8051.exe, etc.).
-rem
-rem Diagnostic log is written to %USERPROFILE%\.mcu8051ide_compile.log
-rem to help debug issues when the IDE's DDE pipe doesn't connect.
+rem Auto-detects SDCC in PATH or in common install locations.
+rem Writes SDCC output to <work_dir>\.mcu8051ide_sdcc_output.log
+rem ending with a 'SDCC_DONE:<rc>' line that the IDE polls for.
 rem ============================================================
 
-rem Initialize diagnostic log early so we can capture every step
 if defined USERPROFILE (
     set "DIAG_LOG=%USERPROFILE%\.mcu8051ide_compile.log"
 ) else (
     set "DIAG_LOG=startsdcc_diag.log"
 )
+set "RAW_DATE=%DATE%"
+call set "DATE_PRE=%%RAW_DATE:~0,10%%"
+set "STAMP=%DATE_PRE% %TIME:~0,8%"
 
-rem Compute a locale-independent timestamp. The built-in %DATE% on
-rem Chinese (and other non-English) Windows versions embeds the local
-rem day-of-week name (e.g. "周六") after the numeric prefix. We just
-rem take the first 10 characters of %DATE% (always numeric prefix in
-rem both US MM/DD/YYYY and CN YYYY/MM/DD formats) and combine with
-rem the time. This avoids relying on wmic (removed in Win 11 24H2)
-rem and on PowerShell (slow, may not be on PATH).
-rem
-rem %DATE:~0,10%  =>  2026/06/13  (locale-neutral date)
-rem %TIME:~0,8%   =>  01:18:36   (locale-neutral time, 24h)
-set "STAMP=%DATE:~0,10% %TIME:~0,8%"
+rem Single-line start marker, no per-step noise
+echo [%STAMP%] startsdcc.bat v5 work_dir=%~1 args=%2 %3 %4 %5 %6 %7 %8 %9 > "%DIAG_LOG%"
 
-echo [%STAMP%] === startsdcc.bat v4 (file-based pipeline, locale-neutral stamp) invoked === > "%DIAG_LOG%"
-echo [%STAMP%] argv: %* >> "%DIAG_LOG%"
+SETLOCAL ENABLEEXTENSIONS ENABLEDELAYEDEXPANSION
 
-SETLOCAL ENABLEEXTENSIONS
-SETLOCAL ENABLEDELAYEDEXPANSION
-
-rem ---- Find SDCC bin directory ----
 SET "SDCC_BIN="
-
-rem First, check if sdcc is already on PATH
 WHERE sdcc.exe >nul 2>&1
-IF !ERRORLEVEL! EQU 0 (
-    echo [%STAMP%] SDCC found on PATH >> "%DIAG_LOG%"
-    GOTO :HaveSDCC
-)
+IF !ERRORLEVEL! EQU 0 GOTO :HaveSDCC
 
-rem Not on PATH - try common install locations
 FOR %%D IN (
     "%ProgramFiles%\SDCC\bin"
     "%ProgramFiles(x86)%\SDCC\bin"
@@ -63,57 +38,26 @@ FOR %%D IN (
 ) DO (
     IF EXIST "%%~D\sdcc.exe" (
         SET "SDCC_BIN=%%~D"
-        echo [%STAMP%] SDCC found at %%~D >> "%DIAG_LOG%"
         GOTO :HaveSDCC
     )
 )
 
-rem Not found anywhere - emit a clear error so the IDE message panel
-rem shows what went wrong instead of appearing to hang silently.
-echo.
-echo ============================================================
-echo SDCC compiler not found.
-echo.
-echo Searched:
-echo   - System PATH
-echo   - %ProgramFiles%\SDCC\bin
-echo   - %ProgramFiles(x86)%\SDCC\bin
-echo   - %ProgramW6432%\SDCC\bin
-echo   - D:\Program Files\SDCC\bin
-echo   - D:\Program Files (x86)\SDCC\bin
-echo   - C:\SDCC\bin
-echo   - D:\SDCC\bin
-echo.
-echo Please install SDCC 4.x from:
-echo   https://sdcc.sourceforge.net/
-echo Or add your SDCC bin directory to the system PATH and restart
-echo MCU 8051 IDE.
-echo ============================================================
-echo.
-echo [%STAMP%] SDCC NOT FOUND - aborting with exit 127 >> "%DIAG_LOG%"
+echo [%STAMP%] SDCC NOT FOUND - aborting >> "%DIAG_LOG%"
+echo SDCC compiler not found. Searched PATH and common install locations.
+echo Install SDCC 4.x from https://sdcc.sourceforge.net/ or add SDCC bin to PATH.
+echo SDCC_NOT_FOUND >> "%USERPROFILE%\.mcu8051ide_sdcc_output.log" 2>nul
 EXIT /B 127
 
 :HaveSDCC
-IF DEFINED SDCC_BIN (
-    SET "PATH=!SDCC_BIN!;%PATH%"
-    echo [%STAMP%] Updated PATH with !SDCC_BIN! >> "%DIAG_LOG%"
-)
+IF DEFINED SDCC_BIN SET "PATH=!SDCC_BIN!;%PATH%"
 
-rem ---- Change to work directory and run sdcc ----
 IF "%~1"=="" (
-    echo [%STAMP%] ERROR: missing work_dir argument >> "%DIAG_LOG%"
-    ECHO startsdcc.bat: missing work_dir argument 1>&2
+    echo [%STAMP%] ERROR: missing work_dir >> "%DIAG_LOG%"
     EXIT /B 1
 )
-echo [%STAMP%] cd /d %~1 >> "%DIAG_LOG%"
 cd /d "%~1"
-echo [%STAMP%] now in %CD% >> "%DIAG_LOG%"
 SHIFT
 
-rem Reassemble remaining args into args variable.
-rem Use delayed expansion (!args!) so the loop correctly accumulates
-rem across iterations - the original used %args% which is parsed
-rem before each SET and never grows beyond the first iteration.
 SET "args="
 :Loop
 IF "%~1"=="" GOTO :Continue
@@ -122,19 +66,13 @@ SHIFT
 GOTO :Loop
 
 :Continue
-echo [%STAMP%] invoking: sdcc -mmcs51 !args! >> "%DIAG_LOG%"
-
-rem ---- Run SDCC, capture its output to a file the IDE polls ----
-rem The IDE polls %OUTPUT_FILE% (in work_dir) for SDCC output. When
-rem SDCC exits, the bat writes "SDCC_DONE:<rc>" as the last line and
-rem the IDE sees this and fires the compilation callback.
 set "OUTPUT_FILE=%CD%\.mcu8051ide_sdcc_output.log"
-echo [%STAMP%] output file: !OUTPUT_FILE! >> "%DIAG_LOG%"
 type nul > "!OUTPUT_FILE!"
-echo --- SDCC started at %STAMP% --- >> "!OUTPUT_FILE!"
 sdcc -mmcs51 %args% >> "!OUTPUT_FILE!" 2>&1
 SET "RC=!ERRORLEVEL!"
-echo --- SDCC exited with code !RC! at %STAMP% --- >> "!OUTPUT_FILE!"
-echo SDCC_DONE:!RC! >> "!OUTPUT_FILE!"
-echo [%STAMP%] sdcc returned !RC! >> "%DIAG_LOG%"
+rem Write the SDCC_DONE marker line. Plain `echo` (not `echo.`) writes
+rem "SDCC_DONE:N<CR><LF>" with no trailing space, which the IDE's regex
+rem matches cleanly. Append so the SDCC output above is preserved.
+>> "!OUTPUT_FILE!" echo SDCC_DONE:!RC!
+echo [%STAMP%] rc=!RC! >> "%DIAG_LOG%"
 EXIT /B %RC%

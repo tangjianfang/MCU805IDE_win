@@ -4095,31 +4095,15 @@ namespace eval X {
 		set ihx_exists [file exists $ihx_path]
 
 		if {$bat_says_done || $ihx_exists} {
-			# Bat completed. Append its log to the message panel and recover.
-			if {$bat_output ne ""} {
-				# Strip the leading timestamp+marker lines that aren't useful to
-				# the user, and append a compact summary.
-				set summary "\n[mc {Watchdog: bat completed but SDCC pipe never fired. Recovering.}]\n"
-				append summary "[mc {Bat log (last 500 chars):}]\n"
-				if {[string length $bat_output] > 500} {
-					set bat_output "...[string range $bat_output end-499 end]"
-				}
-				append summary $bat_output "\n"
-				append summary "[mc {Output files in work_dir:}]\n"
-				catch {
-					foreach f [glob -nocomplain [file join $cur_dir *]] {
-						append summary "  [file tail $f] ([file size $f] bytes)\n"
-					}
-				}
-				::X::messages_text_append $summary
+			# Bat completed. Show a short recovery message, then recover state.
+			set summary "\n[mc {Watchdog: bat completed. Recovering IDE state.}]\n"
+			if {$ihx_exists} {
+				append summary "[mc {.ihx found:}] [file join $cur_dir "$input_name.ihx"]\n"
 			}
-
-			# Force completion - call X::ext_compilation_complete directly
-			# to reset compilation_in_progress and the spinner.
+			::X::messages_text_append $summary
 			catch {::X::ext_compilation_complete}
 		} else {
-			# Bat hasn't finished. Just log the watchdog tick and try again.
-			::X::messages_text_append "\n[mc {Watchdog: compilation still pending after 30s. Will check again in 30s.}]\n"
+			# Bat hasn't finished. Just reschedule silently.
 			after 30000 [list X::__compilation_watchdog $cur_dir $input_name]
 		}
 	}
@@ -4156,7 +4140,7 @@ namespace eval X {
 
 		# If file doesn't exist yet, just reschedule
 		if {![file exists $__sdcc_output_path]} {
-			after 200 {X::__compilation_poll_tick}
+			after 500 {X::__compilation_poll_tick}
 			return
 		}
 
@@ -4174,8 +4158,11 @@ namespace eval X {
 				set lines [split $new_content "\n"]
 				foreach line $lines {
 					if {$line eq ""} {continue}
-					# Strip the trailing 'SDCC_DONE:<rc>' marker line
-					if {[regexp {^SDCC_DONE:(-?\d+)$} $line -> rc]} {
+					# Strip the trailing 'SDCC_DONE:<rc>' marker line.
+					# Allow trailing whitespace: cmd's `echo SDCC_DONE:N` may write
+					# 'SDCC_DONE:0 ' with a trailing space/CR depending on the
+					# host. Anchor the start, allow optional trailing junk.
+					if {[regexp {^SDCC_DONE:(-?\d+)} $line -> rc]} {
 						# Compilation finished
 						catch {::X::ext_compilation_complete}
 						return
@@ -4191,7 +4178,7 @@ namespace eval X {
 		}
 
 		# Reschedule
-		after 200 {X::__compilation_poll_tick}
+		after 500 {X::__compilation_poll_tick}
 	}
 
 	## Append text to messages text (bottom panel - tab "Messages")

@@ -306,14 +306,25 @@ namespace eval ExternalCompiler {
 			# This replaces the previous external_command.exe |& DDE
 			# eval pipe, which was fragile and often silently failed
 			# leaving the IDE's progress bar stuck forever.
+			#
+			# CRITICAL: On Windows, Tcl's exec does backslash interpretation
+			# inside double-quoted args. 'C:\tjf' becomes 'C:<TAB>jf' (because
+			# \t = TAB), which then gets split on whitespace by the bat.
+			# We avoid this entirely by using forward slashes for the path
+			# we hand to exec - Windows cmd accepts both / and \ in
+			# `cd /d` and as positional args, and forward slashes are
+			# never reinterpreted by Tcl.
+			set work_dir_fwd  [regsub -all {\\} $work_dir /]
+			set input_file_fwd [regsub -all {\\} $input_file /]
+			set inst_dir_fwd   [regsub -all {\\} ${::INSTALLATION_DIR} /]
 			eval [subst -nocommands {
-				return [exec -- "${::INSTALLATION_DIR}/startsdcc.bat"		\
-					"${work_dir}"						\
+				return [exec -- "${inst_dir_fwd}/startsdcc.bat"		\
+					"${work_dir_fwd}"					\
 					--iram-size	$iram					\
 					--xram-size	$xram					\
 					--code-size	$code					\
 					$sdcc_opts						\
-					"${input_file}" &					\
+					"${input_file_fwd}" &					\
 				]
 			}]
 			# Start polling the SDCC output file
