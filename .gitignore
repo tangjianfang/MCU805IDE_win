@@ -51,3 +51,4 @@ src/regression_tests/**/*.hex~
 src/regression_tests/**/*.lst~
 src/regression_tests/**/*.bin~
 src/regression_tests/**/results/
+*.c~

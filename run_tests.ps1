@@ -134,6 +134,76 @@ Get-ChildItem "$SimCases\*.in" -ErrorAction SilentlyContinue | ForEach-Object {
 }
 
 # ===========================================================
+# C COMPILER TESTS (SDCC, external toolchain)
+# ===========================================================
+
+Write-Host ""
+Write-Host "---- C Compiler Tests (SDCC) --------------------------------"
+
+# Find SDCC: PATH, then common install locations
+$SdccExe = $null
+foreach ($p in @(
+    (Get-Command sdcc.exe -ErrorAction SilentlyContinue).Source
+    "C:\Program Files\SDCC\bin\sdcc.exe"
+    "C:\Program Files (x86)\SDCC\bin\sdcc.exe"
+    "D:\Program Files\SDCC\bin\sdcc.exe"
+)) {
+    if ($p -and (Test-Path $p)) { $SdccExe = $p; break }
+}
+
+if (-not $SdccExe) {
+    Write-Host "  [SKIP] SDCC not found. Install from https://sdcc.sourceforge.net/" -ForegroundColor Yellow
+    Get-ChildItem "$TestDir\c_compiler\testcases\*.c" | ForEach-Object { $script:Skip++ }
+} else {
+    $SdccDir = Split-Path -Parent $SdccExe
+    Write-Host "  SDCC found: $SdccExe"
+
+    Get-ChildItem "$TestDir\c_compiler\testcases\*.c" | ForEach-Object {
+        $tname = $_.BaseName
+        $tout  = Join-Path $TempBase "c_$tname"
+        New-Item $tout -ItemType Directory -Force | Out-Null
+        Copy-Item $_.FullName "$tout\$($_.Name)"
+
+        # Prepend SDCC bin to PATH so sdcc finds cc1
+        $env:PATH = "$SdccDir;$env:PATH"
+
+        # SDCC writes outputs to the current working directory
+        Push-Location $tout
+        try {
+            & $SdccExe -mmcs51 $_.Name 2>&1 | Out-Null
+        } finally {
+            Pop-Location
+        }
+
+        $casePassed = $true
+        $ihx = Join-Path $tout "$tname.ihx"
+        if (-not (Test-Path $ihx)) {
+            Write-Host "  [FAIL] $tname" -ForegroundColor Red
+            Write-Host "         Reason: .ihx not generated"
+            $casePassed = $false
+        } else {
+            $recs = Get-Content $ihx | Where-Object { $_ -match '^:[0-9A-Fa-f]{8,}$' }
+            if (-not $recs -or $recs.Count -lt 2) {
+                Write-Host "  [FAIL] $tname" -ForegroundColor Red
+                Write-Host "         Reason: invalid Intel HEX records"
+                $casePassed = $false
+            } elseif ($recs[-1] -notmatch '^:00000001FF$') {
+                Write-Host "  [FAIL] $tname" -ForegroundColor Red
+                Write-Host "         Reason: missing EOF record"
+                $casePassed = $false
+            }
+        }
+
+        if ($casePassed) {
+            Write-Host "  [PASS] $tname" -ForegroundColor Green
+            $script:Pass++
+        } else {
+            $script:Fail++
+        }
+    }
+}
+
+# ===========================================================
 # SUMMARY
 # ===========================================================
 

@@ -125,6 +125,15 @@ copy /y "%SRC_DIR%\mcu8051ide.png" "%BUILD_DIR%\mcu8051ide.png" >nul 2>&1
 echo   Copying mcu8051ide_entry.tcl ...
 copy /y "%WIN_PKG_DIR%\mcu8051ide_entry.tcl" "%BUILD_DIR%\mcu8051ide_entry.tcl" >nul 2>&1
 
+:: ---- Copy Windows helper batch files (startsdcc.bat, startasem.bat, external_command.bat) ----
+:: These MUST live next to mcu8051ide.exe because the IDE exec()'s them at compile time.
+:: Without them, the IDE reports "couldn't execute ...\startsdcc.bat" and the C/assembler
+:: pipeline silently dies before DDE ever gets involved.
+echo   Copying Windows helper batch files ...
+copy /y "%WIN_PKG_DIR%\startsdcc.bat"    "%BUILD_DIR%\startsdcc.bat"    >nul 2>&1
+copy /y "%WIN_PKG_DIR%\startasem.bat"    "%BUILD_DIR%\startasem.bat"    >nul 2>&1
+copy /y "%WIN_PKG_DIR%\external_command.bat" "%BUILD_DIR%\external_command.bat" >nul 2>&1
+
 :: ---- Generate .ico from .png (if possible) ----
 echo   Generating mcu8051ide.ico ...
 

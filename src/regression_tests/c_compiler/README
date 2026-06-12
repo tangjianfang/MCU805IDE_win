@@ -1,0 +1,41 @@
+C language regression tests (SDCC)
+===================================
+
+These tests verify that C source files compile correctly with the SDCC
+compiler that MCU 8051 IDE drives on Windows via startsdcc.bat.
+
+Unlike the assembler tests (which use the IDE's built-in --assemble CLI),
+C compilation is delegated to the external SDCC toolchain. These tests
+therefore drive SDCC directly, the same way the IDE does.
+
+Test cases (testcases/):
+  001_minimal.c        - Minimal program (empty main + infinite loop)
+  002_io_ports.c       - SFR/port access, bit operations
+  003_functions.c      - Functions, parameters, arithmetic
+  004_arrays_structs.c - Arrays, structs, pointers
+  005_interrupts.c     - ISRs (__interrupt), timers, volatile
+
+Each test case has:
+  NNN_name.c        - C source file
+  NNN_name.ihx.exp  - Expected Intel HEX output (baseline from SDCC 4.5.0)
+
+Verification strategy:
+  The runner (run_tests.ps1) compiles each .c file with SDCC and checks:
+    1. SDCC exits 0 (compilation succeeds)
+    2. A non-empty .ihx Intel HEX file is generated
+    3. The .ihx record structure is valid
+
+  NOTE: Exact .ihx byte content varies between SDCC versions and
+  optimization settings, so the runner does NOT require a byte-exact
+  match against .ihx.exp by default. The .exp files are kept as a
+  reference baseline for manual inspection. Use --strict-hex to enable
+  byte-exact comparison when validating against a pinned SDCC version.
+
+Requirements:
+  SDCC must be installed. The runner auto-detects it in:
+    - System PATH
+    - C:\Program Files\SDCC\bin
+    - C:\Program Files (x86)\SDCC\bin
+    - D:\Program Files\SDCC\bin
+  The SDCC bin directory is prepended to PATH during the test so the
+  sdcc subprocess (sdcpp/cc1) can be found.
