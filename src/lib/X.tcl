@@ -4054,8 +4054,7 @@ namespace eval X {
 	}
 
 	## Compilation watchdog: if compilation_in_progress is still 1 after 30s,
-	 # the DDE callback chain likely broke silently (external_command.exe DDE
-	 # eval failed or never started). Recover the IDE state by:
+	 # the SDCC pipe may have failed silently. Recover the IDE state by:
 	 #   1. Reading the bat's diagnostic log to see if SDCC finished
 	 #   2. If yes, appending SDCC output to the message panel
 	 #   3. Calling ext_compilation_complete to reset compilation_in_progress
@@ -4077,7 +4076,10 @@ namespace eval X {
 		set bat_output ""
 		if {$log_path ne "" && [file exists $log_path]} {
 			catch {
+				# Read with explicit UTF-8 translation so non-ASCII chars
+				# (Chinese day names, accented chars) don't display as garbage.
 				set fh [open $log_path r]
+				fconfigure $fh -encoding utf-8
 				set content [read $fh]
 				close $fh
 				# Look for the bat's completion marker
@@ -4097,7 +4099,7 @@ namespace eval X {
 			if {$bat_output ne ""} {
 				# Strip the leading timestamp+marker lines that aren't useful to
 				# the user, and append a compact summary.
-				set summary "\n[mc {Watchdog: bat completed but DDE callback never fired. Recovering.}]\n"
+				set summary "\n[mc {Watchdog: bat completed but SDCC pipe never fired. Recovering.}]\n"
 				append summary "[mc {Bat log (last 500 chars):}]\n"
 				if {[string length $bat_output] > 500} {
 					set bat_output "...[string range $bat_output end-499 end]"
@@ -4161,6 +4163,7 @@ namespace eval X {
 		# Read new content from the saved position to current end-of-file
 		catch {
 			set fh [open $__sdcc_output_path r]
+			fconfigure $fh -encoding utf-8
 			seek $fh $__sdcc_output_pos
 			set new_content [read $fh]
 			set __sdcc_output_pos [tell $fh]

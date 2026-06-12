@@ -22,8 +22,21 @@ if defined USERPROFILE (
 ) else (
     set "DIAG_LOG=startsdcc_diag.log"
 )
-echo [%date% %time%] === startsdcc.bat v3 (iram/xram/code-size-fix + DDE error log) invoked === > "%DIAG_LOG%"
-echo [%date% %time%] argv: %* >> "%DIAG_LOG%"
+
+rem Compute a locale-independent timestamp. The built-in %DATE% on
+rem Chinese (and other non-English) Windows versions embeds the local
+rem day-of-week name (e.g. "周六") after the numeric prefix. We just
+rem take the first 10 characters of %DATE% (always numeric prefix in
+rem both US MM/DD/YYYY and CN YYYY/MM/DD formats) and combine with
+rem the time. This avoids relying on wmic (removed in Win 11 24H2)
+rem and on PowerShell (slow, may not be on PATH).
+rem
+rem %DATE:~0,10%  =>  2026/06/13  (locale-neutral date)
+rem %TIME:~0,8%   =>  01:18:36   (locale-neutral time, 24h)
+set "STAMP=%DATE:~0,10% %TIME:~0,8%"
+
+echo [%STAMP%] === startsdcc.bat v4 (file-based pipeline, locale-neutral stamp) invoked === > "%DIAG_LOG%"
+echo [%STAMP%] argv: %* >> "%DIAG_LOG%"
 
 SETLOCAL ENABLEEXTENSIONS
 SETLOCAL ENABLEDELAYEDEXPANSION
@@ -34,7 +47,7 @@ SET "SDCC_BIN="
 rem First, check if sdcc is already on PATH
 WHERE sdcc.exe >nul 2>&1
 IF !ERRORLEVEL! EQU 0 (
-    echo [%date% %time%] SDCC found on PATH >> "%DIAG_LOG%"
+    echo [%STAMP%] SDCC found on PATH >> "%DIAG_LOG%"
     GOTO :HaveSDCC
 )
 
@@ -50,7 +63,7 @@ FOR %%D IN (
 ) DO (
     IF EXIST "%%~D\sdcc.exe" (
         SET "SDCC_BIN=%%~D"
-        echo [%date% %time%] SDCC found at %%~D >> "%DIAG_LOG%"
+        echo [%STAMP%] SDCC found at %%~D >> "%DIAG_LOG%"
         GOTO :HaveSDCC
     )
 )
@@ -77,24 +90,24 @@ echo Or add your SDCC bin directory to the system PATH and restart
 echo MCU 8051 IDE.
 echo ============================================================
 echo.
-echo [%date% %time%] SDCC NOT FOUND - aborting with exit 127 >> "%DIAG_LOG%"
+echo [%STAMP%] SDCC NOT FOUND - aborting with exit 127 >> "%DIAG_LOG%"
 EXIT /B 127
 
 :HaveSDCC
 IF DEFINED SDCC_BIN (
     SET "PATH=!SDCC_BIN!;%PATH%"
-    echo [%date% %time%] Updated PATH with !SDCC_BIN! >> "%DIAG_LOG%"
+    echo [%STAMP%] Updated PATH with !SDCC_BIN! >> "%DIAG_LOG%"
 )
 
 rem ---- Change to work directory and run sdcc ----
 IF "%~1"=="" (
-    echo [%date% %time%] ERROR: missing work_dir argument >> "%DIAG_LOG%"
+    echo [%STAMP%] ERROR: missing work_dir argument >> "%DIAG_LOG%"
     ECHO startsdcc.bat: missing work_dir argument 1>&2
     EXIT /B 1
 )
-echo [%date% %time%] cd /d %~1 >> "%DIAG_LOG%"
+echo [%STAMP%] cd /d %~1 >> "%DIAG_LOG%"
 cd /d "%~1"
-echo [%date% %time%] now in %CD% >> "%DIAG_LOG%"
+echo [%STAMP%] now in %CD% >> "%DIAG_LOG%"
 SHIFT
 
 rem Reassemble remaining args into args variable.
@@ -109,19 +122,19 @@ SHIFT
 GOTO :Loop
 
 :Continue
-echo [%date% %time%] invoking: sdcc -mmcs51 !args! >> "%DIAG_LOG%"
+echo [%STAMP%] invoking: sdcc -mmcs51 !args! >> "%DIAG_LOG%"
 
 rem ---- Run SDCC, capture its output to a file the IDE polls ----
 rem The IDE polls %OUTPUT_FILE% (in work_dir) for SDCC output. When
 rem SDCC exits, the bat writes "SDCC_DONE:<rc>" as the last line and
 rem the IDE sees this and fires the compilation callback.
 set "OUTPUT_FILE=%CD%\.mcu8051ide_sdcc_output.log"
-echo [%date% %time%] output file: !OUTPUT_FILE! >> "%DIAG_LOG%"
+echo [%STAMP%] output file: !OUTPUT_FILE! >> "%DIAG_LOG%"
 type nul > "!OUTPUT_FILE!"
-echo --- SDCC started at %date% %time% --- >> "!OUTPUT_FILE!"
+echo --- SDCC started at %STAMP% --- >> "!OUTPUT_FILE!"
 sdcc -mmcs51 %args% >> "!OUTPUT_FILE!" 2>&1
 SET "RC=!ERRORLEVEL!"
-echo --- SDCC exited with code !RC! at %date% %time% --- >> "!OUTPUT_FILE!"
+echo --- SDCC exited with code !RC! at %STAMP% --- >> "!OUTPUT_FILE!"
 echo SDCC_DONE:!RC! >> "!OUTPUT_FILE!"
-echo [%date% %time%] sdcc returned !RC! >> "%DIAG_LOG%"
+echo [%STAMP%] sdcc returned !RC! >> "%DIAG_LOG%"
 EXIT /B %RC%

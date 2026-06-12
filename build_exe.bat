@@ -129,10 +129,27 @@ copy /y "%WIN_PKG_DIR%\mcu8051ide_entry.tcl" "%BUILD_DIR%\mcu8051ide_entry.tcl" 
 :: These MUST live next to mcu8051ide.exe because the IDE exec()'s them at compile time.
 :: Without them, the IDE reports "couldn't execute ...\startsdcc.bat" and the C/assembler
 :: pipeline silently dies before DDE ever gets involved.
+::
+:: IMPORTANT: Windows cmd REQUIRES CRLF line endings in .bat files. The source files
+:: in src/pkgs/Windows/ are checked into git as LF (POSIX), so we must convert to
+:: CRLF after copy. Without this, the bat would fail to execute on Windows with
+:: a confusing "'X' is not recognized as an internal or external command" error
+:: (the apostrophe would also be mis-encoded on Chinese Windows).
 echo   Copying Windows helper batch files ...
 copy /y "%WIN_PKG_DIR%\startsdcc.bat"    "%BUILD_DIR%\startsdcc.bat"    >nul 2>&1
 copy /y "%WIN_PKG_DIR%\startasem.bat"    "%BUILD_DIR%\startasem.bat"    >nul 2>&1
 copy /y "%WIN_PKG_DIR%\external_command.bat" "%BUILD_DIR%\external_command.bat" >nul 2>&1
+
+:: ---- Convert bat files from LF to CRLF (Windows cmd requirement) ----
+:: Uses a small VBScript (universally available on Windows since Win98)
+:: to rewrite the file with proper CRLF line endings.
+echo   Converting bat line endings to CRLF ...
+for %%f in ("%BUILD_DIR%\startsdcc.bat" "%BUILD_DIR%\startasem.bat" "%BUILD_DIR%\external_command.bat") do (
+    if exist %%f (
+        cscript //nologo "%WIN_PKG_DIR%\lf2crlf.vbs" "%%f" "%%f.crlf" >nul 2>&1
+        if exist "%%f.crlf" move /y "%%f.crlf" "%%f" >nul 2>&1
+    )
+)
 
 :: ---- Generate .ico from .png (if possible) ----
 echo   Generating mcu8051ide.ico ...

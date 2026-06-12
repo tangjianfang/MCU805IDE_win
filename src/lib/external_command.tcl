@@ -101,9 +101,11 @@ proc secure_dde_eval {target_app callback arg} {
 	} result]} then {
 		set diag "[clock format [clock seconds]] DDE eval FAILED: target=$target_app callback=$callback error=$result"
 		puts stderr $diag
-		# Also write to a diagnostic log so the user can find it after the fact
+		# Also write to a diagnostic log so the user can find it after the fact.
+		# Write as UTF-8 to avoid garbage chars on non-English Windows.
 		catch {
 			set fh [open [file join $::env(USERPROFILE) .mcu8051ide_dde_errors.log] a]
+			fconfigure $fh -encoding utf-8
 			puts $fh $diag
 			close $fh
 		}
