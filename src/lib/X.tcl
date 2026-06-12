@@ -3662,6 +3662,10 @@ namespace eval X {
 					$cur_dir	$input_file_name.$input_file_extension	\
 					$iram_size	$xram_size	$code_size		\
 				]
+				# Watchdog: if the DDE callback chain breaks silently, the IDE
+				# progress bar would spin forever. After 30s, if compilation is
+				# still in progress, check the bat's diagnostic log and recover.
+				after 30000 [list X::__compilation_watchdog $cur_dir $input_file_name]
 				return 2
 			}
 
@@ -4044,6 +4048,75 @@ namespace eval X {
 			set compilation_progress 0
 		}
 		after 200 {X::compilation_progress}
+	}
+
+	## Compilation watchdog: if compilation_in_progress is still 1 after 30s,
+	 # the DDE callback chain likely broke silently (external_command.exe DDE
+	 # eval failed or never started). Recover the IDE state by:
+	 #   1. Reading the bat's diagnostic log to see if SDCC finished
+	 #   2. If yes, appending SDCC output to the message panel
+	 #   3. Calling ext_compilation_complete to reset compilation_in_progress
+	 # @parm String cur_dir    - Compile work directory
+	 # @parm String input_name - Input file basename (no extension)
+	 # @return void
+	proc __compilation_watchdog {cur_dir input_name} {
+		variable compilation_in_progress
+		if {!$compilation_in_progress} {return}
+
+		# Try to read the bat's diagnostic log
+		set log_path ""
+		catch {
+			if {[info exists ::env(USERPROFILE)] && $::env(USERPROFILE) ne ""} {
+				set log_path [file join $::env(USERPROFILE) .mcu8051ide_compile.log]
+			}
+		}
+		set bat_says_done 0
+		set bat_output ""
+		if {$log_path ne "" && [file exists $log_path]} {
+			catch {
+				set fh [open $log_path r]
+				set content [read $fh]
+				close $fh
+				# Look for the bat's completion marker
+				if {[string match "*sdcc returned*" $content]} {
+					set bat_says_done 1
+					set bat_output $content
+				}
+			}
+		}
+
+		# Try the work_dir for the .ihx artifact
+		set ihx_path [file join $cur_dir "$input_name.ihx"]
+		set ihx_exists [file exists $ihx_path]
+
+		if {$bat_says_done || $ihx_exists} {
+			# Bat completed. Append its log to the message panel and recover.
+			if {$bat_output ne ""} {
+				# Strip the leading timestamp+marker lines that aren't useful to
+				# the user, and append a compact summary.
+				set summary "\n[mc {Watchdog: bat completed but DDE callback never fired. Recovering.}]\n"
+				append summary "[mc {Bat log (last 500 chars):}]\n"
+				if {[string length $bat_output] > 500} {
+					set bat_output "...[string range $bat_output end-499 end]"
+				}
+				append summary $bat_output "\n"
+				append summary "[mc {Output files in work_dir:}]\n"
+				catch {
+					foreach f [glob -nocomplain [file join $cur_dir *]] {
+						append summary "  [file tail $f] ([file size $f] bytes)\n"
+					}
+				}
+				::X::messages_text_append $summary
+			}
+
+			# Force completion - call X::ext_compilation_complete directly
+			# to reset compilation_in_progress and the spinner.
+			catch {::X::ext_compilation_complete}
+		} else {
+			# Bat hasn't finished. Just log the watchdog tick and try again.
+			::X::messages_text_append "\n[mc {Watchdog: compilation still pending after 30s. Will check again in 30s.}]\n"
+			after 30000 [list X::__compilation_watchdog $cur_dir $input_name]
+		}
 	}
 
 	## Append text to messages text (bottom panel - tab "Messages")

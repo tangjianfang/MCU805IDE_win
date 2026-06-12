@@ -22,7 +22,7 @@ if defined USERPROFILE (
 ) else (
     set "DIAG_LOG=startsdcc_diag.log"
 )
-echo [%date% %time%] === startsdcc.bat invoked === > "%DIAG_LOG%"
+echo [%date% %time%] === startsdcc.bat v3 (iram/xram/code-size-fix + DDE error log) invoked === > "%DIAG_LOG%"
 echo [%date% %time%] argv: %* >> "%DIAG_LOG%"
 
 SETLOCAL ENABLEEXTENSIONS
