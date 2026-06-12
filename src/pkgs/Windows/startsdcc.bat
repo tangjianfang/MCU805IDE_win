@@ -110,7 +110,18 @@ GOTO :Loop
 
 :Continue
 echo [%date% %time%] invoking: sdcc -mmcs51 !args! >> "%DIAG_LOG%"
-sdcc -mmcs51 %args%
+
+rem ---- Run SDCC, capture its output to a file the IDE polls ----
+rem The IDE polls %OUTPUT_FILE% (in work_dir) for SDCC output. When
+rem SDCC exits, the bat writes "SDCC_DONE:<rc>" as the last line and
+rem the IDE sees this and fires the compilation callback.
+set "OUTPUT_FILE=%CD%\.mcu8051ide_sdcc_output.log"
+echo [%date% %time%] output file: !OUTPUT_FILE! >> "%DIAG_LOG%"
+type nul > "!OUTPUT_FILE!"
+echo --- SDCC started at %date% %time% --- >> "!OUTPUT_FILE!"
+sdcc -mmcs51 %args% >> "!OUTPUT_FILE!" 2>&1
 SET "RC=!ERRORLEVEL!"
+echo --- SDCC exited with code !RC! at %date% %time% --- >> "!OUTPUT_FILE!"
+echo SDCC_DONE:!RC! >> "!OUTPUT_FILE!"
 echo [%date% %time%] sdcc returned !RC! >> "%DIAG_LOG%"
 EXIT /B %RC%

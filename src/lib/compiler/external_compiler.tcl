@@ -296,9 +296,16 @@ namespace eval ExternalCompiler {
 				]
 			}
 		} else { ;# Microsoft Windows way
-			# NOTE: The Windows path previously omitted --iram-size / --xram-size /
-			# --code-size. The Linux path includes them. We pass them explicitly here
-			# to fix the silent flag drop on Windows.
+			# File-based pipeline: the bat writes SDCC output to
+			# <work_dir>\.mcu8051ide_sdcc_output.log, including a final
+			# 'SDCC_DONE:<rc>' line. The IDE polls this file via
+			# X::__compilation_poll and forwards lines to
+			# ::X::compilation_message, then fires ext_compilation_complete
+			# when SDCC_DONE appears.
+			#
+			# This replaces the previous external_command.exe |& DDE
+			# eval pipe, which was fragile and often silently failed
+			# leaving the IDE's progress bar stuck forever.
 			eval [subst -nocommands {
 				return [exec -- "${::INSTALLATION_DIR}/startsdcc.bat"		\
 					"${work_dir}"						\
@@ -306,15 +313,11 @@ namespace eval ExternalCompiler {
 					--xram-size	$xram					\
 					--code-size	$code					\
 					$sdcc_opts						\
-					"${input_file}"						\
-						|&						\
-					"${::INSTALLATION_DIR}/external_command.bat"		\
-					"${::INSTALLATION_DIR}/external_command.exe"		\
-					"[tk appname]"						\
-					{::ExternalCompiler::ext_compilation_complete 1}	\
-					::X::compilation_message &				\
+					"${input_file}" &					\
 				]
 			}]
+			# Start polling the SDCC output file
+			X::__compilation_poll_start [file join $cur_dir .mcu8051ide_sdcc_output.log]
 		}
 	}
 

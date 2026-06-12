@@ -197,6 +197,9 @@ namespace eval X {
 	variable compiler_pid			0	;# Int: PID of external compiler if used
 	variable compilation_start_simulator	0	;# Bool: Start simulator after successful compilation
 	variable compile_this_file_only		0	;# Bool: Compile the current file only
+	# SDCC output polling (Windows file-based pipeline)
+	variable __sdcc_output_path		""	;# String: path to .mcu8051ide_sdcc_output.log
+	variable __sdcc_output_pos		0	;# Int: byte position last read from the log
 
 	## Dialog "Select input/output file"
 	variable input_file				;# Input file
@@ -4117,6 +4120,75 @@ namespace eval X {
 			::X::messages_text_append "\n[mc {Watchdog: compilation still pending after 30s. Will check again in 30s.}]\n"
 			after 30000 [list X::__compilation_watchdog $cur_dir $input_name]
 		}
+	}
+
+	## Start polling the SDCC output file
+	 # The bat writes SDCC output to <work_dir>\.mcu8051ide_sdcc_output.log
+	 # and ends with 'SDCC_DONE:<rc>'. We poll every 200ms, forward new
+	 # lines to ::X::compilation_message, and fire ext_compilation_complete
+	 # when SDCC_DONE appears.
+	 # @parm String output_path - Path to the SDCC output log file
+	 # @return void
+	proc __compilation_poll_start {output_path} {
+		variable __sdcc_output_path
+		variable __sdcc_output_pos
+		set __sdcc_output_path $output_path
+		set __sdcc_output_pos 0
+		# Truncate the file in case a previous run left content
+		catch {
+			set fh [open $output_path w]
+			close $fh
+		}
+		__compilation_poll_tick
+	}
+
+	## Poll tick: read new lines from the SDCC output file
+	 # @return void
+	proc __compilation_poll_tick {} {
+		variable compilation_in_progress
+		variable __sdcc_output_path
+		variable __sdcc_output_pos
+
+		if {!$compilation_in_progress} {return}
+		if {![info exists __sdcc_output_path] || $__sdcc_output_path eq ""} {return}
+
+		# If file doesn't exist yet, just reschedule
+		if {![file exists $__sdcc_output_path]} {
+			after 200 {X::__compilation_poll_tick}
+			return
+		}
+
+		# Read new content from the saved position to current end-of-file
+		catch {
+			set fh [open $__sdcc_output_path r]
+			seek $fh $__sdcc_output_pos
+			set new_content [read $fh]
+			set __sdcc_output_pos [tell $fh]
+			close $fh
+
+			if {$new_content ne ""} {
+				# Forward each line to compilation_message
+				set lines [split $new_content "\n"]
+				foreach line $lines {
+					if {$line eq ""} {continue}
+					# Strip the trailing 'SDCC_DONE:<rc>' marker line
+					if {[regexp {^SDCC_DONE:(-?\d+)$} $line -> rc]} {
+						# Compilation finished
+						catch {::X::ext_compilation_complete}
+						return
+					}
+					# Skip the decorative header/footer lines from the bat
+					if {[string match "--- SDCC*" $line]} {continue}
+					# Forward the line to the message panel
+					catch {
+						::X::compilation_message $line
+					}
+				}
+			}
+		}
+
+		# Reschedule
+		after 200 {X::__compilation_poll_tick}
 	}
 
 	## Append text to messages text (bottom panel - tab "Messages")
