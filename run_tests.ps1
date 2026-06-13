@@ -148,7 +148,7 @@ if (-not (Test-Path $Tclsh)) {
     Write-Host "  [SKIP] freewrapTCLSH32.exe not found" -ForegroundColor Yellow
     $script:Skip += 2
 } else {
-    foreach ($tclTest in @("test_regex_red_green.tcl", "test_sdcc_polling.tcl")) {
+    foreach ($tclTest in @("test_regex_red_green.tcl", "test_sdcc_polling.tcl", "test_idle_poll.tcl")) {
         $srcTcl  = Join-Path $TestsDir $tclTest
         $crlfTcl = "$srcTcl.crlf"
         if (-not (Test-Path $srcTcl)) {
