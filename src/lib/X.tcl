@@ -3920,6 +3920,15 @@ namespace eval X {
 			incr idx -1
 		}
 
+		# CR / form-feed / vertical tab / null / other low ASCII control
+		# characters. Windows bat redirects SDCC output with `>>` which
+		# preserves CRLF and lets SDCC's progress lines contain stray
+		# control bytes (e.g. \f form feed between phases). Tk's text
+		# widget interprets these as commands (\r moves cursor to col 0
+		# overwriting earlier text, \P \S \b are eaten as control chars),
+		# so we must strip them before display.
+		regsub -all {[\x00-\x08\x0b\x0c\x0e-\x1f\x7f]} $args "" args
+
 		if {[$compilation_mess_project messages_text_append [string trimright $args]]} {
 			set compilation_successfull 0
 		}
@@ -4200,6 +4209,13 @@ namespace eval X {
 				# Forward each line to compilation_message
 				set lines [split $new_content "\n"]
 				foreach line $lines {
+					# Strip trailing CR. The bat redirects SDCC stdout/stderr
+					# to a file via `>> "!OUTPUT_FILE!" 2>&1`. cmd's >> writes
+					# CRLF on Windows, so each line ends in \r. If we forward
+					# the \r to the Tk text widget, the cursor returns to
+					# column 0 and the next character overwrites the first -
+					# 'sdcc:' becomes 'dcc:'. Trim before display.
+					set line [string trimright $line "\r"]
 					if {$line eq ""} {continue}
 					# Strip the trailing 'SDCC_DONE:<rc>' marker line.
 					# Allow trailing whitespace: cmd's `echo SDCC_DONE:N` may write
@@ -4216,6 +4232,13 @@ namespace eval X {
 								puts $fh3 "[\clock\ format [clock\ seconds] -format {%Y/%m/%d %H:%M:%S}] POLL_FOUND_MARKER rc=$rc line=|${line}|"
 								close $fh3
 							}
+						}
+						# Show the marker in the message panel - users want
+						# to see "SDCC_DONE:0" so they know the compile
+						# actually finished and what the rc was. The IDE
+						# previously consumed it silently.
+						catch {
+							::X::compilation_message $line
 						}
 						# Compilation finished
 						catch {::X::ext_compilation_complete}

@@ -37,6 +37,21 @@ if {[info exists ::env(MCU8051IDE_AUTOCOMPILE_FILE)]
 		event generate . <Key> -keysym F11
 		update
 
+		# Capture every line that the poll forwards to the message panel,
+		# so we can verify the \r / control-char stripping works.
+		set ::__autocompile_lines_log [file join $::env(TEMP) mcu8051ide_autocompile_lines.txt]
+		set ::__autocompile_capture [list]
+		# Rename compilation_message so we can wrap it. We can't easily
+		# intercept messages_text_append (it's a Snit method), but
+		# compilation_message is a plain X:: proc and is called from the
+		# poll tick before messages_text_append - so logging the argument
+		# here is a faithful picture of what the user sees.
+		rename ::X::compilation_message ::X::compilation_message__orig
+		proc ::X::compilation_message {args} {
+			lappend ::__autocompile_capture [lindex $args 0]
+			return [::X::compilation_message__orig {*}$args]
+		}
+
 		# Poll the result via monitor
 		after 500 [list ::__autocompile_monitor]
 	}
@@ -55,6 +70,20 @@ if {[info exists ::env(MCU8051IDE_AUTOCOMPILE_FILE)]
 			return
 		}
 		# Done
+		# Dump every line that the poll forwarded to compilation_message
+		# so we can verify \r / control-char stripping works.
+		if {[info exists ::__autocompile_capture]} {
+			set fh [open $::__autocompile_lines_log w]
+			puts $fh "=== captured [llength $::__autocompile_capture] lines ==="
+			set n 0
+			foreach line $::__autocompile_capture {
+				incr n
+				# Show repr of each line so \r and other control chars are visible
+				puts $fh "[format %03d $n] |$line|"
+			}
+			close $fh
+			::__autocompile_log "CAPTURED_LINES: [llength $::__autocompile_capture] lines -> $::__autocompile_lines_log"
+		}
 		::__autocompile_log "DONE: elapsed=${elapsed}ms in_progress=0"
 		# Check if SDCC log got the marker
 		set log_path [file join [file dirname ${::AUTOCOMPILE_FILE}] .mcu8051ide_sdcc_output.log]
