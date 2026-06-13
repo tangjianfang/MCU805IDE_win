@@ -52,3 +52,8 @@ src/regression_tests/**/*.lst~
 src/regression_tests/**/*.bin~
 src/regression_tests/**/results/
 *.c~
+
+# SDCC output log written by startsdcc.bat during compilation
+.mcu8051ide_sdcc_output.log
+.mcu8051ide_sdcc_output*.log
+.mcu8051ide_compile.log

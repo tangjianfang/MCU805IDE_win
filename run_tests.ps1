@@ -134,6 +134,45 @@ Get-ChildItem "$SimCases\*.in" -ErrorAction SilentlyContinue | ForEach-Object {
 }
 
 # ===========================================================
+# SDCC PIPELINE TESTS (polling + marker matching)
+# ===========================================================
+
+Write-Host ""
+Write-Host "---- SDCC Pipeline Tests ------------------------------------"
+
+$TestsDir   = Join-Path $ProjectDir "tests"
+$Tclsh      = Join-Path $ProjectDir "resources\freewrap\freewrapTCLSH32.exe"
+$Lf2Crlf    = Join-Path $ProjectDir "src\pkgs\Windows\lf2crlf.vbs"
+
+if (-not (Test-Path $Tclsh)) {
+    Write-Host "  [SKIP] freewrapTCLSH32.exe not found" -ForegroundColor Yellow
+    $script:Skip += 2
+} else {
+    foreach ($tclTest in @("test_regex_red_green.tcl", "test_sdcc_polling.tcl")) {
+        $srcTcl  = Join-Path $TestsDir $tclTest
+        $crlfTcl = "$srcTcl.crlf"
+        if (-not (Test-Path $srcTcl)) {
+            Write-Host "  [SKIP] $tclTest (file missing)" -ForegroundColor Yellow
+            $script:Skip++
+            continue
+        }
+        # freewrapTCLSH32 is a Windows exe; source must be CRLF
+        & cscript //nologo $Lf2Crlf $srcTcl $crlfTcl 2>&1 | Out-Null
+        Move-Item -Force $crlfTcl $srcTcl
+
+        $out = & $Tclsh $srcTcl 2>&1
+        if ($LASTEXITCODE -eq 0) {
+            Write-Host "  [PASS] $tclTest" -ForegroundColor Green
+            $script:Pass++
+        } else {
+            Write-Host "  [FAIL] $tclTest" -ForegroundColor Red
+            $out | ForEach-Object { Write-Host "         $_" }
+            $script:Fail++
+        }
+    }
+}
+
+# ===========================================================
 # C COMPILER TESTS (SDCC, external toolchain)
 # ===========================================================
 
