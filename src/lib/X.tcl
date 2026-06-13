@@ -4119,12 +4119,21 @@ namespace eval X {
 		variable __sdcc_output_path
 		variable __sdcc_output_pos
 		set __sdcc_output_path $output_path
+		# Do NOT truncate the output log here. The bat (startsdcc.bat) already
+		# truncates it with `type nul > "!OUTPUT_FILE!"` at the start of its
+		# run. If we truncate here, we race with a fast-completing bat that
+		# has already written the SDCC_DONE marker - the truncate would wipe
+		# it out, the poll would see an empty file forever, and only the
+		# 30-second watchdog would recover.
+		#
+		# If the bat hasn't started yet, the file may not exist (or may be
+		# empty/leftover from a prior run). Either way, the poll tick below
+		# handles that: missing file = reschedule, empty file = reschedule,
+		# content with SDCC_DONE = fire.
+		#
+		# We start reading from offset 0 to capture whatever the bat has
+		# already written (in case it finished before we got here).
 		set __sdcc_output_pos 0
-		# Truncate the file in case a previous run left content
-		catch {
-			set fh [open $output_path w]
-			close $fh
-		}
 		__compilation_poll_tick
 	}
 
