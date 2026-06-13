@@ -3598,10 +3598,12 @@ namespace eval X {
 		if {$compile_this_file_only} {
 			set input_file {}
 		} else {
-			set input_file [list					\
-				[$actualProject cget -projectPath]		\
-				[$actualProject cget -P_option_main_file]	\
-			]
+			# Always prefer the editor's fullFileName (via getFileName) - it
+			# returns the real directory of the currently open .c file, not
+			# just the project root. Without this, files in subfolders
+			# (e.g. testcases/001_minimal.c) fail because the bat `cd`s to
+			# the project root and SDCC cannot find the source file.
+			set input_file [$actualProject editor_procedure {} getFileName {}]
 		}
 		if {[lindex $input_file 1] == {}} {
 			set input_file [$actualProject editor_procedure {} getFileName {}]
@@ -4119,17 +4121,25 @@ namespace eval X {
 		variable __sdcc_output_path
 		variable __sdcc_output_pos
 		set __sdcc_output_path $output_path
+		# Diagnostic: write the path we are about to poll to the diag log
+		# so we can see what the IDE actually thinks the log location is.
+		catch {
+			set log_path ""
+			if {[info exists ::env(USERPROFILE)] && $::env(USERPROFILE) ne ""} {
+				set log_path [file join $::env(USERPROFILE) .mcu8051ide_compile.log]
+			}
+			if {$log_path ne ""} {
+				set fh [open $log_path a]
+				puts $fh "[\clock\ format [clock\ seconds] -format {%Y/%m/%d %H:%M:%S}] POLL_START path=|${output_path}|"
+				close $fh
+			}
+		}
 		# Do NOT truncate the output log here. The bat (startsdcc.bat) already
 		# truncates it with `type nul > "!OUTPUT_FILE!"` at the start of its
 		# run. If we truncate here, we race with a fast-completing bat that
 		# has already written the SDCC_DONE marker - the truncate would wipe
 		# it out, the poll would see an empty file forever, and only the
 		# 30-second watchdog would recover.
-		#
-		# If the bat hasn't started yet, the file may not exist (or may be
-		# empty/leftover from a prior run). Either way, the poll tick below
-		# handles that: missing file = reschedule, empty file = reschedule,
-		# content with SDCC_DONE = fire.
 		#
 		# We start reading from offset 0 to capture whatever the bat has
 		# already written (in case it finished before we got here).
@@ -4149,6 +4159,17 @@ namespace eval X {
 
 		# If file doesn't exist yet, just reschedule
 		if {![file exists $__sdcc_output_path]} {
+			catch {
+				set log_path ""
+				if {[info exists ::env(USERPROFILE)] && $::env(USERPROFILE) ne ""} {
+					set log_path [file join $::env(USERPROFILE) .mcu8051ide_compile.log]
+				}
+				if {$log_path ne ""} {
+					set fh [open $log_path a]
+					puts $fh "[\clock\ format [clock\ seconds] -format {%Y/%m/%d %H:%M:%S}] POLL_TICK file_missing"
+					close $fh
+				}
+			}
 			after 500 {X::__compilation_poll_tick}
 			return
 		}
@@ -4162,6 +4183,19 @@ namespace eval X {
 			set __sdcc_output_pos [tell $fh]
 			close $fh
 
+			# Diagnostic: log every read
+			catch {
+				set log_path ""
+				if {[info exists ::env(USERPROFILE)] && $::env(USERPROFILE) ne ""} {
+					set log_path [file join $::env(USERPROFILE) .mcu8051ide_compile.log]
+				}
+				if {$log_path ne ""} {
+					set fh2 [open $log_path a]
+					puts $fh2 "[\clock\ format [clock\ seconds] -format {%Y/%m/%d %H:%M:%S}] POLL_TICK pos=$__sdcc_output_pos bytes=[string length $new_content] first=[string range $new_content 0 30]"
+					close $fh2
+				}
+			}
+
 			if {$new_content ne ""} {
 				# Forward each line to compilation_message
 				set lines [split $new_content "\n"]
@@ -4172,6 +4206,17 @@ namespace eval X {
 					# 'SDCC_DONE:0 ' with a trailing space/CR depending on the
 					# host. Anchor the start, allow optional trailing junk.
 					if {[regexp {^SDCC_DONE:(-?\d+)} $line -> rc]} {
+						catch {
+							set log_path ""
+							if {[info exists ::env(USERPROFILE)] && $::env(USERPROFILE) ne ""} {
+								set log_path [file join $::env(USERPROFILE) .mcu8051ide_compile.log]
+							}
+							if {$log_path ne ""} {
+								set fh3 [open $log_path a]
+								puts $fh3 "[\clock\ format [clock\ seconds] -format {%Y/%m/%d %H:%M:%S}] POLL_FOUND_MARKER rc=$rc line=|${line}|"
+								close $fh3
+							}
+						}
 						# Compilation finished
 						catch {::X::ext_compilation_complete}
 						return

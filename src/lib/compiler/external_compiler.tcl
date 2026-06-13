@@ -317,18 +317,29 @@ namespace eval ExternalCompiler {
 			set work_dir_fwd  [regsub -all {\\} $work_dir /]
 			set input_file_fwd [regsub -all {\\} $input_file /]
 			set inst_dir_fwd   [regsub -all {\\} ${::INSTALLATION_DIR} /]
-			eval [subst -nocommands {
-				return [exec -- "${inst_dir_fwd}/startsdcc.bat"		\
-					"${work_dir_fwd}"					\
-					--iram-size	$iram					\
-					--xram-size	$xram					\
-					--code-size	$code					\
-					$sdcc_opts						\
-					"${input_file_fwd}" &					\
-				]
-			}]
-			# Start polling the SDCC output file
-			X::__compilation_poll_start [file join $cur_dir .mcu8051ide_sdcc_output.log]
+			# NOTE: do NOT use `return [...]` here. The previous code used
+			# `return [exec ... &]` inside an `eval [subst -nocommands {...}]`,
+			# which returned from compile_C immediately after the bat was
+			# launched - so the line below that starts the poll was never
+			# reached. Result: bat ran, SDCC log got SDCC_DONE, but the IDE
+			# never noticed - it hung until the 30s watchdog recovered.
+			# Capture the exec result for the caller's compiler_pid instead.
+			set bat_pid [exec -- "${inst_dir_fwd}/startsdcc.bat"		\
+				"${work_dir_fwd}"					\
+				--iram-size	$iram					\
+				--xram-size	$xram					\
+				--code-size	$code					\
+				$sdcc_opts						\
+				"${input_file_fwd}" &					\
+			]
+			# Start polling the SDCC output file. Use $work_dir (in scope here)
+			# NOT $cur_dir - that is a local in X::__compile and is not visible
+			# from inside this proc, so reading it returns the empty string and
+			# we end up polling the wrong path, hanging until the 30s watchdog.
+			X::__compilation_poll_start [file join $work_dir .mcu8051ide_sdcc_output.log]
+			# Return the bat's pid (or whatever Tcl exec gave us) so the
+			# caller can still store a compiler_pid for cleanup.
+			return $bat_pid
 		}
 	}
 

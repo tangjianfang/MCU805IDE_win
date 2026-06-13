@@ -941,6 +941,11 @@ if {$::MICROSOFT_WINDOWS} {
 # Initialize file change notifications mechanism
 FSnotifications::init
 
+# Optional test hook: sourced only when env var MCU8051IDE_AUTOCOMPILE_FILE
+# is set. Has zero effect for normal users. Used by the test suite to drive
+# the real GUI flow. See test_hook.tcl for details.
+catch {source [file join ${::LIB_DIRNAME} test_hook.tcl]}
+
 # >>> File inclusion guard
 }
 # <<< File inclusion guard
