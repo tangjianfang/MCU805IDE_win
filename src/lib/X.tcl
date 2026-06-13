@@ -4240,6 +4240,20 @@ namespace eval X {
 						catch {
 							::X::compilation_message $line
 						}
+						# Print a human-readable success/failure line, the
+						# same way the "Starting compiler ..." line at the
+						# start was printed. This way users always see a
+						# clear English summary of the compile result in
+						# the Messages panel.
+						if {$rc == 0} {
+							catch {
+								::X::compilation_message "\n[mc "Compilation successful."]\n"
+							}
+						} else {
+							catch {
+								::X::compilation_message "\n[mc "Compilation failed (rc=%s), see messages above for details." $rc]\n"
+							}
+						}
 						# Compilation finished
 						catch {::X::ext_compilation_complete}
 						return
